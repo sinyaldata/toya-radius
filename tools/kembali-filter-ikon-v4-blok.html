@@ -1,0 +1,220 @@
+<style>
+    /* =====================================================================
+     * KEMBALI-FILTER-IKON-V4 (2026-10-17) -- pengganti V3 (blok V3 dicabut oleh installer)
+     * karena di HP asli tombol filter mendorong tabel sampai bisa digeser
+     * ke samping. Sekarang Search dipaksa menyempit & posisi tombol dibatasi
+     * di dalam kotak tabel. Mode HP:
+     *  1. Tombol filter (corong) SEJAJAR di kanan kotak Search di semua
+     *     tabel. Tombolnya ada di wadah lain (filter "di atas konten"),
+     *     jadi diposisikan oleh skrip -- elemennya TIDAK dipindah supaya
+     *     Livewire/Alpine tetap aman.
+     *  2. Garis bawah bar atas dihilangkan -- menyambung dengan isi halaman.
+     *  3. Bar bawah hanya tampil di Dasbor (pengenalan elemen diperbaiki).
+     *  4. Nama halaman di sebelah tombol kembali dibuat rata tengah.
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        /* ---- 1. filter di samping Search ---- */
+        html body .tya-cari-induk4 {
+            position: relative !important;
+        }
+
+        html body .fi-ta-search-field.tya-cari-sempit4:not(#tya-x) {
+            width: calc(100% - 50px) !important;
+            max-width: calc(100% - 50px) !important;
+            min-width: 0 !important;
+            flex: 0 1 calc(100% - 50px) !important;
+            margin-inline-end: 0 !important;
+        }
+
+        /* tabel tidak boleh bisa digeser ke samping gara-gara tombol ini */
+        html body .tya-cari-induk4:not(#tya-x) {
+            position: relative !important;
+            overflow-x: clip !important;
+        }
+
+        html body .fi-ta-filters-trigger-action-ctn.tya-filter-melayang4 {
+            position: absolute !important;
+            z-index: 6 !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+        }
+
+        html body .tya-filter-kosong4:not(#tya-x) {
+            padding: 0 !important;
+            margin: 0 !important;
+            border: 0 !important;
+            min-height: 0 !important;
+            height: 0 !important;
+            overflow: visible !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* ---- 2. tanpa garis di bawah bar atas ---- */
+        html body .fi-topbar-ctn,
+        html body .fi-topbar,
+        html body .fi-topbar.tya-mtop-aktif {
+            border-bottom: 0 !important;
+            border-block-end: 0 !important;
+            box-shadow: none !important;
+        }
+
+        html body .fi-topbar-ctn::before,
+        html body .fi-topbar-ctn::after,
+        html body .fi-topbar::before,
+        html body .fi-topbar::after {
+            content: none !important;
+            display: none !important;
+        }
+
+        /* ---- 3. bar bawah hanya di Dasbor ---- */
+        body.tya-bukan-dasbor .tya-bnav,
+        body.tya-bukan-dasbor .tya-bnav-v3 {
+            display: none !important;
+        }
+
+        /* ---- 4. nama halaman rata tengah ---- */
+        body.tya-bukan-dasbor #tya-mtop .tya-mtop-judul {
+            text-align: center !important;
+            padding-inline-end: 50px !important;
+        }
+    }
+</style>
+<script>
+    /* KEMBALI-FILTER-IKON-V4 */
+    (function () {
+        if (window.__tyaKembaliV4) return;
+        window.__tyaKembaliV4 = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+        var dijadwalkan = false;
+
+        function diDasbor() {
+            return location.pathname.split('/').filter(Boolean).length <= 1;
+        }
+
+        // ---------- 3. bar bawah ----------
+        function tandaiBarBawah() {
+            var ada = document.querySelector('.tya-bnav-v3');
+            if (ada && document.body.contains(ada)) return;
+            var tautan = document.querySelectorAll('a, button');
+            for (var i = 0; i < tautan.length; i++) {
+                var a = tautan[i];
+                var t = (a.textContent || '').trim().toLowerCase();
+                if (t !== 'laporan' && t !== 'setting' && t !== 'pengaturan') continue;
+                if (a.closest('.fi-sidebar, #tya-menu-ikon, #tya-mtop, .fi-modal, .fi-dropdown-panel, .fi-ta, .fi-header')) continue;
+                var el = a.parentElement;
+                for (var d = 0; el && el !== document.body && d < 10; d++, el = el.parentElement) {
+                    var pos = window.getComputedStyle(el).position;
+                    if (pos === 'fixed' || pos === 'sticky') {
+                        el.classList.add('tya-bnav-v3');
+                        return;
+                    }
+                }
+            }
+        }
+
+        // ---------- 1. filter di samping Search ----------
+        function lepasFilter() {
+            document.querySelectorAll('.tya-filter-melayang4').forEach(function (x) {
+                x.classList.remove('tya-filter-melayang4');
+                x.style.removeProperty('top');
+                x.style.removeProperty('left');
+            });
+            document.querySelectorAll('.tya-cari-sempit4').forEach(function (x) { x.classList.remove('tya-cari-sempit4'); });
+            document.querySelectorAll('.tya-cari-induk4').forEach(function (x) { x.classList.remove('tya-cari-induk4'); });
+            document.querySelectorAll('.tya-filter-kosong4').forEach(function (x) { x.classList.remove('tya-filter-kosong4'); });
+        }
+
+        function terlihat(el) {
+            return !!el && el.offsetParent !== null && el.getClientRects().length > 0;
+        }
+
+        function aturFilter() {
+            document.querySelectorAll('.fi-ta-search-field').forEach(function (cari) {
+                if (cari.closest('.fi-modal, .fi-dropdown-panel')) return;
+                var ta = cari.closest('.fi-ta');
+                if (!ta) return;
+                var trig = ta.querySelector('.fi-ta-filters-trigger-action-ctn');
+                if (!trig || trig.closest('.fi-dropdown-panel')) return;
+
+                var induk = ta.querySelector('.fi-ta-ctn') || ta;
+                if (!induk.contains(trig) || !induk.contains(cari)) induk = ta;
+
+                induk.classList.add('tya-cari-induk4');
+                cari.classList.add('tya-cari-sempit4');
+                trig.classList.add('tya-filter-melayang4');
+
+                // Wadah filter yang tinggal berisi tombol ini (panel filter
+                // tertutup) tidak boleh menyisakan ruang kosong.
+                var wadah = trig.parentElement;
+                if (wadah && wadah !== induk && !wadah.contains(cari)) {
+                    var panel = wadah.querySelector('.fi-ta-filters');
+                    wadah.classList.toggle('tya-filter-kosong4', !terlihat(panel));
+                }
+
+                if (induk.scrollLeft) induk.scrollLeft = 0;
+                var rInduk = induk.getBoundingClientRect();
+                var kotak = cari.querySelector('.fi-input-wrp') || cari;
+                var rCari = kotak.getBoundingClientRect();
+                var rTrig = trig.getBoundingClientRect();
+                var tinggi = rTrig.height || 38;
+                var lebar = rTrig.width || 38;
+                var atas = Math.round(rCari.top - rInduk.top + induk.scrollTop + (rCari.height - tinggi) / 2);
+                var kiri = Math.round(rCari.right - rInduk.left + 10);
+                // tidak boleh melewati tepi kanan kotak tabel
+                var batas = Math.round(induk.clientWidth - lebar - 12);
+                if (kiri > batas) kiri = batas;
+                if (kiri < 0) kiri = 0;
+                trig.style.setProperty('top', atas + 'px', 'important');
+                trig.style.setProperty('left', kiri + 'px', 'important');
+            });
+        }
+
+        function proses() {
+            dijadwalkan = false;
+            document.body.classList.toggle('tya-bukan-dasbor', mq.matches && !diDasbor());
+            if (!mq.matches) {
+                lepasFilter();
+                return;
+            }
+            tandaiBarBawah();
+            aturFilter();
+            // posisi dihitung ulang sekali lagi setelah tata letak tenang
+            setTimeout(aturFilter, 250);
+        }
+
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            window.requestAnimationFrame(function () {
+                window.requestAnimationFrame(function () { setTimeout(proses, 0); });
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', jadwalkan);
+        } else {
+            jadwalkan();
+        }
+        new MutationObserver(function (m) {
+            for (var i = 0; i < m.length; i++) {
+                var t = m[i].target;
+                if (t && t.closest && t.closest('.tya-mtop-judul')) continue;
+                jadwalkan();
+                return;
+            }
+        }).observe(document.documentElement, { childList: true, subtree: true });
+        // buka/tutup panel filter cuma mengubah style (bukan isi) -- dipantau lewat klik
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.closest && e.target.closest('.fi-ta-filters-trigger-action-ctn, .fi-ta-filters')) {
+                setTimeout(jadwalkan, 60);
+                setTimeout(jadwalkan, 350);
+            }
+        }, true);
+        window.addEventListener('resize', jadwalkan);
+        window.addEventListener('popstate', jadwalkan);
+        document.addEventListener('livewire:navigated', jadwalkan);
+        if (mq.addEventListener) mq.addEventListener('change', jadwalkan);
+    })();
+</script>

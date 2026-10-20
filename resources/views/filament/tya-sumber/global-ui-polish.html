@@ -1,0 +1,1691 @@
+{{-- ============================================================
+     GLOBAL UI POLISH — penyempurnaan tampilan menyeluruh sesuai
+     permintaan user:
+       1) Tombol filter FULL WIDTH di mode HP (semua halaman).
+       2) SUDUT KOTAK di mana-mana (tidak ada lengkung lagi).
+       3) Tabel diperkecil di HP, lebar kolom mengikuti isi.
+       4) Checkbox desain minimalis di semua halaman.
+       5) Form responsif di HP -- tidak ada yang "pincang"/ikon berantakan.
+
+     Murni CSS, tidak menyentuh logic/struktur data.
+
+     URUTAN RENDER: file ini didaftarkan PALING AKHIR di
+     AdminPanelProvider (sesudah global-table-style dan
+     global-form-style), supaya aturannya menang atas keduanya pada
+     spesifisitas yang sama. Jangan ditukar urutannya.
+
+     ⚠️ TOMBOL: sama seperti catatan di global-form-style, JANGAN
+     memberi gradasi/bayangan berwarna pada ".fi-btn" global -- di
+     toolbar header tombolnya berjejer rapat dan hasilnya jadi satu
+     balok oranye. Di file ini tombol hanya diatur BENTUK (sudut
+     kotak) dan LEBAR (full width di HP), bukan warnanya.
+     ============================================================ --}}
+<style>
+    /* ============================================================
+     * 1) TOMBOL FILTER FULL WIDTH DI HP
+     *
+     * Kenapa perlu ditulis ulang di sini: di global-table-style ada
+     * aturan mobile "width:100%" (dalam @media) TAPI beberapa baris
+     * SESUDAHNYA ada aturan non-media dengan selector yang sama
+     * spesifisitasnya yang memasang "width:auto !important". Karena
+     * spesifisitasnya seri, yang MENANG adalah yang ditulis
+     * BELAKANGAN -- jadi width:auto itu ikut berlaku juga di HP dan
+     * tombol filter tidak pernah benar-benar full width.
+     *
+     * Di sini dipakai selector yang LEBIH SPESIFIK (ditambah
+     * .fi-ta-header-ctn di depan) + di dalam @media, jadi dijamin
+     * menang khusus di layar kecil saja.
+     * ============================================================ */
+    @media (max-width: 767px) {
+        .fi-ta-header-ctn .fi-ta-filters-above-content-ctn > .fi-ta-filters-trigger-action-ctn,
+        .fi-ta-filters-trigger-action-ctn {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            justify-self: stretch !important;
+            margin: 0 !important;
+        }
+
+        /* TOMBOLNYA SENDIRI.
+         *
+         * Ditulis dengan "> *" (anak langsung apa pun) DI SAMPING nama
+         * kelas yang sudah diketahui, karena tombol ini TIDAK selalu
+         * ber-kelas ".fi-btn": di versi Filament ini elemennya
+         * ber-kelas ".fi-ta-filters-trigger-action", dan aturan lama
+         * di global-table-style mengunci ukurannya jadi kotak 34x34
+         * (width/height/min-width/min-height 34px). Itulah kenapa
+         * tombolnya sempat tampil sebagai kotak kecil dengan tulisan
+         * "Filter" terlipat ke bawah ikon.
+         *
+         * Semua pengunci ukuran itu dibuka di sini sekaligus: lebar
+         * penuh, tinggi mengikuti isi, isi berjajar mendatar, dan teks
+         * tidak boleh dipatahkan ke baris baru. */
+        .fi-ta-header-ctn .fi-ta-filters-above-content-ctn .fi-ta-filters-trigger-action-ctn > *,
+        .fi-ta-header-ctn .fi-ta-filters-above-content-ctn .fi-ta-filters-trigger-action-ctn .fi-btn,
+        .fi-ta-filters-trigger-action-ctn > *,
+        .fi-ta-filters-trigger-action-ctn .fi-btn,
+        .fi-ta-filters-trigger-action-ctn .fi-icon-btn,
+        .fi-ta-filters-trigger-action {
+            display: inline-flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.45rem !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            height: auto !important;
+            min-height: 2.5rem !important;
+            padding-inline: 1rem !important;
+            padding-block: 0.55rem !important;
+            white-space: nowrap !important;
+            box-sizing: border-box !important;
+            flex-shrink: 1 !important;
+        }
+
+        /* Label "Filter" wajib tampil (aturan lama menyembunyikan label
+         * tombol header di HP supaya jadi ikon saja -- tombol selebar
+         * layar tanpa tulisan justru membingungkan). */
+        .fi-ta-filters-trigger-action-ctn .fi-btn-label,
+        .fi-ta-filters-trigger-action .fi-btn-label {
+            display: inline !important;
+            font-size: 13px !important;
+            white-space: nowrap !important;
+        }
+
+        /* Ikonnya jangan ikut melar. */
+        .fi-ta-filters-trigger-action-ctn svg,
+        .fi-ta-filters-trigger-action svg {
+            width: 16px !important;
+            height: 16px !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Badge jumlah filter aktif: ditaruh menempel di ujung kanan
+         * tombol, BUKAN mengambang menimpa ikon (cincin putih di
+         * sekelilingnya juga dilepas supaya tidak terlihat tumpang
+         * tindih waktu tombolnya jadi lebar). */
+        .fi-ta-filters-trigger-action-ctn .fi-badge {
+            position: static !important;
+            margin-inline-start: auto !important;
+            box-shadow: none !important;
+            flex-shrink: 0 !important;
+        }
+    }
+
+    /* ============================================================
+     * 1b) PANEL FILTER DIRAMPINGKAN (berlaku di SEMUA halaman)
+     *
+     * Tiga hal yang diminta user:
+     *   a. Baris judul "Filters" di atas panel DIHAPUS — tidak ada
+     *      fungsinya, cuma memakan tempat.
+     *   b. Baris kosong di antara field dan tombol DIHAPUS. Itu wadah
+     *      "indikator filter aktif" bawaan Filament (chip penanda
+     *      filter yang sedang menyala). Saat belum ada filter dipakai,
+     *      wadahnya tetap dirender tapi ISINYA KOSONG — jadi kelihatan
+     *      seperti pita kosong. Dimatikan dua lapis: lewat nama
+     *      kelasnya, DAN lewat ":empty" (aturan umum: elemen apa pun di
+     *      dalam panel filter yang benar-benar tidak berisi apa-apa
+     *      tidak perlu memakan ruang).
+     *   c. Field dibuat FULL WIDTH mengikuti lebar layar, dan tombol
+     *      "Apply filters"/"Reset" didekatkan ke field (garis pemisah
+     *      serta jarak besarnya dibuang).
+     * ============================================================ */
+
+    /* a. Judul panel filter. */
+    .fi-ta-filters-above-content-ctn .fi-ta-filters-header,
+    .fi-ta-filters .fi-ta-filters-header,
+    .fi-ta-filters > .fi-section-header,
+    .fi-ta-filters-heading {
+        display: none !important;
+    }
+
+    /* b. Pita kosong (indikator filter aktif) & wadah kosong lainnya. */
+    .fi-ta-filters .fi-ta-filters-indicators,
+    .fi-ta-filters .fi-ta-filter-indicators,
+    .fi-ta-filters-above-content-ctn .fi-ta-filters-indicators {
+        display: none !important;
+    }
+
+    .fi-ta-filters > *:empty,
+    .fi-ta-filters > * > *:empty,
+    .fi-ta-filters .fi-fo-component-ctn > *:empty {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+    }
+
+    /* c-1. Field filter memenuhi lebar layar & membagi ruang rata.
+     * repeat(auto-fit, minmax(...)) dipilih supaya jumlah kolomnya
+     * menyesuaikan sendiri: 2 filter jadi 2 kolom lebar, 4 filter jadi
+     * 4 kolom, dan di layar sempit otomatis turun ke bawah — tanpa
+     * perlu media query terpisah. */
+    .fi-ta-filters-above-content-ctn .fi-ta-filters .fi-fo-grid,
+    .fi-ta-filters-above-content-ctn .fi-ta-filters .fi-sc-grid,
+    .fi-ta-filters .fi-fo-grid,
+    .fi-ta-filters .fi-sc-grid {
+        /* DIPAKSA SATU BARIS (permintaan user): flex + nowrap, dan tiap
+         * field diberi "flex: 1 1 0" + "min-width: 0" supaya semuanya
+         * berbagi lebar layar secara RATA dan boleh menyempit. Tanpa
+         * "min-width: 0", field tidak boleh lebih sempit dari isinya —
+         * itu yang biasanya memaksa field terakhir turun ke baris baru.
+         *
+         * Berapa pun jumlah filternya (2, 4, 6) tetap satu baris. */
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: flex-end !important;
+        gap: 0.75rem !important;
+        width: 100% !important;
+    }
+
+    .fi-ta-filters .fi-fo-grid > *,
+    .fi-ta-filters .fi-sc-grid > * {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        grid-column: auto !important;
+    }
+
+    /* ---- GRUP FILTER BERTINGKAT (mis. "Dari Tanggal" + "Sampai
+     * Tanggal") ----
+     *
+     * Kenapa sebelumnya masih turun ke baris kedua: filter rentang
+     * tanggal itu BUKAN dua filter terpisah, melainkan SATU filter yang
+     * di dalamnya berisi dua field. Jadi susunannya bertingkat:
+     *
+     *   grid filter
+     *     ├── Status
+     *     ├── Profile
+     *     ├── Outlet
+     *     ├── Dibuat Lewat
+     *     └── [grup periode]        <- satu sel
+     *           ├── Dari Tanggal
+     *           └── Sampai Tanggal  <- ini yang menumpuk ke bawah
+     *
+     * Aturan flex di atas cuma mengenai grid terluar, sehingga isi
+     * grup itu tetap bertumpuk.
+     *
+     * Diselesaikan dengan ":has(> A + A)" — artinya "pilih elemen apa
+     * pun yang punya DUA field bersebelahan sebagai anak langsung".
+     * Cara ini menemukan wadah berisi banyak field TANPA perlu tahu
+     * nama kelas atau kedalamannya, jadi ikut membereskan grup serupa
+     * di halaman filter mana pun (Voucher, Kasir, Invoice, dst).
+     *
+     * Penting: yang disasar hanya WADAH BERISI BANYAK FIELD — isi
+     * field itu sendiri (label di atas, input di bawah) tidak
+     * tersentuh, jadi labelnya tidak ikut bergeser ke samping. */
+    .fi-ta-filters *:has(> .fi-fo-field-wrp + .fi-fo-field-wrp),
+    .fi-ta-filters *:has(> .fi-sc-component + .fi-sc-component),
+    .fi-ta-filters *:has(> .fi-schema-component + .fi-schema-component) {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: flex-end !important;
+        gap: 0.75rem !important;
+        width: 100% !important;
+    }
+
+    .fi-ta-filters *:has(> .fi-fo-field-wrp + .fi-fo-field-wrp) > .fi-fo-field-wrp,
+    .fi-ta-filters *:has(> .fi-sc-component + .fi-sc-component) > .fi-sc-component,
+    .fi-ta-filters *:has(> .fi-schema-component + .fi-schema-component) > .fi-schema-component {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        margin: 0 !important;
+    }
+
+    /* Kecuali di HP: memaksa 6 filter berjajar di layar selebar 5 cm
+     * justru bikin semuanya tidak terbaca, jadi di sini dibolehkan
+     * turun ke bawah. */
+    @media (max-width: 639px) {
+        .fi-ta-filters *:has(> .fi-fo-field-wrp + .fi-fo-field-wrp),
+        .fi-ta-filters *:has(> .fi-sc-component + .fi-sc-component),
+        .fi-ta-filters *:has(> .fi-schema-component + .fi-schema-component) {
+            flex-wrap: wrap !important;
+        }
+
+        .fi-ta-filters .fi-fo-grid,
+        .fi-ta-filters .fi-sc-grid {
+            flex-wrap: wrap !important;
+        }
+
+        .fi-ta-filters .fi-fo-grid > *,
+        .fi-ta-filters .fi-sc-grid > * {
+            flex: 1 1 100% !important;
+        }
+    }
+
+    /* Kotak pembungkus panel filter — SUDUT KOTAK, tanpa lengkungan.
+     * Ditulis dengan dua kelas ("...-above-content-ctn .fi-ta-filters")
+     * karena aturan lama di global-table-style memakai selector sama
+     * dan memasang border-radius 0.85rem; kalau di sini cuma ditulis
+     * ".fi-ta-filters" saja, yang lama MENANG (spesifisitasnya lebih
+     * tinggi), bukan soal urutan file. */
+    .fi-ta-filters-above-content-ctn .fi-ta-filters,
+    .fi-ta-header-ctn .fi-ta-filters-above-content-ctn > .fi-ta-filters {
+        border-radius: 0 !important;
+    }
+
+    .fi-ta-filters .fi-fo-field-wrp,
+    .fi-ta-filters .fi-input-wrp,
+    .fi-ta-filters .fi-input,
+    .fi-ta-filters .fi-select-input {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    /* c-2. TOMBOL APPLY/RESET SEBARIS DENGAN FIELD.
+     *
+     * Masalahnya: kita tidak tahu pasti sedalam apa tombol itu
+     * dibungkus Filament (bisa langsung di bawah .fi-ta-filters, bisa
+     * di dalam <form>, bisa lebih dalam lagi, dan bisa berbeda antar
+     * versi). Menebak-nebak susunannya rapuh.
+     *
+     * Solusinya pakai ":has()" — "PILIH elemen APA PUN yang menjadi
+     * INDUK LANGSUNG dari wadah tombol". Induk itulah yang dijadikan
+     * baris flex, tanpa perlu tahu namanya atau kedalamannya. Lalu:
+     *   - saudara di sebelahnya (kumpulan field) diberi flex:1 supaya
+     *     MELAR memenuhi sisa lebar layar,
+     *   - wadah tombolnya sendiri flex:0 (selebar isinya saja),
+     *   - flex-wrap:wrap sebagai pengaman: kalau layar terlalu sempit,
+     *     tombol turun ke bawah dengan rapi, bukan terjepit.
+     *
+     * ⚠️ PENTING — JANGAN memasang "display: ... !important" pada
+     * ".fi-ta-filters" itu sendiri. Panel itu disembunyikan/ditampilkan
+     * Alpine lewat x-show, yang caranya menulis "display:none" sebagai
+     * style INLINE. Aturan !important di stylesheet MENGALAHKAN style
+     * inline, jadi begitu ".fi-ta-filters" dipaksa display:flex, panel
+     * filternya tidak pernah bisa menutup lagi walau tombolnya diklik
+     * (persis masalah yang sempat terjadi).
+     *
+     * Solusinya: kalau wadah tombol memang anak langsung dari panel,
+     * penataannya disandarkan pada kelas ".fi-open" milik pembungkus
+     * luar (dipasang Alpine hanya SAAT panel terbuka) — jadi aturan
+     * display cuma aktif ketika panel memang sedang tampil. */
+    .fi-ta-filters *:has(> .fi-ta-filters-actions-ctn),
+    .fi-ta-filters-above-content-ctn.fi-open > .fi-ta-filters:has(> .fi-ta-filters-actions-ctn) {
+        display: flex !important;
+        align-items: flex-end !important;
+        flex-wrap: wrap !important;
+        gap: 0.85rem !important;
+        width: 100% !important;
+    }
+
+    .fi-ta-filters *:has(> .fi-ta-filters-actions-ctn) > *:not(.fi-ta-filters-actions-ctn),
+    .fi-ta-filters-above-content-ctn.fi-open > .fi-ta-filters:has(> .fi-ta-filters-actions-ctn) > *:not(.fi-ta-filters-actions-ctn) {
+        flex: 1 1 260px !important;
+        min-width: 0 !important;
+    }
+
+    .fi-ta-filters-above-content-ctn .fi-ta-filters-actions-ctn,
+    .fi-ta-filters .fi-ta-filters-actions-ctn {
+        flex: 0 0 auto !important;
+        /* Jarak & garis pemisah bawaan dibuang -- tombolnya sekarang
+         * berdampingan dengan field, bukan di baris footer sendiri. */
+        margin-block-start: 0 !important;
+        padding-block-start: 0 !important;
+        border-top: 0 !important;
+        /* Tinggi tombol disejajarkan dengan tinggi field di sebelahnya. */
+        align-items: flex-end !important;
+    }
+
+    /* Di HP tombolnya dibuat selebar layar & berbagi ruang rata. */
+    @media (max-width: 639px) {
+        .fi-ta-filters-above-content-ctn .fi-ta-filters-actions-ctn,
+        .fi-ta-filters .fi-ta-filters-actions-ctn {
+            display: flex !important;
+            width: 100% !important;
+            gap: 0.5rem !important;
+        }
+
+        .fi-ta-filters-above-content-ctn .fi-ta-filters-actions-ctn > *,
+        .fi-ta-filters .fi-ta-filters-actions-ctn > * {
+            flex: 1 1 0 !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+    }
+
+    /* ============================================================
+     * 1c) PAGINATION MINIMALIS (berlaku di semua tabel)
+     *
+     * Sebelumnya tiap nomor halaman dibungkus kotak bergaris sendiri —
+     * ramai, dan dengan 284 halaman deretan kotaknya makin berat
+     * dilihat. Sekarang: tanpa kotak & tanpa garis, cuma angka polos;
+     * halaman yang sedang dibuka saja yang diberi blok oranye. Bilah
+     * bawahnya juga dibuat tipis dan menyatu dengan tabel.
+     *
+     * Selector ditulis dengan dua kelas (".fi-ta-pagination .fi-...")
+     * karena aturan lama di theme.css memakai satu kelas — kalau di
+     * sini ditulis satu kelas juga, yang lama bisa menang duluan.
+     * ============================================================ */
+    .fi-ta-pagination {
+        padding: 0.6rem 0.85rem !important;
+        border-top: 1px solid #f1f1f4 !important;
+        background: transparent !important;
+    }
+    .dark .fi-ta-pagination { border-top-color: rgba(255,255,255,.06) !important; }
+
+    /* Nomor halaman: angka polos, tanpa kotak & garis.
+     *
+     * UKURAN MENGIKUTI LEBAR ANGKA (permintaan user): min-width/height
+     * tetap bawaan (2,2rem persegi) DIBUANG, diganti padding. Jadi
+     * kotak oranye pada halaman aktif menempel pas di angkanya —
+     * "1" jadi sempit, "284" jadi lebih lebar, bukan dipaksa sama
+     * besar seperti sebelumnya. */
+    .fi-ta-pagination .fi-pagination-item,
+    .fi-pagination-item {
+        min-width: 0 !important;
+        width: auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0.28rem 0.5rem !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        color: #71717a !important;
+        font-size: 0.78rem !important;
+        font-weight: 500 !important;
+        line-height: 1.2 !important;
+        transition: background-color .13s ease, color .13s ease !important;
+    }
+
+    .fi-ta-pagination .fi-pagination-item-label,
+    .fi-pagination-item-label {
+        min-width: 0 !important;
+        width: auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        font-size: 0.78rem !important;
+        font-weight: 500 !important;
+        line-height: 1.2 !important;
+    }
+
+    .fi-ta-pagination .fi-pagination-item:hover,
+    .fi-pagination-item:hover {
+        background: #f4f4f5 !important;
+        color: #18181b !important;
+    }
+    .dark .fi-pagination-item:hover { background: rgba(255,255,255,.06) !important; color: #fafafa !important; }
+
+    /* Halaman yang sedang dibuka — satu-satunya yang diberi warna
+     * oranye. Blok oranyenya seukuran angka (lihat padding di atas),
+     * tetap kotak tanpa lengkungan. Teks di dalamnya ikut dipaksa
+     * putih karena pada sebagian tombol angkanya dibungkus elemen
+     * label tersendiri yang punya warna sendiri. */
+    .fi-ta-pagination .fi-pagination-item[aria-current="page"],
+    .fi-pagination-item[aria-current="page"],
+    .fi-pagination-item-active {
+        background: #f97316 !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    .fi-pagination-item[aria-current="page"] .fi-pagination-item-label,
+    .fi-pagination-item[aria-current="page"] span,
+    .fi-pagination-item-active .fi-pagination-item-label,
+    .fi-pagination-item-active span {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+
+    /* Tombol panah maju/mundur & titik-titik "..." dibuat lebih redup
+     * supaya angka halamannya yang menonjol. */
+    .fi-ta-pagination .fi-pagination-item svg,
+    .fi-pagination-item svg {
+        width: 0.9rem !important;
+        height: 0.9rem !important;
+    }
+
+    /* "Per page": tanpa kotak, cuma teks kecil + angka. */
+    .fi-ta-pagination .fi-pagination-items-per-page-select .fi-input-wrp,
+    .fi-pagination-items-per-page-select .fi-input-wrp {
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    .fi-ta-pagination .fi-pagination-items-per-page-select .fi-select-input,
+    .fi-pagination-items-per-page-select .fi-select-input {
+        height: 1.9rem !important;
+        min-height: 1.9rem !important;
+        font-size: 0.78rem !important;
+        padding-inline-start: 0.25rem !important;
+        color: #52525b !important;
+    }
+    .dark .fi-pagination-items-per-page-select .fi-select-input { color: #d4d4d8 !important; }
+
+    .fi-ta-pagination .fi-pagination-items-per-page-select label,
+    .fi-pagination-items-per-page-select label,
+    .fi-pagination-overview {
+        font-size: 0.72rem !important;
+        color: #a1a1aa !important;
+        font-weight: 500 !important;
+    }
+
+    /* Di HP: bilah pagination dirapatkan & angka sedikit dikecilkan. */
+    @media (max-width: 639px) {
+        .fi-ta-pagination { padding: 0.5rem 0.6rem !important; }
+
+        .fi-ta-pagination .fi-pagination-item,
+        .fi-pagination-item {
+            padding: 0.24rem 0.42rem !important;
+            font-size: 0.72rem !important;
+        }
+    }
+
+    /* ============================================================
+     * 1d) KARTU: TANPA GARIS, PAKAI BAYANGAN TIPIS (semua halaman)
+     *
+     * Permintaan user: garis pembatas kartu dihapus, diganti bayangan
+     * halus di belakangnya supaya kartunya "mengambang" lembut, bukan
+     * dikurung kotak bergaris.
+     *
+     * Termasuk juga: garis tipis di bawah JUDUL kartu (mis. di bawah
+     * "PENDAPATAN BULANAN" & "5 OUTLET PENJUALAN TERBANYAK" pada
+     * Dashboard) — itu berasal dari border-bottom pada header section
+     * yang saya tambahkan sebelumnya, dan sekarang dilepas.
+     * ============================================================ */
+    .fi-section,
+    .fi-wi,
+    .fi-wi-chart,
+    /* Kartu statistik Dashboard (Pendapatan Hari Ini, dst). Ditulis
+     * dengan dua kelas juga (".fi-wi-stats-overview .fi-wi-stats-
+     * overview-stat") karena aturan garisnya di theme.css memakai
+     * selector bertingkat — kalau di sini cuma satu kelas, yang lama
+     * menang dan garisnya tetap kelihatan (itu yang terjadi kemarin). */
+    .fi-wi-stats-overview,
+    .fi-wi-stats-overview-stat,
+    .fi-wi-stats-overview .fi-wi-stats-overview-stat,
+    .fi-wi-stats-overview-stats-ctn,
+    .tya-sc-card,
+    .tya-hs-card,
+    .tya-card,
+    .tya-summary-card,
+    .tya-outlet-card,
+    .cmr-card {
+        border: 0 !important;
+        outline: 0 !important;
+        box-shadow: 0 1px 2px rgba(24, 24, 27, .05), 0 4px 14px rgba(24, 24, 27, .05) !important;
+    }
+
+    /* Kartu di halaman Voucher (Total Voucher, Voucher Aktif, dst).
+     * Lengkungannya ditulis sebagai style INLINE di dalam view-nya
+     * (border-radius: 0.85rem), dan style inline hanya bisa dikalahkan
+     * oleh aturan ber-!important seperti ini — itu sebabnya kartu ini
+     * masih membulat padahal kartu lain sudah kotak. */
+    .tya-hs-card,
+    .tya-hs-icon-ctn {
+        border-radius: 0 !important;
+    }
+
+    /* Wadah luar deretan kartu statistik: tidak perlu ikut berbayang,
+     * kalau tidak bayangannya bertumpuk dengan bayangan tiap kartu. */
+    .fi-wi-stats-overview,
+    .fi-wi-stats-overview-stats-ctn {
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+    .dark .fi-section,
+    .dark .fi-wi,
+    .dark .fi-wi-chart,
+    .dark .tya-sc-card,
+    .dark .tya-hs-card,
+    .dark .tya-card,
+    .dark .tya-summary-card,
+    .dark .tya-outlet-card,
+    .dark .cmr-card {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25) !important;
+    }
+
+    /* Garis di bawah judul kartu — dihapus. */
+    .fi-wi .fi-section-header,
+    .fi-wi-chart .fi-section-header,
+    .fi-section > .fi-section-header {
+        border-bottom: 0 !important;
+    }
+
+    /* Di dalam modal, kartu jangan ikut berbayang (modalnya sendiri
+     * sudah jadi kartu) -- kalau ikut, bayangannya bertumpuk. */
+    .fi-modal-content .fi-section {
+        box-shadow: none !important;
+    }
+
+    /* ============================================================
+     * 1d-2) LEGENDA DONUT: DUA KOLOM
+     *
+     * Dengan 20 outlet, daftar satu kolom cuma memperlihatkan 5 nama
+     * lalu harus digulir, sementara ruang di bawahnya menganggur.
+     * Sekarang dibuat dua kolom dengan huruf kecil, dan tinggi
+     * maksimalnya dinaikkan supaya ruang kosong itu terpakai.
+     *
+     * theme.css memasang "max-height: 11rem !important" pada kelas yang
+     * sama; file ini dirender BELAKANGAN dengan spesifisitas setara,
+     * jadi nilai di bawah ini yang menang.
+     * ============================================================ */
+    /* --- Judul kartu: ikon kotak gelap + teks dua warna --- */
+    .tya-donut-head {
+        display: flex !important;
+        align-items: center !important;
+        /* Judul kartu ditaruh RATA TENGAH (permintaan user). */
+        justify-content: center !important;
+        gap: 0.5rem !important;
+        padding-block-end: 0.6rem !important;
+        margin-block-end: 0.7rem !important;
+        border-bottom: 1px solid #f0f0f2 !important;
+    }
+    .dark .tya-donut-head { border-bottom-color: rgba(255,255,255,.07) !important; }
+
+    /* Latar kotak hitam di belakang ikon DIHILANGKAN (permintaan
+     * user) -- tinggal ikonnya saja, berwarna oranye. */
+    .tya-donut-head-icon {
+        width: auto !important;
+        height: auto !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: transparent !important;
+        color: #f97316 !important;
+        padding: 0 !important;
+        border: 0 !important;
+    }
+    .tya-donut-head-icon svg { width: 1.1rem !important; height: 1.1rem !important; }
+
+    .tya-donut-head-title {
+        font-size: 0.78rem !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.01em !important;
+        line-height: 1.2 !important;
+    }
+    .tya-donut-head-dark { color: #18181b !important; }
+    .dark .tya-donut-head-dark { color: #fafafa !important; }
+    .tya-donut-head-accent { color: #f97316 !important; }
+
+    /* --- Legenda dua kolom --- */
+    .tya-donut-legend {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.22rem 0.6rem !important;
+        /* Dengan 10 outlet, dua kolom cukup 5 baris — semuanya muat
+         * tanpa perlu digulir sama sekali. */
+        max-height: none !important;
+        overflow: visible !important;
+        margin-block-start: 0.7rem !important;
+    }
+
+    .tya-donut-legend-row {
+        display: grid !important;
+        grid-template-columns: 0.55rem minmax(0, 1fr) auto !important;
+        align-items: center !important;
+        gap: 0.4rem !important;
+        padding: 0.26rem 0.15rem !important;
+        /* Latar abu di tiap baris DIHILANGKAN (permintaan user) --
+         * daftarnya jadi polos, cuma titik warna + nama + persen. */
+        border-block-end: 0 !important;
+        background: transparent !important;
+    }
+    .dark .tya-donut-legend-row { background: transparent !important; }
+
+    .tya-donut-dot {
+        width: 0.55rem !important;
+        height: 0.55rem !important;
+        border-radius: 999px !important;
+    }
+
+    .tya-donut-name {
+        font-size: 0.64rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.01em !important;
+        /* Nama panjang dipotong "..." supaya lebar kolom tetap sama
+         * rata dan susunan dua kolomnya tidak goyang. */
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    /* Label persen: warnanya diambil dari warna potongan donatnya
+     * (dihitung di OutletRevenueWidget::badgeStyle) dan ditulis sebagai
+     * style inline, jadi di sini HANYA bentuk & ukurannya yang diatur —
+     * background/color sengaja TIDAK ditimpa dari sini. */
+    .tya-donut-pct {
+        font-size: 0.6rem !important;
+        font-weight: 700 !important;
+        padding: 0.1rem 0.35rem !important;
+        border-radius: 0.3rem !important;
+        justify-self: end !important;
+    }
+
+    /* Nominal rupiah disembunyikan — mengikuti contoh desain, dan
+     * supaya nama outlet tidak terpotong. */
+    .tya-donut-amount { display: none !important; }
+
+    /* Di HP: satu kolom — dua kolom di layar sempit membuat nama
+     * outlet terpotong hampir semuanya. */
+    @media (max-width: 639px) {
+        .tya-donut-legend {
+            grid-template-columns: minmax(0, 1fr) !important;
+        }
+    }
+
+    /* ============================================================
+     * 1e) GRAFIK DASHBOARD
+     *
+     * Tingginya diatur dari PHP (maxHeight di SalesChartWidget) +
+     * maintainAspectRatio:false. Di sini hanya penyesuaian layar kecil:
+     * grafik yang tinggi di desktop akan memakan hampir satu layar
+     * penuh di HP, jadi dipendekkan; dan tulisan legenda
+     * "Pendapatan/Pengeluaran" dikecilkan supaya tidak berdesakan.
+     * ============================================================ */
+    @media (max-width: 639px) {
+        .fi-wi-chart canvas {
+            max-height: 240px !important;
+        }
+
+        /* Kotak ringkasan "Total Pendapatan"/"Total Pengeluaran" di
+         * bawah grafik — dikecilkan & dirapatkan supaya dua-duanya muat
+         * berdampingan di layar HP, tidak saling berdesakan. */
+        .tya-revsum {
+            gap: 0.5rem !important;
+        }
+
+        .tya-revsum-box {
+            padding: 0.55rem 0.6rem !important;
+            gap: 0.45rem !important;
+        }
+
+        .tya-revsum-label {
+            font-size: 9.5px !important;
+            letter-spacing: 0 !important;
+        }
+
+        .tya-revsum-value {
+            font-size: 11.5px !important;
+        }
+
+        .tya-revsum-delta {
+            font-size: 9px !important;
+        }
+
+        .tya-revsum-icon {
+            width: 1.6rem !important;
+            height: 1.6rem !important;
+        }
+
+        .tya-revsum-icon svg {
+            width: 0.85rem !important;
+            height: 0.85rem !important;
+        }
+    }
+
+    /* ============================================================
+     * 1f) FORM WIZARD DI DALAM POPUP — dibuat ringkas
+     *
+     * Wizard aslinya dirancang untuk satu halaman penuh: langkahnya
+     * besar-besar, berjejer mendatar dengan panah pemisah, dan makan
+     * ruang vertikal banyak. Begitu dipindah ke popup yang sengaja
+     * TIDAK lebar, tampilan itu jadi sesak. Di sini ukurannya
+     * dikecilkan supaya proporsional dengan popup.
+     * ============================================================ */
+    .fi-modal-content .fi-sc-wizard-header,
+    .fi-modal-content .fi-fo-wizard-header {
+        padding-block-end: 0.8rem !important;
+        margin-block-end: 1rem !important;
+        /* Kalau langkahnya banyak, digulir ke samping — jauh lebih baik
+         * daripada langkahnya ditumpuk atau terpotong. */
+        overflow-x: auto !important;
+        scrollbar-width: none !important;
+    }
+    .fi-modal-content .fi-sc-wizard-header::-webkit-scrollbar,
+    .fi-modal-content .fi-fo-wizard-header::-webkit-scrollbar { display: none !important; }
+
+    .fi-modal-content .fi-sc-wizard-header-step-label,
+    .fi-modal-content .fi-fo-wizard-header-step-label {
+        font-size: 9.5px !important;
+        letter-spacing: 0.04em !important;
+    }
+
+    /* Keterangan kecil di bawah nama langkah disembunyikan di popup —
+     * di ruang sesempit ini justru bikin ramai. */
+    .fi-modal-content .fi-sc-wizard-header-step-description,
+    .fi-modal-content .fi-fo-wizard-header-step-description {
+        display: none !important;
+    }
+
+    .fi-modal-content .fi-sc-wizard-header-step-icon-ctn,
+    .fi-modal-content .fi-fo-wizard-header-step-icon-ctn {
+        width: 1.6rem !important;
+        height: 1.6rem !important;
+    }
+
+    .fi-modal-content .fi-sc-wizard-header-step-icon-ctn svg,
+    .fi-modal-content .fi-fo-wizard-header-step-icon-ctn svg {
+        width: 0.85rem !important;
+        height: 0.85rem !important;
+    }
+
+    /* Baris tombol Kembali/Lanjut: rapat & sejajar, dengan tombol
+     * "Lanjut" didorong ke kanan. */
+    .fi-modal-content .fi-sc-wizard-header + * .fi-ac,
+    .fi-modal-content .fi-sc-wizard-actions,
+    .fi-modal-content .fi-fo-wizard-actions {
+        gap: 0.5rem !important;
+        margin-block-start: 1.1rem !important;
+    }
+
+    /* Ikon di dalam tombol wizard dibuat kecil & sepadan dengan teks. */
+    .fi-modal-content .fi-btn svg {
+        width: 0.9rem !important;
+        height: 0.9rem !important;
+    }
+
+    /* ============================================================
+     * 1f+) FORM "UBAH NAS" — dipadatkan lebih lanjut (permintaan user)
+     *
+     * Bagian 1f) di atas cuma merapikan HEADER wizard (tab langkah).
+     * Body-nya (field, kotak script, tombol) masih memakai jarak
+     * bawaan Filament yang dirancang untuk halaman penuh -- di popup
+     * sesempit ini kelihatan longgar/berjarak.
+     *
+     * Dibatasi ke kelas .tya-nas-wizard (ditambahkan lewat
+     * ->extraAttributes() di NasResource::form()) -- HANYA wizard form
+     * "Ubah NAS" yang kena, wizard resource lain tidak ikut berubah.
+     *
+     * --spacing DIOVERRIDE: di Filament v4 hampir semua padding/gap
+     * bawaan dihitung dari token ini (calc(var(--spacing) * N)), jadi
+     * satu perubahan di sini otomatis merapatkan semuanya sekaligus
+     * secara proporsional -- bukan cuma beberapa elemen yang diketahui
+     * nama kelasnya.
+     * ============================================================ */
+    .tya-nas-wizard {
+        --spacing: 0.2rem !important;
+    }
+
+    /* Jarak antar field ditumpuk (Select tipe koneksi → Select akun VPN
+     * → kotak script → tombol) dirapatkan. */
+    .tya-nas-wizard .fi-fo-component-ctn,
+    .tya-nas-wizard .fi-schema-component-ctn {
+        gap: 0.85rem !important;
+    }
+
+    /* Jarak label ke kotak isian di bawahnya. */
+    .tya-nas-wizard .fi-fo-field-wrp-label {
+        margin-block-end: 0.25rem !important;
+    }
+
+    /* Tombol "Tes Koneksi VPN": dulu punya jarak atas sendiri yang lebar
+     * (bawaan komponen Actions) -- dirapatkan ke kotak script di atasnya. */
+    .tya-nas-wizard .fi-sc-actions {
+        margin-block: 0.35rem 0 !important;
+    }
+
+    /* Baris tombol Kembali/Lanjut/Simpan: jarak dari isi di atasnya dan
+     * ruang kosong di bawahnya dipangkas (dulu ini yang bikin ada jarak
+     * lebar sebelum tombol "Lanjut"). */
+    .tya-nas-wizard .fi-sc-wizard-footer {
+        margin-block-start: 0.9rem !important;
+        padding-block-end: 1rem !important;
+    }
+
+    /* Tinggi minimum tiap langkah -- BUKAN supaya ada ruang kosong,
+     * tapi supaya popup TIDAK terasa "melompat" drastis antara langkah
+     * yang cuma 1 field (mis. "Akses Langsung") dan yang isinya banyak
+     * (mis. VPN + script). Nilainya sengaja jauh di bawah tinggi kondisi
+     * paling penuh, jadi tidak menambah ruang kosong di sana -- cuma
+     * jadi alas minimum buat kondisi yang paling sepi. */
+    .tya-nas-wizard .fi-sc-wizard-step {
+        min-height: 200px;
+        transition: min-height 120ms ease;
+    }
+
+    /* ============================================================
+     * 1g) DASHBOARD MUAT SATU LAYAR (tanpa gulir atas-bawah)
+     *
+     * Isi Dashboard ada 4 baris: sapaan, 4 kartu ringkasan, 3 grafik,
+     * lalu 3 daftar (Aktivitas Login, Invoice, Penjualan Voucher).
+     * Kalau semuanya dibiarkan setinggi aslinya, halaman pasti lebih
+     * panjang dari layar.
+     *
+     * Caranya di sini: tiap bagian dipadatkan, DAN tiga daftar di baris
+     * bawah dibatasi tingginya lalu digulir DI DALAM kartunya
+     * masing-masing. Jadi halamannya sendiri tidak lagi bergulir —
+     * yang bergulir cuma isi daftar, itu pun hanya kalau datanya
+     * banyak.
+     *
+     * Hanya berlaku di layar tinggi >= 700px & lebar >= 1024px; di
+     * layar pendek atau di HP pemadatan ini justru bikin sesak, jadi
+     * di sana dibiarkan bergulir seperti biasa.
+     * ============================================================ */
+    @media (min-width: 1024px) and (min-height: 700px) {
+        /* Jarak antar widget dirapatkan. */
+        .fi-page .fi-wi-ctn,
+        .fi-page .fi-wi-grid {
+            gap: 0.6rem !important;
+        }
+
+        /* Sapaan di baris paling atas dipendekkan. */
+        .fi-page .fi-wi:first-child .fi-section {
+            padding-block: 0.7rem !important;
+        }
+
+        /* Kartu ringkasan atas.
+         *
+         * PENTING soal tinggi: garis tren (sparkline) di kartu ini
+         * digambar MENEMPEL DI DASAR kartu dengan posisi absolut. Jadi
+         * kalau kartunya dipendekkan terlalu banyak, garis itu naik dan
+         * MENUTUPI teks keterangan di bawah angka ("Voucher + tagihan
+         * lunas", "449 Hotspot - 191 PPPoE", dst) -- persis yang sempat
+         * terjadi.
+         *
+         * Karena itu padding BAWAH sengaja dibuat lebih besar dari
+         * padding lainnya: itulah ruang yang disediakan untuk garis
+         * tren, supaya tidak bertabrakan dengan teks. */
+        .fi-wi-stats-overview-stat {
+            padding: 0.6rem 0.75rem 2.1rem !important;
+        }
+
+        .fi-wi-stats-overview-stat-value {
+            font-size: 1.05rem !important;
+        }
+
+        .fi-wi-stats-overview-stat-label {
+            font-size: 0.68rem !important;
+        }
+
+        .fi-wi-stats-overview-stat-description {
+            font-size: 0.62rem !important;
+        }
+
+        .fi-wi-stats-overview-stat-chart,
+        .fi-wi-stats-overview-stat canvas {
+            max-height: 30px !important;
+        }
+
+        /* Daftar di baris bawah: tinggi dipatok, isinya yang digulir. */
+        .fi-wi .fi-ta-content {
+            max-height: 10rem !important;
+            overflow-y: auto !important;
+        }
+
+        /* Legenda donat TIDAK ikut dibatasi tinggi — 10 outlet dalam dua
+         * kolom cuma 5 baris, dan justru baris itulah yang mengisi ruang
+         * kosong di bawah donat. */
+        .fi-wi .tya-donut-legend {
+            max-height: none !important;
+            overflow: visible !important;
+        }
+
+        /* Pagination di dalam widget daftar disembunyikan — memakan satu
+         * baris penuh padahal daftarnya sudah bisa digulir. */
+        .fi-wi .fi-ta-pagination {
+            display: none !important;
+        }
+
+
+        /* ---- Ruang kosong di bawah/atas judul kartu grafik ----
+         *
+         * Wadah judul (.fi-section-header) tetap dirender walau isinya
+         * kosong -- di kartu donat malah memang dikosongkan karena
+         * judulnya digambar sendiri. Wadah kosong itu yang bikin ada
+         * pita kosong di dalam kartu. Di sini semua wadah kosong
+         * dihilangkan dan jarak judul dirapatkan. */
+        .fi-wi .fi-section-header:empty,
+        .fi-wi .fi-section-header-description:empty,
+        .fi-wi .fi-section-header-heading:empty,
+        .fi-wi .fi-section-content-ctn > *:empty {
+            display: none !important;
+        }
+
+        .fi-wi-chart .fi-section-header {
+            min-height: 0 !important;
+            padding-block: 0 !important;
+            margin-block-end: 0.3rem !important;
+            border-bottom: 0 !important;
+        }
+
+        /* Kartu donat: judul bawaan section TIDAK dipakai sama sekali
+         * (judulnya .tya-donut-head buatan sendiri), jadi wadahnya
+         * dibuang total supaya tidak menyisakan ruang. */
+        .tya-donut-widget .fi-section-header {
+            display: none !important;
+        }
+
+        /* Jarak di sekeliling area kanvas grafik dirapatkan. */
+        .fi-wi-chart-frame,
+        .fi-wi-chart-canvas-ctn {
+            margin-block: 0 !important;
+        }
+
+        /* Isi kartu dirapatkan. */
+        .fi-page .fi-wi .fi-section {
+            padding: 0.75rem 0.9rem !important;
+        }
+
+        /* Judul kartu widget dirapatkan. */
+        .fi-page .fi-wi .fi-section-header {
+            padding-block-end: 0.5rem !important;
+            margin-block-end: 0.6rem !important;
+        }
+
+        /* Baris tabel di widget daftar dipadatkan. */
+        .fi-wi .fi-ta-table td,
+        .fi-wi .fi-ta-table th {
+            padding-block: 0.3rem !important;
+            font-size: 11px !important;
+            height: auto !important;
+        }
+
+        /* Kotak ringkasan di bawah grafik (Pendapatan/Pengeluaran dan
+         * Total Online/Hotspot/PPPoE) dipadatkan. */
+        .tya-revsum-box {
+            padding: 0.5rem 0.6rem !important;
+        }
+
+        .tya-revsum-value {
+            font-size: 0.9rem !important;
+        }
+
+        .tya-revsum-label {
+            font-size: 0.62rem !important;
+        }
+
+        .tya-revsum-icon {
+            width: 1.7rem !important;
+            height: 1.7rem !important;
+        }
+
+        .tya-revsum-icon svg {
+            width: 0.9rem !important;
+            height: 0.9rem !important;
+        }
+    }
+
+    /* Kotak ringkasan versi TIGA kolom (kartu Pelanggan Online). Kelas
+     * ".tya-revsum" aslinya dibuat untuk dua kotak; varian ini cuma
+     * mengubah jumlah kolomnya. */
+    .tya-revsum-3 {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 0.5rem !important;
+    }
+
+    /* Warna ikon kotak ringkasan Pelanggan Online — disamakan dengan
+     * warna kurvanya: Hotspot biru, PPPoE kuning. */
+    .tya-revsum-icon-hotspot {
+        background: rgba(37, 99, 235, 0.12) !important;
+        color: #2563eb !important;
+    }
+
+    .tya-revsum-icon-pppoe {
+        background: rgba(234, 179, 8, 0.18) !important;
+        color: #a16207 !important;
+    }
+
+    /* ============================================================
+     * 2) SUDUT KOTAK DI SEMUA ELEMEN
+     *
+     * Daftarnya ditulis EKSPLISIT (bukan "* { border-radius: 0 }")
+     * supaya elemen yang memang HARUS bulat tetap bulat: tombol
+     * toggle on/off, radio button, foto profil/avatar, dan spinner
+     * loading. Kalau dipukul rata, toggle & radio jadi kotak dan
+     * malah tidak terbaca lagi sebagai toggle/radio.
+     * ============================================================ */
+    .fi-section,
+    .fi-section-content-ctn,
+    .fi-modal-window,
+    .fi-modal-header,
+    .fi-modal-footer,
+    .fi-input-wrp,
+    .fi-input,
+    .fi-select-input,
+    .choices__inner,
+    /* CATATAN: ".choices__list--dropdown", ".fi-dropdown-panel",
+     * ".fi-fo-select-option-list" dan ".fi-fo-date-time-picker-panel"
+     * SENGAJA DIKELUARKAN dari daftar ini. Panel dropdown diukur
+     * tinggi & posisi gulirnya oleh JavaScript Filament; menimpanya
+     * dari CSS terbukti membuat daftar pilihan tidak langsung tampil
+     * (baru muncul setelah digulir). Biarkan apa adanya. */
+    .fi-btn,
+    .fi-icon-btn,
+    .fi-badge,
+    .fi-ta-ctn,
+    .fi-ta-content,
+    .fi-ta-table,
+    .fi-ta-filters,
+    .fi-ta-search-field .fi-input-wrp,
+    .fi-fo-repeater-item,
+    .fi-fo-file-upload .filepond--panel-root,
+    .fi-fo-file-upload .filepond--drop-label,
+    .fi-wi,
+    .fi-wi-stats-overview-stat,
+    .fi-pagination-item,
+    .fi-sidebar-item-btn,
+    .fi-sidebar-group-btn,
+    .fi-header,
+    .fi-page,
+    /* Halaman custom (Laporan Penjualan & Laporan Komisi) yang tabel
+     * dan kartunya ditulis manual, bukan komponen Filament. */
+    .tya-card,
+    .tya-summary-card,
+    .tya-outlet-card,
+    .tya-outlet-foot,
+    .tya-report-filter-card,
+    .tya-print-btn,
+    .tya-tab-btn,
+    .tya-type-card,
+    .tya-select-native,
+    .cmr-card,
+    .cmr-table,
+    .cmr-foot {
+        border-radius: 0 !important;
+    }
+
+    /* Yang SENGAJA tetap bulat -- lihat penjelasan di atas. */
+    [role="switch"],
+    [role="switch"] span,
+    input[type="radio"],
+    .fi-avatar,
+    .fi-user-avatar,
+    .fi-loading-indicator,
+    .animate-spin {
+        border-radius: 999px !important;
+    }
+
+    /* ============================================================
+     * 3) CHECKBOX MINIMALIS (semua halaman: tabel & form)
+     *
+     * appearance:none -> checkbox bawaan browser dimatikan, lalu
+     * digambar ulang: kotak tipis, tanpa lengkung, centang putih di
+     * atas latar oranye saat dicentang. Tanda centangnya SVG yang
+     * ditempel lewat background-image (data URI) -- tidak butuh file
+     * gambar tambahan sama sekali.
+     * ============================================================ */
+    input[type="checkbox"],
+    .fi-checkbox-input,
+    .fi-ta-record-checkbox,
+    .fi-ta-selection-checkbox {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        width: 1rem !important;
+        height: 1rem !important;
+        border: 1.5px solid #cbd2dd !important;
+        border-radius: 0 !important;
+        background-color: #fff !important;
+        background-image: none !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        background-size: 0.7rem !important;
+        box-shadow: none !important;
+        cursor: pointer !important;
+        transition: background-color .13s ease, border-color .13s ease !important;
+        flex-shrink: 0 !important;
+        /* Netralkan ring fokus tebal bawaan Filament/Tailwind. */
+        --tw-ring-color: transparent !important;
+        --tw-ring-shadow: 0 0 #0000 !important;
+        --tw-ring-offset-shadow: 0 0 #0000 !important;
+    }
+
+    input[type="checkbox"]:hover,
+    .fi-checkbox-input:hover {
+        border-color: #f97316 !important;
+    }
+
+    input[type="checkbox"]:checked,
+    .fi-checkbox-input:checked,
+    .fi-ta-record-checkbox:checked,
+    .fi-ta-selection-checkbox:checked {
+        background-color: #f97316 !important;
+        border-color: #f97316 !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M3 8.5l3.2 3.2L13 5'/%3E%3C/svg%3E") !important;
+    }
+
+    /* Keadaan "sebagian tercentang" (checkbox pilih-semua di header
+     * tabel saat cuma sebagian baris dipilih) -- digambar garis datar. */
+    input[type="checkbox"]:indeterminate,
+    .fi-checkbox-input:indeterminate {
+        background-color: #f97316 !important;
+        border-color: #f97316 !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='square'%3E%3Cpath d='M4 8h8'/%3E%3C/svg%3E") !important;
+    }
+
+    input[type="checkbox"]:focus-visible,
+    .fi-checkbox-input:focus-visible {
+        outline: 2px solid rgba(249, 115, 22, .35) !important;
+        outline-offset: 1px !important;
+    }
+
+    .dark input[type="checkbox"],
+    .dark .fi-checkbox-input {
+        background-color: #26262a !important;
+        border-color: rgba(255, 255, 255, .22) !important;
+    }
+
+    /* Radio: ikut minimalis (tetap bulat), aksen oranye. */
+    input[type="radio"] {
+        accent-color: #f97316 !important;
+    }
+
+    /* ============================================================
+     * 4) TABEL DI HP — DIPERKECIL & LEBAR KOLOM MENGIKUTI ISI
+     *
+     * Polanya seperti tabel di halaman Laporan: kolom TIDAK dipaksa
+     * melar rata, tapi menyempit seukuran isinya (table-layout:auto
+     * + white-space:nowrap), dan kalau totalnya masih lebih lebar
+     * dari layar, wadahnya yang digeser ke samping (scroll), bukan
+     * teksnya yang terlipat jadi banyak baris.
+     * ============================================================ */
+    @media (max-width: 639px) {
+        .fi-ta-content,
+        .fi-ta-ctn {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+
+        table.fi-ta-table {
+            table-layout: auto !important;
+            width: auto !important;
+            min-width: 100% !important;
+        }
+
+        table.fi-ta-table th,
+        table.fi-ta-table td {
+            white-space: nowrap !important;
+            width: 1% !important;          /* kolom menciut seukuran isi */
+            padding-inline: 0.4rem !important;
+            padding-block: 0.28rem !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            font-size: 10px !important;
+            line-height: 1.35 !important;
+        }
+
+        table.fi-ta-table th {
+            font-size: 9px !important;
+            letter-spacing: 0.02em !important;
+        }
+
+        /* Badge & tombol aksi ikut diperkecil supaya barisnya tetap
+         * pendek dan tidak "menggendut" gara-gara isinya. */
+        .fi-ta-table .fi-badge {
+            font-size: 9px !important;
+            padding-inline: 0.32rem !important;
+            padding-block: 0.05rem !important;
+        }
+
+        .fi-ta-table .fi-ta-actions {
+            gap: 0.15rem !important;
+        }
+
+        .fi-ta-table .fi-ta-actions .fi-icon-btn {
+            width: 1.45rem !important;
+            height: 1.45rem !important;
+            padding: 0 !important;
+        }
+
+        .fi-ta-table .fi-ta-actions .fi-icon-btn svg {
+            width: 0.8rem !important;
+            height: 0.8rem !important;
+        }
+
+        /* Kolom checkbox dibuat sesempit mungkin. */
+        table.fi-ta-table th:has(input[type="checkbox"]),
+        table.fi-ta-table td:has(input[type="checkbox"]) {
+            width: 1.6rem !important;
+            padding-inline: 0.3rem !important;
+        }
+
+        table.fi-ta-table input[type="checkbox"] {
+            width: 0.85rem !important;
+            height: 0.85rem !important;
+            background-size: 0.6rem !important;
+        }
+    }
+
+    /* ============================================================
+     * 5) FORM RESPONSIF DI HP — tidak ada yang "pincang"
+     *
+     * Tiga penyebab tampilan pincang yang diatasi di sini:
+     *  a. Grid 2-3 kolom dipaksa jadi 1 kolom -- di layar sempit,
+     *     kolom kedua sering cuma dapat sisa ruang sempit sehingga
+     *     satu field terlihat jauh lebih pendek dari tetangganya.
+     *  b. "min-width: 0" pada anak grid/flex -- ini penyebab klasik
+     *     elemen melewati batas layar (bikin halaman bisa digeser
+     *     ke samping) karena bawaannya anak grid TIDAK boleh lebih
+     *     sempit dari isinya.
+     *  c. Ukuran ikon dipatok seragam -- ikon yang mewarisi ukuran
+     *     font berbeda-beda itulah yang bikin deretan ikon terlihat
+     *     tidak beraturan.
+     * ============================================================ */
+    @media (max-width: 639px) {
+        /* a. Semua grid form -> satu kolom penuh. */
+        .fi-fo-grid,
+        .fi-sc-grid,
+        .fi-schema-component-ctn > .grid,
+        .fi-modal-content .grid,
+        .fi-section-content-ctn > .grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        /* Field yang di desktop "nempel" setengah kolom dipaksa penuh. */
+        .fi-fo-field-wrp,
+        .fi-sc-component,
+        .fi-schema-component {
+            grid-column: 1 / -1 !important;
+        }
+
+        /* b. Anti-meluber. */
+        .fi-fo-field-wrp,
+        .fi-sc-component,
+        .fi-schema-component,
+        .fi-input-wrp,
+        .fi-modal-content,
+        .fi-section {
+            min-width: 0 !important;
+            max-width: 100% !important;
+        }
+
+        .fi-modal-content,
+        .fi-section {
+            overflow-x: hidden !important;
+        }
+
+        /* c. Ikon seragam -- baik di dalam field, tombol, maupun
+         * header section. */
+        .fi-input-wrp .fi-icon svg,
+        .fi-fo-field-wrp .fi-icon svg,
+        .fi-section-header .fi-icon svg {
+            width: 1rem !important;
+            height: 1rem !important;
+        }
+
+        .fi-icon-btn {
+            width: 2rem !important;
+            height: 2rem !important;
+            padding: 0 !important;
+        }
+
+        .fi-icon-btn svg {
+            width: 1rem !important;
+            height: 1rem !important;
+        }
+
+        /* Baris tombol form/modal: rata dan sama besar, tidak ada
+         * yang menggantung sendirian di tengah. */
+        .fi-modal-footer .fi-ac,
+        .fi-form-actions .fi-ac {
+            display: flex !important;
+            width: 100% !important;
+            gap: 0.5rem !important;
+        }
+
+        .fi-modal-footer .fi-ac .fi-btn,
+        .fi-form-actions .fi-ac .fi-btn {
+            flex: 1 1 0 !important;
+            justify-content: center !important;
+        }
+
+        /* Wizard di HP: langkah-langkahnya digulung ke samping, tidak
+         * saling tindih/terpotong. */
+        .fi-sc-wizard-header,
+        .fi-fo-wizard-header {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            scrollbar-width: none !important;
+        }
+        .fi-sc-wizard-header::-webkit-scrollbar,
+        .fi-fo-wizard-header::-webkit-scrollbar { display: none !important; }
+    }
+    /* ============================================================
+     * FLYOUT SUB-MENU SIDEBAR (mode ikon / sidebar diciutkan)
+     *
+     * Dua masalah nyata, dipastikan lewat pemeriksaan DOM & CSS yang
+     * benar-benar aktif di halaman produksi -- bukan tebakan:
+     *
+     * 1) ISI PANEL TIDAK PERNAH TERSENTUH CSS.
+     *    theme.css mengatur ".fi-dropdown-panel .fi-sidebar-item-btn"
+     *    dan ".fi-sidebar-item-label". Di Filament versi ini, isi
+     *    flyout TIDAK memakai kelas itu sama sekali -- markup aslinya:
+     *        .fi-dropdown-panel
+     *          > .fi-dropdown-header  (judul grup)
+     *          > .fi-dropdown-list
+     *              > a.fi-dropdown-list-item
+     *                  > span.fi-dropdown-list-item-label
+     *    Pemeriksaan langsung: querySelectorAll('.fi-dropdown-panel
+     *    .fi-sidebar-item-btn') = 0 elemen, sedangkan
+     *    '.fi-dropdown-list-item' = 40 elemen. Jadi seluruh aturan itu
+     *    mati, dan panel tampil apa adanya: judul grup seukuran & setebal
+     *    isinya (tidak ada susunan), jarak longgar, sudut membulat --
+     *    padahal seluruh aplikasi ini sudah bersudut kotak.
+     *
+     * 2) PANEL MENIMPA RAIL IKON.
+     *    theme.css memaksa "left: calc(100% + 0.5rem)" yang dihitung
+     *    dari .fi-dropdown -- lebarnya cuma 28px pada x=22, sehingga
+     *    panel mendarat di x=58, sementara rail ikon selebar 72px.
+     *    Hasilnya panel menumpuk ~14px di atas rail. Itu yang bikin
+     *    tampilannya terlihat janggal/miring.
+     *
+     * Perbaikannya ditaruh DI SINI, bukan di theme.css, karena berkas
+     * ini dirender PALING AKHIR sehingga menang atas theme.css tanpa
+     * perlu proses build ulang aset.
+     *
+     * JANGAN memakai "inset: auto !important" di sini. Sudah dicoba:
+     * penempatan otomatis (Floating UI) menulis left/top sebagai inline
+     * style, dan inline style KALAH oleh !important -- panelnya jadi
+     * jatuh ke x=22, menimpa rail lebih parah. Karena itu penempatannya
+     * tetap ditentukan CSS (left dihitung dari .fi-dropdown yang
+     * position:relative), cuma angkanya yang dibetulkan.
+     * ============================================================ */
+    .fi-sidebar .fi-dropdown {
+        position: relative !important;
+    }
+
+    .fi-sidebar .fi-dropdown-panel {
+        position: absolute !important;
+        /* 1.75rem = 28px. .fi-dropdown berakhir di x=50, jadi panel
+         * mulai di x=78 -- 6px di kanan tepi rail (72px), tidak lagi
+         * menimpa ikon. */
+        left: calc(100% + 1.75rem) !important;
+        right: auto !important;
+        top: 0 !important;
+        bottom: auto !important;
+        transform: none !important;
+        margin: 0 !important;
+        min-width: 12.5rem !important;
+        z-index: 60 !important;
+        padding: 0 !important;
+        border: 1px solid #e4e4e7 !important;
+        border-radius: 0 !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
+        overflow: hidden !important;
+    }
+
+    /* Judul grup: dibedakan tegas dari isinya -- kecil, huruf besar,
+     * abu-abu, dengan garis pemisah. Tanpa ini judul dan item terbaca
+     * sederajat dan daftarnya kehilangan susunan. */
+    .fi-sidebar .fi-dropdown-panel .fi-dropdown-header {
+        padding: 0.55rem 0.75rem 0.4rem !important;
+        font-size: 0.66rem !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.06em !important;
+        color: #a1a1aa !important;
+        border-bottom: 1px solid #f4f4f5 !important;
+    }
+
+    .fi-sidebar .fi-dropdown-panel .fi-dropdown-list {
+        padding: 0.2rem !important;
+        row-gap: 0 !important;
+    }
+
+    .fi-sidebar .fi-dropdown-panel .fi-dropdown-list-item {
+        border-radius: 0 !important;
+        padding: 0.42rem 0.55rem !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        color: #3f3f46 !important;
+    }
+
+    .fi-sidebar .fi-dropdown-panel .fi-dropdown-list-item:hover {
+        background: rgba(249, 115, 22, 0.1) !important;
+        color: #ea580c !important;
+    }
+
+    /* Label mewarisi ukuran/warna dari itemnya, supaya efek hover di
+     * atas benar-benar terlihat (kalau label punya warna sendiri,
+     * hover-nya tidak kelihatan). */
+    .fi-sidebar .fi-dropdown-panel .fi-dropdown-list-item-label {
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        color: inherit !important;
+    }
+
+    .dark .fi-sidebar .fi-dropdown-panel {
+        border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    .dark .fi-sidebar .fi-dropdown-panel .fi-dropdown-header {
+        border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+    }
+    .dark .fi-sidebar .fi-dropdown-panel .fi-dropdown-list-item {
+        color: #d4d4d8 !important;
+    }
+    /* ============================================================
+     * 1) KARTU "BUTUH BANTUAN?" MENEMPEL DI BAWAH SIDEBAR
+     *
+     * Riwayat: dua cara sebelumnya GAGAL, dan alasannya penting supaya
+     * tidak diulang.
+     *
+     *  a) margin-block-start: auto  -> hanya mendorong ke bawah SELAMA
+     *     isi menu lebih pendek dari sidebar. Begitu satu grup dibuka,
+     *     menunya memanjang dan kartu ikut terdorong turun.
+     *
+     *  b) position: sticky + bottom -> elemen sticky hanya bisa bergeser
+     *     DI DALAM kotak elemen induknya. Kalau induknya pas-pasan
+     *     setinggi kartu itu sendiri (tidak ada ruang gerak), sticky
+     *     tidak melakukan apa-apa dan hasilnya sama saja seperti biasa.
+     *     Inilah yang terjadi di sini.
+     *
+     * Cara sekarang: position: fixed. Elemen fixed dipatok ke JENDELA,
+     * bukan ke induk mana pun -- jadi tidak peduli seberapa panjang
+     * daftar menunya, apakah induknya menggulung, atau setinggi apa
+     * kotak induknya. Tidak ada lagi syarat yang bisa gagal diam-diam.
+     *
+     * Lebarnya memakai var(--sidebar-width) -- nilai yang sama yang
+     * dipakai Filament untuk sidebar (->sidebarWidth('16.5rem') di
+     * AdminPanelProvider), jadi kalau lebar sidebar diubah, kartunya
+     * ikut sendiri tanpa perlu diingat.
+     *
+     * Semua dibatasi ke ".fi-sidebar-open": saat sidebar diciutkan jadi
+     * rail ikon, kartunya memang disembunyikan (x-show di view-nya), dan
+     * ruang kosong di bawah daftar menu tidak perlu disediakan.
+     * ============================================================ */
+    /* Wadah yang dipatok: kartu bantuan + tanda tangan merek, keduanya
+     * ikut menempel supaya tidak terpisah saat menu digulung. */
+    .fi-sidebar-open .tya-help-dock {
+        position: fixed !important;
+        inset-inline-start: 0 !important;
+        bottom: 0 !important;
+        width: var(--sidebar-width, 16.5rem) !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        padding: 0.55rem 0.95rem 0.45rem !important;
+        z-index: 31 !important;
+        background: #ffffff !important;
+        /* Wadah ini menutupi tepi kanan sidebar, sehingga garis pembatas
+         * sidebar terputus di bagian bawah. Garisnya diteruskan di sini
+         * dengan warna & tebal yang sama, jadi terlihat menyambung utuh
+         * dari atas sampai dasar. */
+        border-inline-end: 1px solid rgb(228 228 231) !important;
+    }
+
+    .dark .fi-sidebar-open .tya-help-dock {
+        background: #18181b !important;
+        border-inline-end-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    /* Ruang di bawah daftar menu supaya item TERAKHIR tidak tertutup
+     * kartu yang melayang di atasnya. Tanpa ini, menu paling bawah tidak
+     * akan pernah bisa diklik. */
+    .fi-sidebar-open .fi-sidebar-nav {
+        padding-bottom: 11.5rem !important;
+    }
+
+    /* ---- Kartu ----
+     * Sudutnya SENGAJA membulat, satu-satunya di aplikasi ini yang
+     * begitu (sisanya kotak, permintaan user sebelumnya). Kartu ini
+     * memang bukan bagian dari daftar menu — dia sisipan yang berdiri
+     * sendiri, dan bentuk yang berbeda justru menegaskan itu. */
+    .fi-sidebar-open .tya-help-card {
+        position: relative !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0.6rem 0.6rem 0.65rem !important;
+        border: none !important;
+        border-radius: 0.9rem !important;
+        background: linear-gradient(150deg, #fff6ef 0%, #ffeadd 55%, #ffe3d2 100%) !important;
+        box-shadow: none !important;
+    }
+
+    .dark .fi-sidebar-open .tya-help-card {
+        background: linear-gradient(150deg, rgba(249,115,22,.14) 0%, rgba(249,115,22,.08) 100%) !important;
+    }
+
+    /* Lingkaran hias pojok kanan atas. Dibuat lebih besar dari kartunya
+     * lalu dipotong oleh overflow:hidden induknya — itu yang membuat
+     * lengkungannya terlihat "keluar bingkai" seperti pada rancangan. */
+    .tya-help-blob {
+        position: absolute;
+        top: -2.2rem;
+        inset-inline-end: -2.2rem;
+        width: 6rem;
+        height: 6rem;
+        border-radius: 999px;
+        background: rgba(249, 115, 22, 0.10);
+        pointer-events: none;
+    }
+
+    .tya-help-head {
+        position: relative;
+        display: flex !important;
+        align-items: flex-start !important;
+        gap: 0.45rem !important;
+        margin-block-end: 0.6rem !important;
+    }
+
+    /* Lencana bundar oranye pekat — jangkar visual kartu ini. */
+    .tya-help-badge {
+        flex-shrink: 0;
+        width: 1.8rem;
+        height: 1.8rem;
+        border-radius: 999px;
+        background: #f97316;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(249, 115, 22, 0.35);
+    }
+
+    .tya-help-badge .tya-help-icon {
+        width: 1rem !important;
+        height: 1rem !important;
+        color: #ffffff !important;
+    }
+
+    .tya-help-title {
+        font-size: 0.76rem !important;
+        font-weight: 800 !important;
+        color: #1c1917 !important;
+        line-height: 1.2 !important;
+    }
+
+    .dark .tya-help-title { color: #fafafa !important; }
+
+    .tya-help-sub {
+        font-size: 0.62rem !important;
+        font-weight: 500 !important;
+        color: #8a8a93 !important;
+        line-height: 1.35 !important;
+        margin-block-start: 0.15rem !important;
+    }
+
+    /* ---- Tombol ----
+     * Oranye PEKAT dan selebar kartu: ini satu-satunya tindakan di
+     * kartu ini, jadi tidak ada gunanya dibuat malu-malu. */
+    .fi-sidebar-open .tya-help-btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+        /* box-sizing ditegaskan di sini, tidak mengandalkan reset global:
+         * tanpa ini padding tombol ditambahkan DI LUAR lebar 100%, dan
+         * tepi kanannya keluar dari kartu lalu terpotong overflow:hidden. */
+        box-sizing: border-box !important;
+        padding: 0.42rem 0.6rem !important;
+        border: none !important;
+        border-radius: 0.6rem !important;
+        background: #f97316 !important;
+        color: #ffffff !important;
+        font-size: 0.7rem !important;
+        font-weight: 700 !important;
+        text-decoration: none !important;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.35) !important;
+        transition: background-color .15s ease, transform .15s ease !important;
+    }
+
+    .fi-sidebar-open .tya-help-btn:hover {
+        background: #ea580c !important;
+        transform: translateY(-1px) !important;
+    }
+
+    .tya-help-btn-icon {
+        width: 0.85rem !important;
+        height: 0.85rem !important;
+        color: #ffffff !important;
+    }
+
+    /* ---- Tanda tangan merek ---- */
+    .tya-help-brand {
+        text-align: center;
+        padding-block-start: 0.55rem;
+    }
+
+    .tya-help-brand-name {
+        font-size: 0.73rem;
+        font-weight: 800;
+        color: #1c1917;
+        letter-spacing: -0.01em;
+        line-height: 1.1;
+    }
+
+    .tya-help-brand-name span { color: #f97316; }
+
+    .dark .tya-help-brand-name { color: #fafafa; }
+
+    .tya-help-brand-tag {
+        font-size: 0.53rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #b4b4bb;
+        margin-block-start: 0.2rem;
+    }
+
+    /* ============================================================
+     * 2) KOLOM "AKTIF" & "TELEGRAM" DI TABEL DIKECILKAN
+     *
+     * Toggle bawaan Filament dibuat untuk FORM, ukurannya terlalu besar
+     * kalau dipakai sebagai kolom tabel -- barisnya jadi ikut tinggi dan
+     * tabel terasa longgar. Dikecilkan lewat transform: scale supaya
+     * proporsinya (bulatan di dalam rel) tetap benar; mengubah
+     * width/height satu per satu gampang bikin bulatannya keluar rel.
+     *
+     * transform-origin dikunci ke tengah supaya toggle tetap sejajar
+     * dengan isi kolom lain, dan scale TIDAK mengubah ruang yang
+     * dipakainya di tata letak -- itu justru yang diinginkan di sini:
+     * lebar kolom tidak berubah, cuma tombolnya yang mengecil.
+     * ============================================================ */
+    .fi-ta-cell .fi-toggle,
+    td .fi-toggle {
+        transform: scale(0.8) !important;
+        transform-origin: center !important;
+    }
+
+    /* Warna ikon kolom Telegram diatur dari PHP (->color('primary')),
+     * bukan di sini -- supaya kalau suatu saat kolomnya dipindah atau
+     * disalin ke resource lain, warnanya ikut sendiri tanpa perlu ingat
+     * menambah aturan CSS. */
+</style>

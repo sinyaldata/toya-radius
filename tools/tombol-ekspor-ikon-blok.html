@@ -1,0 +1,174 @@
+<style>
+    /* =====================================================================
+     * TOMBOL-EKSPOR-IKON (2026-10-17) -- tombol di kepala halaman & tabel:
+     *  - Export/Download Excel  -> kotak HIJAU dengan logo Excel
+     *  - Export/Download PDF    -> kotak MERAH dengan logo PDF
+     *  - Cetak / Print          -> kotak oranye dengan ikon printer
+     * Berlaku di SEMUA halaman (ditandai otomatis lewat teks tombolnya oleh
+     * skrip di bawah). Di HP tombol kepala halaman jadi kotak ikon saja,
+     * ringkas, berjajar rata tengah. Terang & gelap.
+     * ===================================================================== */
+    html body .tya-ikon-excel.tya-ikon-excel:not(#tya-x),
+    html body .fi-header-actions-ctn .fi-btn.tya-ikon-excel:not(#tya-x) { background: #107c41 !important; color: #fff !important; border-color: #107c41 !important; --c-400: #107c41; --c-500: #107c41; --c-600: #0b5e31; }
+    html body .tya-ikon-excel.tya-ikon-excel:not(#tya-x):hover { background: #0b5e31 !important; }
+    html body .tya-ikon-pdf.tya-ikon-pdf:not(#tya-x),
+    html body .fi-header-actions-ctn .fi-btn.tya-ikon-pdf:not(#tya-x) { background: #e2231a !important; color: #fff !important; border-color: #e2231a !important; --c-400: #e2231a; --c-500: #e2231a; --c-600: #b71c15; }
+    html body .tya-ikon-pdf.tya-ikon-pdf:not(#tya-x):hover { background: #b71c15 !important; }
+    html body .tya-ikon-cetak.tya-ikon-cetak:not(#tya-x),
+    html body .fi-header-actions-ctn .fi-btn.tya-ikon-cetak:not(#tya-x) { background: #f97316 !important; color: #fff !important; border-color: #f97316 !important; }
+    html body .tya-ikon-cetak.tya-ikon-cetak:not(#tya-x):hover { background: #ea580c !important; }
+
+    :is(.tya-ikon-excel, .tya-ikon-pdf, .tya-ikon-cetak) > svg:not(.fi-loading-indicator),
+    :is(.tya-ikon-excel, .tya-ikon-pdf, .tya-ikon-cetak) > .fi-icon:not(.fi-loading-indicator) {
+        display: none !important;
+    }
+
+    :is(.tya-ikon-excel, .tya-ikon-pdf, .tya-ikon-cetak)::before {
+        content: "";
+        flex-shrink: 0;
+        width: 1.2rem;
+        height: 1.2rem;
+        background-color: currentColor;
+        -webkit-mask: var(--tya-logo) center / contain no-repeat;
+        mask: var(--tya-logo) center / contain no-repeat;
+    }
+
+    /* logo Excel: lembar kerja + huruf X */
+    .tya-ikon-excel {
+        --tya-logo: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M13%202.5h6.5A2.5%202.5%200%200%201%2022%205v14a2.5%202.5%200%200%201-2.5%202.5H13v-2h6.5a.5.5%200%200%200%20.5-.5v-3h-5v-2h5v-3h-5v-2h5V5a.5.5%200%200%200-.5-.5H13z%22%2F%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M2%204.2%2014%202v20L2%2019.8zm3.3%204.3%202.1%203.5-2.2%203.5h1.9l1.3-2.3%201.3%202.3h1.9L9.4%2012l2.1-3.5H9.7l-1.3%202.2-1.2-2.2z%22%2F%3E%3C%2Fsvg%3E");
+    }
+    /* logo PDF: dokumen + tulisan PDF */
+    .tya-ikon-pdf {
+        --tya-logo: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M6%201.5h8.6L20%206.9V11h-2V8.2h-3.4a1%201%200%200%201-1-1V3.5H6V11H4V3.5a2%202%200%200%201%202-2zM15.6%203.9v2.3h2.3zM4%2019.5h2v1h12v-1h2v1a2%202%200%200%201-2%202H6a2%202%200%200%201-2-2z%22%2F%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M3.6%2011h16.8a1.6%201.6%200%200%201%201.6%201.6v5.3a1.6%201.6%200%200%201-1.6%201.6H3.6A1.6%201.6%200%200%201%202%2017.9v-5.3A1.6%201.6%200%200%201%203.6%2011zM4.6%2012.9h2.1c1.1%200%201.8.6%201.8%201.6s-.7%201.6-1.8%201.6h-.9v1.5H4.6zm1.2%201v1.3h.8c.4%200%20.7-.2.7-.65s-.3-.65-.7-.65zm3.7-1h2c1.6%200%202.5.9%202.5%202.35s-.9%202.35-2.5%202.35h-2zm1.2%201v2.7h.7c.9%200%201.4-.5%201.4-1.35s-.5-1.35-1.4-1.35zm4-1h3.3v1h-2.1v.9h1.9v1h-1.9v1.8h-1.2z%22%2F%3E%3C%2Fsvg%3E");
+    }
+    /* printer */
+    .tya-ikon-cetak {
+        --tya-logo: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209V2h12v7M6%2018H4a2%202%200%200%201-2-2v-5a2%202%200%200%201%202-2h16a2%202%200%200%201%202%202v5a2%202%200%200%201-2%202h-2%22%2F%3E%3Crect%20x%3D%226%22%20y%3D%2214%22%20width%3D%2212%22%20height%3D%228%22%20rx%3D%221%22%2F%3E%3C%2Fsvg%3E");
+    }
+
+    /* ---------- HP: tombol kepala halaman = kotak ikon ringkas, rata tengah ---------- */
+    @media (max-width: 639px) {
+        /* Kepala halaman ditarik ke kiri (margin negatif) tapi lebarnya
+         * dikunci 100% -- akibatnya isinya bergeser ke kiri & tombol tidak
+         * rata tengah. Lebar dibuat otomatis + jarak tepi kiri/kanan sama. */
+        html body .fi-header {
+            width: auto !important;
+            padding-inline: 1.25rem !important;
+        }
+
+        html body .fi-header .fi-header-actions-ctn {
+            display: flex !important;
+            justify-content: center !important;
+            width: 100% !important;
+            grid-template-columns: none !important;
+        }
+
+        html body .fi-header .fi-header-actions-ctn > .fi-ac {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: .65rem !important;
+            width: auto !important;
+            max-width: 100% !important;
+            margin-inline: auto !important;
+        }
+
+        html body .fi-header .fi-header-actions-ctn .fi-ac > *:not(.tya-fab) {
+            width: auto !important;
+            flex: 0 0 auto !important;
+        }
+
+        html body .fi-header .fi-header-actions-ctn .fi-btn:not(.tya-fab) {
+            display: inline-flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 3rem !important;
+            min-width: 3rem !important;
+            height: 3rem !important;
+            min-height: 3rem !important;
+            padding: 0 !important;
+            gap: 0 !important;
+            border-radius: 14px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .12) !important;
+        }
+
+        html body .fi-header .fi-header-actions-ctn .fi-btn:not(.tya-fab) .fi-btn-label {
+            display: none !important;
+        }
+
+        html body .fi-header .fi-header-actions-ctn .fi-btn:not(.tya-fab) > :is(svg, .fi-icon) {
+            width: 1.35rem !important;
+            height: 1.35rem !important;
+            margin: 0 !important;
+        }
+
+        html body .fi-header .fi-header-actions-ctn :is(.tya-ikon-excel, .tya-ikon-pdf, .tya-ikon-cetak)::before {
+            width: 1.45rem;
+            height: 1.45rem;
+        }
+    }
+</style>
+<script>
+    /* TOMBOL-EKSPOR-IKON: tandai tombol Excel / PDF / Cetak dari teksnya. */
+    (function () {
+        if (window.__tyaTombolEkspor) return;
+        window.__tyaTombolEkspor = true;
+
+        var WADAH = '.fi-header-actions-ctn, .fi-ta-header, .fi-ta-header-toolbar, .tya-lap';
+        var dijadwalkan = false;
+
+        function teks(el) {
+            var lab = el.querySelector('.fi-btn-label, .fi-link-label');
+            var t = (lab ? lab.textContent : el.textContent) || '';
+            t += ' ' + (el.getAttribute('aria-label') || '') + ' ' + (el.getAttribute('title') || '');
+            var tip = el.getAttribute('x-tooltip') || '';
+            return (t + ' ' + tip).toLowerCase();
+        }
+
+        function jenis(t) {
+            if (/excel|xlsx|spreadsheet/.test(t)) return 'tya-ikon-excel';
+            if (/\bpdf\b/.test(t)) return 'tya-ikon-pdf';
+            if (/\bcetak\b|\bprint\b/.test(t)) return 'tya-ikon-cetak';
+            return null;
+        }
+
+        function tandai() {
+            dijadwalkan = false;
+            document.querySelectorAll(WADAH).forEach(function (w) {
+                w.querySelectorAll('.fi-btn, a.fi-link, button.fi-link, .fi-icon-btn').forEach(function (el) {
+                    if (el.closest('.fi-modal, .fi-dropdown-panel')) return;
+                    if (el.classList.contains('tya-fab') || el.id === 'tya-fab') return;
+                    var k = jenis(teks(el));
+                    ['tya-ikon-excel', 'tya-ikon-pdf', 'tya-ikon-cetak'].forEach(function (c) {
+                        if (c !== k) el.classList.remove(c);
+                    });
+                    if (k && !el.classList.contains(k)) el.classList.add(k);
+                    if (k && !el.getAttribute('aria-label')) {
+                        var lab = el.querySelector('.fi-btn-label');
+                        if (lab && lab.textContent.trim()) el.setAttribute('aria-label', lab.textContent.trim());
+                    }
+                    if (k && !el.getAttribute('title')) {
+                        var lab2 = el.querySelector('.fi-btn-label');
+                        if (lab2 && lab2.textContent.trim()) el.setAttribute('title', lab2.textContent.trim());
+                    }
+                });
+            });
+        }
+
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            window.requestAnimationFrame(tandai);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', jadwalkan);
+        } else {
+            jadwalkan();
+        }
+        new MutationObserver(jadwalkan).observe(document.documentElement, { childList: true, subtree: true });
+        document.addEventListener('livewire:navigated', jadwalkan);
+    })();
+</script>

@@ -1,0 +1,54 @@
+PASANG SKRIP SSL/NGINX (di server, sebagai user deploy)
+========================================================
+Isi paket ini:
+  toya-provision-ssl.sh     v2 -- PENGGANTI skrip lama dengan nama yang sama
+  toya-deprovision-ssl.sh   -- baru: mengeluarkan subdomain tenant yang SUDAH dihapus
+
+LANGKAH 0 (hanya membaca): apakah sites-enabled dan sites-available berkas yang sama?
+------------------------------------------------------------------------------------
+  ls -l /etc/nginx/sites-enabled/
+  diff /etc/nginx/sites-available/toya-radius /etc/nginx/sites-enabled/toya-radius | head -20
+
+  Kalau "toya-radius" di sites-enabled BUKAN symlink (tidak ada tanda "->") atau diff
+  menampilkan perbedaan, skrip lama mengedit berkas yang salah. Skrip v2 sudah menangani
+  keduanya: ia selalu memakai berkas yang dibaca nginx dan menyebutkannya saat dijalankan.
+
+LANGKAH 1: ganti skrip pemasangan dengan v2
+-------------------------------------------
+  Upload toya-provision-ssl.sh ke /home/deploy/ (WinSCP), lalu:
+
+  sudo cp -a /usr/local/bin/toya-provision-ssl.sh /home/deploy/toya-provision-ssl.sh.lama
+  sudo install -m 755 -o root -g root /home/deploy/toya-provision-ssl.sh /usr/local/bin/toya-provision-ssl.sh
+
+  (izin sudo untuk www-data yang sudah ada tetap berlaku -- nama dan cara panggilnya sama.)
+
+LANGKAH 2: coba dulu tanpa mengubah apa pun, lalu jalankan
+----------------------------------------------------------
+  sudo /usr/local/bin/toya-provision-ssl.sh suela --dry-run
+  sudo /usr/local/bin/toya-provision-ssl.sh suela
+
+  Skrip menutup dengan "diverifikasi" hanya bila SEMUA nama benar-benar ada di sertifikat.
+
+LANGKAH 3: periksa hasilnya
+---------------------------
+  sudo certbot certificates | grep -A3 "Certificate Name: toyaqi.web.id$"
+  curl -sI https://suela.toyaqi.web.id | head -1
+  echo | openssl s_client -connect suela.toyaqi.web.id:443 -servername suela.toyaqi.web.id 2>/dev/null | openssl x509 -noout -ext subjectAltName | tr ',' '\n' | grep -c suela
+
+  Angka terakhir harus 1 atau lebih.
+
+LANGKAH 4 (terpisah, setelah suela beres): bersihkan tenant yang sudah dihapus
+-------------------------------------------------------------------------------
+  sudo install -m 755 -o root -g root /home/deploy/toya-deprovision-ssl.sh /usr/local/bin/toya-deprovision-ssl.sh
+  echo 'www-data ALL=(root) NOPASSWD: /usr/local/bin/toya-deprovision-ssl.sh' | sudo tee /etc/sudoers.d/toya-radius-ssl-deprovision > /dev/null
+  sudo chmod 440 /etc/sudoers.d/toya-radius-ssl-deprovision
+  sudo visudo -cf /etc/sudoers.d/toya-radius-ssl-deprovision        # harus: parsed OK
+
+  sudo /usr/local/bin/toya-deprovision-ssl.sh ahlamraya --dry-run
+  sudo /usr/local/bin/toya-deprovision-ssl.sh ahlamraya
+
+PEMBATALAN
+----------
+  Skrip lama:  sudo install -m 755 -o root -g root /home/deploy/toya-provision-ssl.sh.lama /usr/local/bin/toya-provision-ssl.sh
+  Perubahan nginx: salin cadangan <berkas>.bak-pasang-* / .bak-hapus-* kembali, lalu
+                   sudo nginx -t && sudo systemctl reload nginx

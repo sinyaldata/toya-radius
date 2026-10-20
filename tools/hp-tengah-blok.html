@@ -1,0 +1,49 @@
+<style>
+    /* =====================================================================
+     * HP-TENGAH (2026-10-17) -- mode HP: isi halaman tepat di tengah.
+     * Batang gulir oranye di kanan (gaya khusus ::-webkit-scrollbar) memakan
+     * ~14px lebar layar, jadi isi halaman tampak lebih sempit ke kiri. Di HP
+     * batang gulir disembunyikan (halaman tetap bisa digeser dengan jari),
+     * dan jarak kiri-kanan isi halaman disamakan.
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        html,
+        body,
+        html body .fi-layout,
+        html body .fi-main-ctn,
+        html body .fi-main {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar,
+        html body .fi-layout::-webkit-scrollbar,
+        html body .fi-main-ctn::-webkit-scrollbar,
+        html body .fi-main::-webkit-scrollbar {
+            width: 0 !important;
+            height: 0 !important;
+            display: none !important;
+            background: transparent !important;
+        }
+
+        html body .fi-main:not(#tya-x) {
+            padding-inline: 12px !important;
+            margin-inline: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        html body .fi-main-ctn:not(#tya-x) {
+            margin-inline: 0 !important;
+            padding-inline: 0 !important;
+            width: 100% !important;
+            max-width: 100vw !important;
+        }
+
+        html body .fi-page:not(#tya-x) {
+            padding-inline: 0 !important;
+        }
+    }
+</style>

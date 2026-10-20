@@ -1,0 +1,33 @@
+{
+  "appId": "id.web.toyaqi.radius",
+  "appName": "Toya Radius",
+  "webDir": "www",
+  "appendUserAgent": "ToyaRadiusApp/1",
+  "backgroundColor": "#f97316",
+  "android": {
+    "adjustMarginsForEdgeToEdge": "auto",
+    "allowMixedContent": false,
+    "captureInput": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": [
+      "toyaqi.web.id",
+      "*.toyaqi.web.id"
+    ],
+    "errorPath": "offline.html"
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": false
+    },
+    "SplashScreen": {
+      "launchShowDuration": 700,
+      "launchAutoHide": true,
+      "backgroundColor": "#f97316",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_CROP"
+    }
+  }
+}

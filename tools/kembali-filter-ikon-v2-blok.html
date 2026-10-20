@@ -1,0 +1,254 @@
+<style>
+    /* =====================================================================
+     * KEMBALI-FILTER-IKON-V2 (2026-10-17)
+     *  1. Tombol "Tampilkan Filter": di Filament v4 tulisannya teks polos
+     *     (tanpa <span>), jadi disembunyikan lewat font-size 0. Berlaku di
+     *     semua tabel; badge "0" disembunyikan. Di HP sejajar kotak Search.
+     *  2. Logo Excel/PDF/Cetak HANYA untuk tombol kepala halaman -- tombol
+     *     di toolbar tabel (mis. "Print" aksi massal) kembali ke gaya aslinya.
+     *  3. HP: bar atas & bar bawah lengkap hanya di Dasbor. Halaman lain:
+     *     bar atas tinggal tombol kembali + nama halaman, bar bawah hilang.
+     * ===================================================================== */
+
+    /* ---------- 1. tombol filter ---------- */
+    html body .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x):not(#tya-y) {
+        position: relative !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 0 0 auto !important;
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        border: 0 !important;
+        border-radius: 11px !important;
+        font-size: 0 !important;
+        line-height: 0 !important;
+        letter-spacing: 0 !important;
+        text-indent: 0 !important;
+        overflow: visible !important;
+        background: linear-gradient(135deg, #fb923c, #ea580c) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, .3) !important;
+    }
+
+    html body .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x):not(#tya-y) > :is(svg, .fi-icon):not(.fi-loading-indicator),
+    html body .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x):not(#tya-y) .fi-btn-label,
+    html body .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x):not(#tya-y) > span:not(.fi-btn-badge-ctn) {
+        display: none !important;
+    }
+
+    html body .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x):not(#tya-y)::before {
+        content: "";
+        display: block;
+        width: 19px;
+        height: 19px;
+        flex-shrink: 0;
+        background-color: #ffffff;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3.5%204.5h17l-6.5%208v6l-4%202v-8z%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3.5%204.5h17l-6.5%208v6l-4%202v-8z%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+    }
+
+    html body .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x):not(#tya-y) .fi-btn-badge-ctn {
+        position: absolute !important;
+        top: -7px !important;
+        right: -7px !important;
+        font-size: 10px !important;
+        line-height: 1 !important;
+    }
+
+    html body .fi-ta-filters-trigger-action-ctn .fi-btn-badge-ctn.tya-badge-nol {
+        display: none !important;
+    }
+
+    /* HP: tombol filter sejajar di kanan kotak Search, tidak turun ke bawah */
+    @media (max-width: 767px) {
+        html body .tya-baris-cari:not(#tya-x) {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            gap: .6rem !important;
+            width: 100% !important;
+        }
+
+        html body .tya-baris-cari:not(#tya-x) > :not(.fi-ta-filters-trigger-action-ctn) {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            width: auto !important;
+            max-width: none !important;
+        }
+
+        html body .tya-baris-cari:not(#tya-x) > .fi-ta-filters-trigger-action-ctn {
+            flex: 0 0 auto !important;
+            order: 99 !important;
+            margin: 0 !important;
+        }
+    }
+
+    /* ---------- 3. HP: bar atas & bawah hanya lengkap di Dasbor ---------- */
+    #tya-mtop .tya-mtop-judul {
+        display: none;
+    }
+
+    @media (max-width: 767px) {
+        body.tya-bukan-dasbor #tya-mtop > :not(.tya-mtop-kembali):not(.tya-mtop-judul) {
+            display: none !important;
+        }
+
+        body.tya-bukan-dasbor #tya-mtop {
+            min-height: 52px !important;
+            gap: 10px !important;
+        }
+
+        body.tya-bukan-dasbor #tya-mtop .tya-mtop-judul {
+            display: block;
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: 16px;
+            font-weight: 800;
+            color: #18181b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dark body.tya-bukan-dasbor #tya-mtop .tya-mtop-judul,
+        body.tya-bukan-dasbor.dark #tya-mtop .tya-mtop-judul {
+            color: #fafafa;
+        }
+
+        body.tya-bukan-dasbor .tya-bnav {
+            display: none !important;
+        }
+    }
+</style>
+<script>
+    /* KEMBALI-FILTER-IKON-V2 */
+    (function () {
+        if (window.__tyaKembaliV2) return;
+        window.__tyaKembaliV2 = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+        var dijadwalkan = false;
+
+        function diDasbor() {
+            return location.pathname.split('/').filter(Boolean).length <= 1;
+        }
+
+        function judulHalaman() {
+            var h = document.querySelector('.fi-header-heading');
+            var t = h ? (h.textContent || '').trim() : '';
+            if (!t) t = (document.title || '').split(/\s[-|–]\s/)[0].trim();
+            return t;
+        }
+
+        // Bar bawah dibuat oleh tampilan lain -- dikenali dari isinya:
+        // elemen "fixed" di bawah layar yang memuat Dashboard & Laporan.
+        function tandaiBarBawah() {
+            if (document.querySelector('.tya-bnav')) return;
+            var calon = document.querySelectorAll('body > *, body > * > *, body > * > * > *');
+            var pilih = null;
+            for (var i = 0; i < calon.length; i++) {
+                var el = calon[i];
+                if (el.closest('.fi-sidebar, .fi-topbar, #tya-mtop, #tya-menu-ikon, .fi-modal, script, style')) continue;
+                var t = (el.textContent || '').toLowerCase();
+                if (t.length > 400 || t.indexOf('dashboard') === -1 || t.indexOf('laporan') === -1) continue;
+                var cs = window.getComputedStyle(el);
+                if (cs.position !== 'fixed') continue;
+                var r = el.getBoundingClientRect();
+                if (r.height > 160 || r.bottom < window.innerHeight - 4) continue;
+                pilih = el;
+                break;
+            }
+            if (pilih) pilih.classList.add('tya-bnav');
+        }
+
+        function proses() {
+            dijadwalkan = false;
+
+            // 2. logo ekspor hanya di kepala halaman
+            document.querySelectorAll('.tya-ikon-excel, .tya-ikon-pdf, .tya-ikon-cetak').forEach(function (el) {
+                if (!el.closest('.fi-header-actions-ctn')) {
+                    el.classList.remove('tya-ikon-excel', 'tya-ikon-pdf', 'tya-ikon-cetak');
+                }
+            });
+
+            // 1. badge filter "0" & baris Search + filter
+            document.querySelectorAll('.fi-ta-filters-trigger-action-ctn').forEach(function (ctn) {
+                var b = ctn.querySelector('.fi-btn-badge-ctn');
+                if (b) b.classList.toggle('tya-badge-nol', (b.textContent || '').trim() === '0');
+                var induk = ctn.parentElement;
+                if (induk && induk.querySelector(':scope > .fi-ta-search-field, :scope > * .fi-ta-search-field, :scope > div input[type="search"]')) {
+                    induk.classList.add('tya-baris-cari');
+                }
+            });
+
+            // 3. bar atas/bawah hanya lengkap di Dasbor (HP)
+            var bukan = mq.matches && !diDasbor();
+            document.body.classList.toggle('tya-bukan-dasbor', bukan);
+            var bar = document.getElementById('tya-mtop');
+            if (bar) {
+                var j = bar.querySelector('.tya-mtop-judul');
+                if (!j) {
+                    j = document.createElement('div');
+                    j.className = 'tya-mtop-judul';
+                    var kembali = bar.querySelector('.tya-mtop-kembali');
+                    if (kembali && kembali.nextSibling) bar.insertBefore(j, kembali.nextSibling);
+                    else bar.appendChild(j);
+                } else {
+                    var k = bar.querySelector('.tya-mtop-kembali');
+                    if (k && k.nextSibling !== j) bar.insertBefore(j, k.nextSibling);
+                }
+                var teksJudul = judulHalaman();
+                if (j.textContent !== teksJudul) j.textContent = teksJudul;
+            }
+            if (mq.matches) tandaiBarBawah();
+        }
+
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            // jalan setelah blok-blok sebelumnya (yang juga menunggu 2 frame)
+            window.requestAnimationFrame(function () {
+                window.requestAnimationFrame(function () { setTimeout(proses, 0); });
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', jadwalkan);
+        } else {
+            jadwalkan();
+        }
+        new MutationObserver(function (m) {
+            for (var i = 0; i < m.length; i++) {
+                var t = m[i].target;
+                if (t && t.closest && t.closest('.tya-mtop-judul')) continue;
+                jadwalkan();
+                return;
+            }
+        }).observe(document.documentElement, { childList: true, subtree: true });
+        // Blok logo ekspor lama bisa memasang ulang kelasnya kapan saja --
+        // setiap kali itu terjadi di luar kepala halaman, langsung dilepas.
+        new MutationObserver(function (m) {
+            for (var i = 0; i < m.length; i++) {
+                var el = m[i].target;
+                if (!el.classList) continue;
+                if (!(el.classList.contains('tya-ikon-excel') || el.classList.contains('tya-ikon-pdf') || el.classList.contains('tya-ikon-cetak'))) continue;
+                if (el.closest('.fi-header-actions-ctn')) continue;
+                el.classList.remove('tya-ikon-excel', 'tya-ikon-pdf', 'tya-ikon-cetak');
+            }
+        }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'], subtree: true });
+        document.addEventListener('livewire:navigated', function () {
+            document.querySelectorAll('.tya-bnav').forEach(function (x) { x.classList.remove('tya-bnav'); });
+            jadwalkan();
+        });
+        window.addEventListener('popstate', jadwalkan);
+        if (mq.addEventListener) mq.addEventListener('change', jadwalkan);
+    })();
+</script>

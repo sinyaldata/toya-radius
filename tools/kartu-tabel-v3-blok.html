@@ -1,0 +1,205 @@
+<style>
+    /* =====================================================================
+     * KARTU-TABEL-MOBILE-V3 (2026-10-13)
+     *  - tombol "+" bundar dibuat sebagai tombol SENDIRI di <body> (versi 2
+     *    memindahkan tombol aslinya, dan di halaman Outlet tombol itu ikut
+     *    "terjebak" di dalam wadahnya sehingga tidak tampil). Tombol asli
+     *    disembunyikan; "+" meneruskan klik ke tombol asli.
+     *  - wadah kepala tabel yang jadi kosong ikut disembunyikan (tidak ada
+     *    ruang kosong di atas Search/Filter)
+     *  - tombol "Apply filters" cukup "Apply" supaya muat satu baris
+     * Hanya di layar < 768px.
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        .tya-fab.tya-fab.tya-fab,
+        .tya-fab-asli.tya-fab-asli {
+            display: none !important;
+        }
+
+        .tya-hdr-kosong {
+            display: none !important;
+        }
+
+        .fi-ta-header-ctn {
+            padding-top: 0.75rem !important;
+            row-gap: 0.6rem !important;
+        }
+
+        #tya-fab {
+            position: fixed;
+            right: 16px;
+            bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+            z-index: 35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            border-radius: 9999px;
+            background: #f97316;
+            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.45);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #tya-fab::before {
+            content: "";
+            display: block;
+            width: 26px;
+            height: 26px;
+            background: #ffffff;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M12%204.5v15M4.5%2012h15%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M12%204.5v15M4.5%2012h15%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        }
+
+        #tya-fab:active {
+            transform: scale(0.94);
+        }
+
+        .dark #tya-fab {
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Panel filter: tombol Apply satu baris. */
+        .fi-ta-filters-actions-ctn .fi-btn {
+            white-space: nowrap !important;
+            min-width: 0 !important;
+        }
+
+        .fi-ta-filters-actions-ctn > .fi-btn:first-child,
+        .fi-ta-filters-actions-ctn > :first-child .fi-btn {
+            font-size: 0 !important;
+            gap: 0.4rem !important;
+        }
+
+        .fi-ta-filters-actions-ctn > .fi-btn:first-child::after,
+        .fi-ta-filters-actions-ctn > :first-child .fi-btn::after {
+            content: "Apply";
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            font-weight: 600;
+        }
+    }
+
+    @media (min-width: 768px) {
+        #tya-fab {
+            display: none !important;
+        }
+    }
+</style>
+<script>
+    /* KARTU-TABEL-MOBILE-V3: tombol "+" sendiri + rapikan kepala tabel. */
+    (function () {
+        if (window.__tyaFabV3) return;
+        window.__tyaFabV3 = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+        var dijadwalkan = false;
+        var asli = null;
+
+        function teks(el) {
+            return (el.textContent || '').replace(/\s+/g, ' ').trim();
+        }
+
+        function tombolTambah(el) {
+            var href = el.getAttribute('href') || '';
+            var klik = el.getAttribute('wire:click') || '';
+            var label = teks(el).toLowerCase();
+            if (/\/create(\?|$|#)/.test(href)) return true;
+            if (/mount(Table)?Action\(\s*'create'/.test(klik)) return true;
+            return /^(\+\s*)?(tambah|buat|create|new|baru)\b/.test(label);
+        }
+
+        function cariAsli() {
+            var kandidat = document.querySelectorAll('.fi-header a, .fi-header button, .fi-ta-header-ctn a, .fi-ta-header-ctn button');
+            for (var i = 0; i < kandidat.length; i++) {
+                var el = kandidat[i];
+                if (el.closest('.fi-modal, .fi-dropdown-panel, .fi-ta-filters, .fi-ta-header-toolbar')) continue;
+                if (!el.classList.contains('fi-btn') && !el.classList.contains('fi-link') && !el.classList.contains('fi-ac-action') && !el.classList.contains('tya-fab')) continue;
+                if (el.classList.contains('tya-fab') || tombolTambah(el)) return el;
+            }
+            return null;
+        }
+
+        function kosongTerlihat(el) {
+            if ((el.innerText || '').trim() !== '') return false;
+            return !Array.prototype.some.call(el.querySelectorAll('input, select, textarea, img, button, a'), function (x) {
+                return x.offsetParent !== null;
+            });
+        }
+
+        function rapikanKepala(el) {
+            document.querySelectorAll('.tya-hdr-kosong').forEach(function (x) { x.classList.remove('tya-hdr-kosong'); });
+            var p = el ? el.parentElement : null;
+            while (p && !p.matches('.fi-ta-header-ctn, .fi-ta, .fi-page, .fi-main, body')) {
+                if (kosongTerlihat(p)) p.classList.add('tya-hdr-kosong');
+                p = p.parentElement;
+            }
+        }
+
+        function fab() {
+            var f = document.getElementById('tya-fab');
+            if (!f) {
+                f = document.createElement('button');
+                f.type = 'button';
+                f.id = 'tya-fab';
+                f.addEventListener('click', function () { if (asli) asli.click(); });
+                document.body.appendChild(f);
+            }
+            return f;
+        }
+
+        function proses() {
+            dijadwalkan = false;
+            document.querySelectorAll('.tya-fab-asli').forEach(function (x) { x.classList.remove('tya-fab-asli'); });
+
+            if (!mq.matches) {
+                var f0 = document.getElementById('tya-fab');
+                if (f0) f0.remove();
+                document.querySelectorAll('.tya-hdr-kosong').forEach(function (x) { x.classList.remove('tya-hdr-kosong'); });
+                asli = null;
+                return;
+            }
+
+            asli = cariAsli();
+            if (!asli) {
+                var f1 = document.getElementById('tya-fab');
+                if (f1) f1.remove();
+                rapikanKepala(null);
+                return;
+            }
+
+            asli.classList.add('tya-fab-asli');
+            var f = fab();
+            var label = asli.getAttribute('aria-label') || teks(asli) || 'Tambah';
+            f.setAttribute('aria-label', label);
+            f.setAttribute('title', label);
+            rapikanKepala(asli);
+        }
+
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            window.requestAnimationFrame(function () { window.requestAnimationFrame(proses); });
+        }
+
+        function mulai() {
+            jadwalkan();
+            new MutationObserver(function (daftar) {
+                for (var i = 0; i < daftar.length; i++) {
+                    var t = daftar[i].target;
+                    if (t && t.id !== 'tya-fab') { jadwalkan(); return; }
+                }
+            }).observe(document.body, { childList: true, subtree: true });
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai);
+        else mulai();
+
+        if (mq.addEventListener) mq.addEventListener('change', jadwalkan);
+        document.addEventListener('livewire:navigated', jadwalkan);
+    })();
+</script>

@@ -1,0 +1,17 @@
+<style>
+    /* =====================================================================
+     * ORANYE-NYAMBUNG (2026-10-18) -- HP: bar atas menyambung mulus dengan
+     * bilah status HP / bilah alamat browser (warna rata #f97316):
+     *  - bagian paling atas bar dibuat PERSIS #f97316 lalu memudar ke gradasi
+     *    kiri-kanan, jadi tidak ada garis sambungan
+     *  - lingkaran hiasan di pojok kanan atas (terpotong di tepi) dibuang
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        body.tya-oranye .fi-topbar-ctn:not(#tya-x):not(#tya-y) .fi-topbar,
+        body.tya-oranye .fi-topbar.tya-mtop-aktif:not(#tya-x):not(#tya-y) {
+            background:
+                linear-gradient(180deg, #f97316 0, rgba(249, 115, 22, .6) 18px, rgba(249, 115, 22, 0) 52px),
+                var(--tya-oranye, linear-gradient(90deg, #fb923c 0%, #f97316 50%, #ea580c 100%)) !important;
+        }
+    }
+</style>

@@ -1,0 +1,485 @@
+<style>
+    /* =====================================================================
+     * KARTU-SLIDE-V2 (2026-10-17) -- HP (< 768px), versi ringan:
+     *  - kartu statistik halaman Voucher, User PPPoE, Invoice, Kasir, Laporan
+     *    Invoice, dll (".tya-sc-card" & ".tya-hs-card") jadi 2 KOLOM:
+     *    persegi panjang ringkas, putih, ikon di kotak warna muda, judul,
+     *    angka besar, keterangan; kartu yang bisa diklik diberi tanda ">"
+     *  - tetap bisa digeser kiri-kanan (2 kartu per layar) + titik penanda
+     *  - efek mantul ringan; kartu Pendapatan Dasbor tetap 1 kartu lebar
+     *  - lebih ringan dari v1: tanpa :has(), tanpa will-change, skrip
+     *    langsung berhenti di halaman yang tidak punya kartu
+     * Tampilan komputer tidak berubah.
+     * ===================================================================== */
+    .tya-ks-titik {
+        display: none;
+    }
+
+    @media (max-width: 767px) {
+        /* ---------- wadah slide (2 kartu per layar) ---------- */
+        .tya-ks:not(#tya-x) {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            grid-template-columns: none !important;
+            gap: 12px !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            scroll-snap-type: x mandatory !important;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+            scrollbar-width: none;
+            /* ruang untuk bayangan kartu (supaya tidak terpotong jadi kotak) */
+            padding: 6px 12px 26px !important;
+            margin: -6px -12px -18px !important;
+            scroll-padding-inline: 12px;
+            width: calc(100% + 24px) !important;
+            max-width: none !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        .tya-ks::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* wadah widget tanpa bingkai/latar (ditandai skrip, bukan :has) */
+        .tya-ks-wadah:not(#tya-x) {
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            --tw-ring-shadow: 0 0 #0000 !important;
+            padding: 0 !important;
+        }
+
+        /* ---------- kartu ---------- */
+        .tya-ks > .tya-ks-k:not(#tya-x) {
+            --ks-w: #f97316;
+            position: relative !important;
+            display: block !important;
+            flex: 0 0 calc((100% - 12px) / 2) !important;
+            width: calc((100% - 12px) / 2) !important;
+            max-width: none !important;
+            min-width: 0 !important;
+            height: 124px !important;
+            min-height: 124px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            border: 1px solid rgba(0, 0, 0, .04) !important;
+            border-radius: 18px !important;
+            background: #ffffff !important;
+            box-shadow: 0 8px 18px -10px rgba(234, 88, 12, .35), 0 1px 2px rgba(0, 0, 0, .05) !important;
+            color: #18181b !important;
+            text-decoration: none !important;
+            transform: none !important;
+            scroll-snap-align: start !important;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tya-ks-k .tya-ks-aksen:not(#tya-x) {
+            display: none !important;
+        }
+
+        .tya-ks-k .tya-ks-baris:not(#tya-x),
+        .tya-ks-k .tya-ks-baris:not(#tya-x) > div:not(.tya-ks-ikon) {
+            display: block !important;
+            position: static !important;
+            width: auto !important;
+            min-width: 0 !important;
+        }
+
+        /* kotak ikon kiri atas */
+        .tya-ks-k .tya-ks-ikon:not(#tya-x) {
+            position: absolute !important;
+            top: 12px !important;
+            left: 12px !important;
+            width: 34px !important;
+            height: 34px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 11px !important;
+            background: #fff7ed !important;
+            background: color-mix(in srgb, var(--ks-w) 12%, #ffffff) !important;
+            box-shadow: none !important;
+            color: var(--ks-w) !important;
+        }
+
+        .tya-ks-k .tya-ks-ikon:not(#tya-x) svg {
+            width: 18px !important;
+            height: 18px !important;
+            color: var(--ks-w) !important;
+        }
+
+        /* judul (di bawah ikon) */
+        .tya-ks-k .tya-ks-label:not(#tya-x) {
+            position: absolute !important;
+            top: 53px !important;
+            left: 12px !important;
+            right: 10px !important;
+            margin: 0 !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            line-height: 1.25 !important;
+            letter-spacing: 0 !important;
+            text-transform: none !important;
+            color: #52525b !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        /* angka besar */
+        .tya-ks-k .tya-ks-nilai:not(#tya-x) {
+            position: absolute !important;
+            top: 70px !important;
+            left: 12px !important;
+            right: 10px !important;
+            margin: 0 !important;
+            font-size: 20px !important;
+            font-weight: 800 !important;
+            line-height: 1.15 !important;
+            letter-spacing: -.02em !important;
+            color: #18181b !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        /* keterangan bawah */
+        .tya-ks-k .tya-ks-sub:not(#tya-x) {
+            position: absolute !important;
+            left: 12px !important;
+            right: 10px !important;
+            bottom: 10px !important;
+            margin: 0 !important;
+            font-size: 10.5px !important;
+            font-weight: 500 !important;
+            line-height: 1.3 !important;
+            color: #a1a1aa !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        /* kartu yang bisa diklik: bulatan ">" kanan atas */
+        a.tya-ks-k:not(#tya-x)::after {
+            content: "\203A";
+            position: absolute;
+            top: 17px;
+            right: 12px;
+            width: 24px;
+            height: 24px;
+            border-radius: 9999px;
+            background: #fff7ed;
+            background: color-mix(in srgb, var(--ks-w) 10%, #ffffff);
+            color: var(--ks-w);
+            font-size: 17px;
+            font-weight: 800;
+            line-height: 22px;
+            text-align: center;
+        }
+
+        /* ---------- titik penanda ---------- */
+        .tya-ks-titik {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            gap: 6px;
+            margin: 2px 0 6px;
+        }
+
+        .tya-ks-titik button {
+            width: 7px;
+            height: 7px;
+            padding: 0;
+            border: 0;
+            border-radius: 9999px;
+            background: #d4d4d8;
+            cursor: pointer;
+            transition: width .45s cubic-bezier(.34, 1.56, .64, 1), background-color .2s ease;
+        }
+
+        .tya-ks-titik button.tya-aktif {
+            width: 20px;
+            background: #f97316;
+        }
+
+        /* ---------- efek mantul ---------- */
+        .tya-ks > .tya-ks-k:not(#tya-x) {
+            transition: transform .5s cubic-bezier(.34, 1.56, .64, 1), opacity .3s ease !important;
+        }
+
+        .tya-ks.tya-ks-siap > .tya-ks-k:not(.tya-ks-aktif):not(#tya-x) {
+            transform: scale(.9) !important;
+            opacity: .6 !important;
+        }
+
+        /* kartu Pendapatan Dasbor (1 kartu lebar) */
+        .tya-statistik.tya-slide > .tya-k:not(#tya-x) {
+            transition: transform .5s cubic-bezier(.34, 1.56, .64, 1), opacity .3s ease !important;
+        }
+
+        .tya-statistik.tya-slide.tya-ks-siap > .tya-k:not(.tya-ks-aktif):not(#tya-x) {
+            transform: scale(.9) !important;
+            opacity: .6 !important;
+        }
+
+        .tya-statistik.tya-slide:not(#tya-x) {
+            overscroll-behavior-x: contain;
+            padding: 6px 12px 30px !important;
+            margin: -6px -12px -22px !important;
+            scroll-padding-inline: 12px;
+            box-sizing: border-box !important;
+        }
+
+        #tya-titik button {
+            transition: width .45s cubic-bezier(.34, 1.56, .64, 1), background-color .2s ease !important;
+        }
+
+        /* ---------- tema gelap ---------- */
+        .dark .tya-ks > .tya-ks-k:not(#tya-x) {
+            background: #1c1c21 !important;
+            border-color: rgba(255, 255, 255, .06) !important;
+            box-shadow: 0 8px 18px -10px rgba(0, 0, 0, .6) !important;
+            color: #f4f4f5 !important;
+        }
+
+        .dark .tya-ks-k .tya-ks-ikon:not(#tya-x) {
+            background: rgba(249, 115, 22, .14) !important;
+            background: color-mix(in srgb, var(--ks-w) 20%, transparent) !important;
+        }
+
+        .dark .tya-ks-k .tya-ks-label:not(#tya-x) {
+            color: #d4d4d8 !important;
+        }
+
+        .dark .tya-ks-k .tya-ks-nilai:not(#tya-x) {
+            color: #fafafa !important;
+        }
+
+        .dark .tya-ks-k .tya-ks-sub:not(#tya-x) {
+            color: #8b8b94 !important;
+        }
+
+        .dark a.tya-ks-k:not(#tya-x)::after {
+            background: rgba(249, 115, 22, .16);
+            background: color-mix(in srgb, var(--ks-w) 20%, transparent);
+            color: #fb923c;
+        }
+
+        .dark .tya-ks-titik button {
+            background: #3f3f46;
+        }
+
+        .dark .tya-ks-titik button.tya-aktif {
+            background: #fb923c;
+        }
+    }
+
+    @media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+        .tya-ks > .tya-ks-k:not(#tya-x),
+        .tya-statistik.tya-slide > .tya-k:not(#tya-x),
+        .tya-ks-titik button,
+        #tya-titik button {
+            transition: none !important;
+        }
+    }
+</style>
+<script>
+    /* KARTU-SLIDE-V2: kartu statistik 2 kolom + slide mantul (versi ringan). */
+    (function () {
+        if (window.__tyaKartuSlideV2) return;
+        window.__tyaKartuSlideV2 = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+        var dijadwalkan = false;
+        var tunda = null;
+        var GRID = '.tya-sc-grid, .tya-hs-grid';
+        var KARTU = '.tya-sc-card, .tya-hs-card';
+        var BAGIAN = ['tya-ks-wadah', 'tya-ks-k', 'tya-ks-aksen', 'tya-ks-baris', 'tya-ks-ikon', 'tya-ks-label', 'tya-ks-nilai', 'tya-ks-sub', 'tya-ks-aktif'];
+
+        function tambah(el, k) {
+            if (el && !el.classList.contains(k)) el.classList.add(k);
+        }
+
+        function anakKartu(g) {
+            return Array.prototype.filter.call(g.children, function (c) {
+                return c.matches(KARTU) || c.matches('.tya-k');
+            });
+        }
+
+        // warna kartu asli (dari kotak ikonnya), dipakai untuk warna muda
+        function warnaKartu(k, ikon) {
+            if (!ikon) return;
+            var w = k.getAttribute('data-tya-warna');
+            if (!w) {
+                w = ikon.style.backgroundColor || '';
+                if (!w || w === 'transparent') w = '#f97316';
+                k.setAttribute('data-tya-warna', w);
+            }
+            if (k.style.getPropertyValue('--ks-w') !== w) k.style.setProperty('--ks-w', w);
+        }
+
+        function tataKartu(k) {
+            tambah(k, 'tya-ks-k');
+            var aksen = k.querySelector(':scope > .tya-sc-accent');
+            if (!aksen) {
+                aksen = Array.prototype.filter.call(k.children, function (c) {
+                    return /width:\s*4px/.test(c.getAttribute('style') || '') && !c.textContent.trim();
+                })[0];
+            }
+            tambah(aksen, 'tya-ks-aksen');
+            var ikon = k.querySelector('.tya-sc-icon, .tya-hs-icon-ctn');
+            tambah(ikon, 'tya-ks-ikon');
+            warnaKartu(k, ikon);
+            if (ikon && ikon.parentElement && ikon.parentElement !== k) tambah(ikon.parentElement, 'tya-ks-baris');
+            tambah(k.querySelector('.tya-sc-label, .tya-hs-label'), 'tya-ks-label');
+            tambah(k.querySelector('.tya-sc-value, .tya-hs-value'), 'tya-ks-nilai');
+            tambah(k.querySelector('.tya-sc-note, .tya-hs-note'), 'tya-ks-sub');
+        }
+
+        // ---------- titik penanda ----------
+        function titik(g, jumlah) {
+            var t = g.nextElementSibling;
+            if (!t || !t.classList.contains('tya-ks-titik')) {
+                t = document.createElement('div');
+                t.className = 'tya-ks-titik';
+                t.setAttribute('aria-hidden', 'true');
+                g.after(t);
+            }
+            if (t.childElementCount !== jumlah) {
+                t.innerHTML = '';
+                for (var i = 0; i < jumlah; i++) {
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.tabIndex = -1;
+                    b.setAttribute('data-i', i);
+                    t.appendChild(b);
+                }
+                t.onclick = function (e) {
+                    var b = e.target.closest('button');
+                    if (!b) return;
+                    var kartu = anakKartu(g);
+                    var x = kartu[parseInt(b.getAttribute('data-i'), 10)];
+                    if (x) g.scrollTo({ left: x.offsetLeft - kartu[0].offsetLeft, behavior: 'smooth' });
+                };
+            }
+            var tampil = jumlah > 1 ? '' : 'none';
+            if (t.style.display !== tampil) t.style.display = tampil;
+            return t;
+        }
+
+        // ---------- kartu aktif (yang paling dekat ke tengah) ----------
+        function aktifkan(g) {
+            var kartu = anakKartu(g);
+            if (!kartu.length) return;
+            var awal = kartu[0].offsetLeft;
+            var idx = 0, jarak = Infinity;
+            kartu.forEach(function (k, i) {
+                var d = Math.abs(k.offsetLeft - awal - g.scrollLeft);
+                if (d < jarak) { jarak = d; idx = i; }
+            });
+            var dua = g.classList.contains('tya-ks'); // grid kartu: 2 kartu per layar
+            if (dua && idx > kartu.length - 2) idx = Math.max(0, kartu.length - 2);
+            kartu.forEach(function (k, i) {
+                var ya = dua ? (i === idx || i === idx + 1) : i === idx;
+                if (k.classList.contains('tya-ks-aktif') !== ya) k.classList.toggle('tya-ks-aktif', ya);
+            });
+            if (!g.classList.contains('tya-ks-siap')) {
+                // tunda 1 frame agar kartu tidak "melompat" saat pertama tampil
+                window.requestAnimationFrame(function () { g.classList.add('tya-ks-siap'); });
+            }
+            var t = g.nextElementSibling;
+            if (t && t.classList.contains('tya-ks-titik')) {
+                Array.prototype.forEach.call(t.children, function (b, i) { b.classList.toggle('tya-aktif', i === idx); });
+            }
+        }
+
+        function pasangGeser(g) {
+            if (g.__tyaKsGeser) return;
+            g.__tyaKsGeser = true;
+            var antre = false;
+            g.addEventListener('scroll', function () {
+                if (antre) return;
+                antre = true;
+                window.requestAnimationFrame(function () { antre = false; aktifkan(g); });
+            }, { passive: true });
+        }
+
+        function bersihkan() {
+            document.querySelectorAll('.tya-ks').forEach(function (g) {
+                g.classList.remove('tya-ks', 'tya-ks-siap');
+                var t = g.nextElementSibling;
+                if (t && t.classList.contains('tya-ks-titik')) t.remove();
+            });
+            document.querySelectorAll('.tya-statistik.tya-ks-siap').forEach(function (g) { g.classList.remove('tya-ks-siap'); });
+            BAGIAN.forEach(function (k) {
+                document.querySelectorAll('.' + k).forEach(function (e) { e.classList.remove(k); });
+            });
+        }
+
+        function proses() {
+            dijadwalkan = false;
+            if (!mq.matches) { if (document.querySelector('.tya-ks, .tya-ks-siap')) bersihkan(); return; }
+            if (!document.querySelector(GRID + ', .tya-statistik.tya-slide')) return;
+
+            document.querySelectorAll(GRID).forEach(function (g) {
+                var kartu = anakKartu(g);
+                if (!kartu.length) return;
+                tambah(g, 'tya-ks');
+                kartu.forEach(tataKartu);
+                titik(g, Math.max(1, kartu.length - 1));
+                // wadah widget di atasnya: tanpa bingkai (pengganti :has)
+                var w = g.parentElement;
+                for (var d = 0; w && d < 4 && !w.matches('.fi-page-content, .fi-page, .fi-main'); d++, w = w.parentElement) {
+                    if (w.matches('.fi-wi, .fi-wi-widget, .fi-section, .fi-section-content-ctn, .fi-section-content')) tambah(w, 'tya-ks-wadah');
+                }
+                pasangGeser(g);
+                aktifkan(g);
+            });
+
+            // kartu Dasbor: cukup efek mantul (slide & titiknya sudah ada)
+            document.querySelectorAll('.tya-statistik.tya-slide').forEach(function (g) {
+                if (!anakKartu(g).length) return;
+                pasangGeser(g);
+                aktifkan(g);
+            });
+        }
+
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            clearTimeout(tunda);
+            // setelah skrip Dasbor (yang menandai .tya-k) selesai
+            tunda = setTimeout(function () { window.requestAnimationFrame(proses); }, 150);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', jadwalkan);
+        } else {
+            jadwalkan();
+        }
+        new MutationObserver(function (daftar) {
+            if (dijadwalkan) return;
+            for (var i = 0; i < daftar.length; i++) {
+                var m = daftar[i];
+                var t = m.target;
+                if (!t || !t.closest || t.closest('.tya-ks-titik, #tya-mpenuh, .fi-dropdown-panel')) continue;
+                // hanya tambahan/hapus ELEMEN (bukan sekadar teks) yang perlu diproses
+                var adaElemen = false;
+                for (var j = 0; j < m.addedNodes.length && !adaElemen; j++) if (m.addedNodes[j].nodeType === 1) adaElemen = true;
+                for (var k = 0; k < m.removedNodes.length && !adaElemen; k++) if (m.removedNodes[k].nodeType === 1) adaElemen = true;
+                if (!adaElemen) continue;
+                jadwalkan();
+                return;
+            }
+        }).observe(document.body || document.documentElement, { childList: true, subtree: true });
+        window.addEventListener('resize', jadwalkan);
+        window.addEventListener('load', jadwalkan);
+        document.addEventListener('livewire:navigated', jadwalkan);
+        if (mq.addEventListener) mq.addEventListener('change', jadwalkan);
+    })();
+</script>

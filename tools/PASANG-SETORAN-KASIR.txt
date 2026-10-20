@@ -1,0 +1,53 @@
+PERINTAH BOT /setor  --  TERIMA SETORAN MITRA UNTUK KASIR
+===========================================================
+
+Yang didapat
+  /setor           kasir mencatat setoran: pilih Outlet (hasil jual voucher) atau Reseller (top up saldo)
+                   -> pilih mitra (tombol / ketik sebagian nama) -> ketik jumlah (150000, 150.000, 150rb, 1,5jt)
+                   -> Simpan Tunai / Simpan Transfer.
+  /rekapsetoran    rekap: Hari ini / Kemarin / Bulan ini / Bulan lalu (total, per jenis, per cara bayar,
+                   per mitra, dan per tanggal untuk rekap bulanan). Untuk kasir DAN admin.
+  /kasir           (admin) kelola kasir:  /kasir tambah CHATID | /kasir hapus CHATID | /kasir saldo on|off
+  Tombol menu      kasir: [Terima Setoran] [Rekap Setoran];  admin: ditambah [Rekap Setoran].
+
+Tidak ada migrasi database: setoran masuk ke tabel cashier_deposits yang SUDAH ada (sama dengan
+halaman Kasir di aplikasi), jadi kartu "Mitra Sudah Setor" dan /outletnunggak ikut terhitung, dan
+admin diberi tahu otomatis oleh CashierDepositObserver yang sudah ada. Mitra TIDAK dikirimi pesan.
+
+PASANG (di server, sebagai user deploy)
+  1) Unggah lewat WinSCP ke /var/www/toya-radius/ :
+        app/Services/SetoranKasirBot.php
+        tools/pasang-setoran-kasir.py
+  2) cd /var/www/toya-radius
+     echo "50a9fa615503426182355f9057c261bd  tools/pasang-setoran-kasir.py" | md5sum -c -
+     echo "2f24e09cd71ae52b221600dbed009349  app/Services/SetoranKasirBot.php" | md5sum -c -
+     grep -c TelegramMenu app/Http/Controllers/TelegramWebhookController.php     # harus 6 (menu tombol v2 sudah terpasang)
+  3) python3 tools/pasang-setoran-kasir.py --dry-run      # lihat rencana, tidak mengubah apa pun
+     python3 tools/pasang-setoran-kasir.py                # pasang (berkas dicadangkan, sintaks dicek, otomatis dibatalkan bila rusak)
+  4) composer dump-autoload
+     php8.4 artisan optimize:clear
+     sudo systemctl restart php8.4-fpm
+  5) Cek:  grep -c SETORAN-KASIR-BOT app/Http/Controllers/TelegramWebhookController.php     # harus 5
+
+DAFTARKAN KASIR (di Telegram)
+  a. Kasir kirim  /admin  ke bot  -> bot membalas Chat ID-nya.
+  b. Admin kirim  /kasir tambah CHATID_ITU
+  c. Kasir kirim  /menu  -> tombol [Terima Setoran] [Rekap Setoran] muncul.
+  Admin yang sudah punya tombol menu lama: kirim /menu sekali untuk memunculkan [Rekap Setoran].
+  Gunakan Chat ID pribadi (bukan grup) supaya hanya orang itu yang bisa mencatat.
+
+SETORAN RESELLER: HANYA DICATAT ATAU IKUT MENAMBAH SALDO?
+  Bawaan: HANYA DICATAT (saldo reseller tidak berubah) -- sama seperti halaman Kasir di aplikasi, dan
+  aman dari saldo ganda kalau saldo juga ditambah lewat /topup atau aplikasi.
+  Kalau uang yang diterima kasir memang langsung jadi saldo:   /kasir saldo on
+  (setoran Reseller lalu juga memanggil SaldoService::topup sekali, dalam satu transaksi dengan
+   pencatatan setoran: salah satu gagal -> keduanya batal). Kembali ke bawaan:  /kasir saldo off
+  Setoran Outlet TIDAK pernah mengubah saldo.
+
+SALAH KETIK JUMLAH
+  Sebelum Simpan: ketik jumlah baru atau tekan [Ubah jumlah]. Sesudah tersimpan: koreksi lewat halaman
+  Kasir di aplikasi (bot sengaja tidak punya tombol hapus/ubah untuk catatan uang).
+
+BATALKAN PEMASANGAN
+  python3 tools/pasang-setoran-kasir.py --kembalikan     (mengembalikan 3 berkas dari cadangan)
+  lalu: composer dump-autoload && php8.4 artisan optimize:clear && sudo systemctl restart php8.4-fpm

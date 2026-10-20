@@ -1,0 +1,155 @@
+<style>
+    /* =====================================================================
+     * KEMBALI-FILTER-IKON-V5 (2026-10-17) -- pengganti V3/V4 (dicabut oleh
+     * installer). V3/V4 memosisikan tombol filter lewat skrip dan meleset di
+     * HP asli; V5 memakai grid kepala tabel saja (lebih stabil & ringan).
+     * Mode HP:
+     *  1. Tombol filter (corong) SEJAJAR di kanan kotak Search di semua
+     *     tabel -- lewat grid kepala tabel, tanpa skrip penghitung posisi.
+     *  2. Garis bawah bar atas dihilangkan -- menyambung dengan isi halaman.
+     *  3. Bar bawah hanya tampil di Dasbor (pengenalan elemen diperbaiki).
+     *  4. Nama halaman di sebelah tombol kembali dibuat rata tengah.
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        /* ---- 1. filter di samping Search: murni CSS ----
+         * Kepala tabel memakai grid (header / toolbar / trigger / panel).
+         * Di HP area "trigger" tadinya baris sendiri di bawah Search --
+         * sekarang ditaruh di KOLOM KANAN baris "toolbar", rata bawah
+         * (sejajar Search yang selalu berada di baris terakhir toolbar). */
+        html body .fi-ta-header-ctn:not(#tya-x) {
+            grid-template-columns: minmax(0, 1fr) auto !important;
+            grid-template-areas:
+                "header header"
+                "toolbar trigger"
+                "panel panel" !important;
+            column-gap: 0 !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        html body .fi-ta-header-ctn:not(#tya-x) > .fi-ta-header-toolbar {
+            padding-inline-end: .65rem !important;
+            padding-block-end: .9rem !important;
+            border-block-end: 0 !important;
+            min-width: 0 !important;
+            align-self: end !important;
+        }
+
+        html body .fi-ta-header-ctn:not(#tya-x) .fi-ta-filters-above-content-ctn > .fi-ta-filters-trigger-action-ctn,
+        html body .fi-ta-header-ctn:not(#tya-x) > .fi-ta-filters-trigger-action-ctn {
+            grid-area: trigger !important;
+            justify-self: end !important;
+            align-self: end !important;
+            width: auto !important;
+            /* tengah tombol (38px) = tengah Search: jarak bawah toolbar .9rem
+             * + jarak bawah Search 8px + setengah Search 16px - setengah tombol 19px */
+            margin: 0 1.25rem calc(.9rem + 5px) 0 !important;
+        }
+
+        html body .fi-ta-header-ctn:not(#tya-x) .fi-ta-search-field {
+            flex: 1 1 auto !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            margin-inline-end: 0 !important;
+        }
+
+        /* ---- 2. tanpa garis di bawah bar atas ---- */
+        html body .fi-topbar-ctn,
+        html body .fi-topbar,
+        html body .fi-topbar.tya-mtop-aktif {
+            border-bottom: 0 !important;
+            border-block-end: 0 !important;
+            box-shadow: none !important;
+        }
+
+        html body .fi-topbar-ctn::before,
+        html body .fi-topbar-ctn::after,
+        html body .fi-topbar::before,
+        html body .fi-topbar::after {
+            content: none !important;
+            display: none !important;
+        }
+
+        /* ---- 3. bar bawah hanya di Dasbor ---- */
+        body.tya-bukan-dasbor .tya-bnav,
+        body.tya-bukan-dasbor .tya-bnav-v3 {
+            display: none !important;
+        }
+
+        /* ---- 4. nama halaman rata tengah ---- */
+        body.tya-bukan-dasbor #tya-mtop .tya-mtop-judul {
+            text-align: center !important;
+            padding-inline-end: 50px !important;
+        }
+    }
+</style>
+<script>
+    /* KEMBALI-FILTER-IKON-V5 */
+    (function () {
+        if (window.__tyaKembaliV5) return;
+        window.__tyaKembaliV5 = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+        var dijadwalkan = false;
+
+        function diDasbor() {
+            return location.pathname.split('/').filter(Boolean).length <= 1;
+        }
+
+        // ---------- 3. bar bawah ----------
+        function tandaiBarBawah() {
+            var ada = document.querySelector('.tya-bnav-v3');
+            if (ada && document.body.contains(ada)) return;
+            var tautan = document.querySelectorAll('a, button');
+            for (var i = 0; i < tautan.length; i++) {
+                var a = tautan[i];
+                var t = (a.textContent || '').trim().toLowerCase();
+                if (t !== 'laporan' && t !== 'setting' && t !== 'pengaturan') continue;
+                if (a.closest('.fi-sidebar, #tya-menu-ikon, #tya-mtop, .fi-modal, .fi-dropdown-panel, .fi-ta, .fi-header')) continue;
+                var el = a.parentElement;
+                for (var d = 0; el && el !== document.body && d < 10; d++, el = el.parentElement) {
+                    var pos = window.getComputedStyle(el).position;
+                    if (pos === 'fixed' || pos === 'sticky') {
+                        el.classList.add('tya-bnav-v3', 'tya-bnav');
+                        return;
+                    }
+                }
+            }
+        }
+
+        function proses() {
+            dijadwalkan = false;
+            document.body.classList.toggle('tya-bukan-dasbor', mq.matches && !diDasbor());
+            if (!mq.matches) return;
+            tandaiBarBawah();
+        }
+
+        var tunda = null;
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            clearTimeout(tunda);
+            tunda = setTimeout(function () { window.requestAnimationFrame(proses); }, 150);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', jadwalkan);
+        } else {
+            jadwalkan();
+        }
+        new MutationObserver(function (m) {
+            for (var i = 0; i < m.length; i++) {
+                var t = m[i].target;
+                if (t && t.closest && t.closest('.tya-mtop-judul')) continue;
+                jadwalkan();
+                return;
+            }
+        }).observe(document.documentElement, { childList: true, subtree: true });
+        window.addEventListener('resize', jadwalkan);
+        window.addEventListener('load', jadwalkan);
+        window.addEventListener('popstate', jadwalkan);
+        document.addEventListener('livewire:navigated', jadwalkan);
+        if (mq.addEventListener) mq.addEventListener('change', jadwalkan);
+    })();
+</script>

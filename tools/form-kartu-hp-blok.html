@@ -1,0 +1,52 @@
+<style>
+    /* =====================================================================
+     * FORM-KARTU-HP (2026-10-18) -- HP (< 768px): halaman Tambah / Edit
+     * (mis. Edit User Hotspot) dibungkus satu kartu putih seperti panel
+     * daftar, supaya isian pertama tidak menempel di pita oranye; jarak
+     * antar isian dirapatkan; tombol Batal abu-abu (hanya Simpan oranye).
+     * Form yang sudah punya kotak bagian (section) sendiri tidak dibungkus.
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        body.tya-oranye .fi-page-content form[wire\:submit]:not(:has(.fi-section)):not(#tya-x) {
+            position: relative !important;
+            z-index: 1 !important;
+            margin: 0 !important;
+            padding: 16px 14px 8px !important;
+            background: #fff !important;
+            border: 0 !important;
+            border-radius: 18px !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, .06) !important;
+        }
+
+        body.tya-oranye .fi-page-content form[wire\:submit]:not(#tya-x) .fi-sc {
+            row-gap: 14px !important;
+        }
+
+        body.tya-oranye .fi-page-content form[wire\:submit]:not(#tya-x) .fi-fo-field-label-ctn,
+        body.tya-oranye .fi-page-content form[wire\:submit]:not(#tya-x) .fi-fo-field-label {
+            margin-bottom: 2px !important;
+        }
+
+        /* tombol Batal / Kembali: abu-abu, bukan oranye */
+        body .fi-page-content :is(.fi-form-actions, form > .fi-ac, .fi-sc-actions) .fi-btn:not([type="submit"]):not(.tya-btn-simpan):not(#tya-x) {
+            background: #f3f4f6 !important;
+            color: #374151 !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+
+        body .fi-page-content :is(.fi-form-actions, form > .fi-ac, .fi-sc-actions) .fi-btn:not([type="submit"]):not(.tya-btn-simpan):not(#tya-x) :is(.fi-btn-label, svg, .fi-icon) {
+            color: #374151 !important;
+        }
+
+        .dark body.tya-oranye .fi-page-content form[wire\:submit]:not(:has(.fi-section)):not(#tya-x) {
+            background: #1c1c21 !important;
+            box-shadow: none !important;
+        }
+
+        .dark body .fi-page-content :is(.fi-form-actions, form > .fi-ac, .fi-sc-actions) .fi-btn:not([type="submit"]):not(.tya-btn-simpan):not(#tya-x) {
+            background: rgba(255, 255, 255, .08) !important;
+            color: #e4e4e7 !important;
+        }
+    }
+</style>

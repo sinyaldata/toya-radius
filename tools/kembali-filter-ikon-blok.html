@@ -1,0 +1,195 @@
+<style>
+    /* =====================================================================
+     * KEMBALI-FILTER-IKON (2026-10-17)
+     *  1. HP: judul halaman & breadcrumb disembunyikan di SEMUA halaman
+     *     (tombol aksi seperti Import/Export tetap ada). Halaman Laporan
+     *     Penjualan: tombol Cetak/Excel/PDF juga disembunyikan di HP.
+     *  2. HP: tombol panah kembali (<-) di pojok kiri atas bar atas, di
+     *     semua halaman kecuali Dasbor.
+     *  3. Tombol "Tampilkan Filter" tabel di semua halaman jadi kotak ikon
+     *     corong oranye -- sama dengan ikon kartu "Filter Laporan".
+     * ===================================================================== */
+
+    /* ---------- 3. tombol filter tabel (semua ukuran layar) ---------- */
+    html body .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x) {
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        border: 0 !important;
+        border-radius: 11px !important;
+        background: linear-gradient(135deg, #fb923c, #ea580c) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, .3) !important;
+    }
+
+    html body .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x):hover {
+        background: linear-gradient(135deg, #f97316, #c2410c) !important;
+    }
+
+    html body .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x) .fi-btn-label,
+    html body .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x) > span:not(.fi-btn-badge-ctn):not(.fi-badge) {
+        display: none !important;
+    }
+
+    html body .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x) > :is(svg, .fi-icon):not(.fi-loading-indicator) {
+        display: none !important;
+    }
+
+    html body .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn:not(#tya-x)::before {
+        content: "";
+        width: 19px;
+        height: 19px;
+        flex-shrink: 0;
+        background-color: currentColor;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3.5%204.5h17l-6.5%208v6l-4%202v-8z%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3.5%204.5h17l-6.5%208v6l-4%202v-8z%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+    }
+
+    /* ---------- 2. tombol kembali (dibuat skrip, hanya tampil di HP) ---------- */
+    .tya-mtop-kembali {
+        display: none;
+    }
+
+    @media (max-width: 767px) {
+        #tya-mtop .tya-mtop-kembali {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 40px;
+            height: 40px;
+            margin-inline-end: -2px;
+            border: 0;
+            border-radius: 12px;
+            background: #fff7ed;
+            color: #ea580c;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #tya-mtop .tya-mtop-kembali:active {
+            transform: scale(.94);
+        }
+
+        #tya-mtop .tya-mtop-kembali::before {
+            content: "";
+            width: 22px;
+            height: 22px;
+            background-color: currentColor;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M19%2012H5M11%206l-6%206%206%206%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M19%2012H5M11%206l-6%206%206%206%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        }
+
+        .dark #tya-mtop .tya-mtop-kembali {
+            background: rgba(249, 115, 22, .14);
+            color: #fb923c;
+        }
+    }
+
+    /* ---------- 1. HP: sembunyikan judul & breadcrumb ---------- */
+    @media (max-width: 639px) {
+        html body .fi-header > div:not(.fi-header-actions-ctn),
+        html body .fi-header .fi-header-heading,
+        html body .fi-header .fi-header-subheading,
+        html body .fi-breadcrumbs {
+            display: none !important;
+        }
+
+        /* kepala halaman tanpa tombol sama sekali -> hilang total */
+        html body .fi-header:not(:has(.fi-header-actions-ctn .fi-btn:not(.tya-fab-asli))),
+        html body .fi-header.tya-hdr-kosong {
+            display: none !important;
+        }
+
+        /* Laporan Penjualan: Cetak/Excel/PDF tidak dipakai di HP */
+        html body .fi-page:has(.tya-lap) .fi-header {
+            display: none !important;
+        }
+
+        html body .fi-page:has(.tya-lap) .fi-page-content {
+            padding-block-start: .75rem !important;
+        }
+    }
+</style>
+<script>
+    /* KEMBALI-FILTER-IKON: tombol panah kembali di bar atas HP. */
+    (function () {
+        if (window.__tyaKembali) return;
+        window.__tyaKembali = true;
+
+        var dijadwalkan = false;
+
+        function segmenPanel() {
+            return location.pathname.split('/').filter(Boolean)[0] || '';
+        }
+
+        function diDasbor() {
+            var bagian = location.pathname.split('/').filter(Boolean);
+            return bagian.length <= 1;
+        }
+
+        function kembali() {
+            var dariSini = false;
+            try {
+                dariSini = !!document.referrer && new URL(document.referrer).origin === location.origin;
+            } catch (e) {}
+            if (dariSini && window.history.length > 1) {
+                window.history.back();
+            } else {
+                location.href = '/' + segmenPanel();
+            }
+        }
+
+        function pasang() {
+            dijadwalkan = false;
+            var bar = document.getElementById('tya-mtop');
+            var btn = bar ? bar.querySelector('.tya-mtop-kembali') : null;
+
+            if (!bar || diDasbor()) {
+                if (btn) btn.remove();
+                return;
+            }
+
+            if (!btn) {
+                btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'tya-mtop-kembali';
+                btn.setAttribute('aria-label', 'Kembali');
+                btn.title = 'Kembali';
+                btn.addEventListener('click', kembali);
+            }
+            if (bar.firstChild !== btn) bar.insertBefore(btn, bar.firstChild);
+        }
+
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            window.requestAnimationFrame(function () { window.requestAnimationFrame(pasang); });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', jadwalkan);
+        } else {
+            jadwalkan();
+        }
+        // Perubahan DI DALAM bar atas yang sudah punya tombol kembali tidak
+        // perlu diproses ulang (mencegah putaran tanpa akhir).
+        new MutationObserver(function (m) {
+            var bar = document.getElementById('tya-mtop');
+            var sudahAda = !!(bar && bar.querySelector('.tya-mtop-kembali'));
+            for (var i = 0; i < m.length; i++) {
+                var t = m[i].target;
+                if (sudahAda && t && t.closest && t.closest('#tya-mtop')) continue;
+                jadwalkan();
+                return;
+            }
+        }).observe(document.documentElement, { childList: true, subtree: true });
+        document.addEventListener('livewire:navigated', jadwalkan);
+        window.addEventListener('popstate', jadwalkan);
+    })();
+</script>

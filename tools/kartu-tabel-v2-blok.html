@@ -1,0 +1,323 @@
+<style>
+    /* =====================================================================
+     * KARTU-TABEL-MOBILE-V2 (2026-10-13) -- penyempurnaan kartu HP:
+     *  - semua kotak data SAMA BESAR (teks panjang dipotong "...")
+     *  - saklar (mis. Aktif) pindah ke kanan atas kartu
+     *  - kotak tanpa isi diberi tanda "-"
+     *  - sisa gaya "kolom beku" (sticky) dibersihkan oleh skrip di bawah
+     *  - tombol Tambah di tiap halaman jadi tombol bundar "+" kanan bawah
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi {
+            grid-column: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            height: 58px !important;
+            min-height: 58px !important;
+            max-height: 58px !important;
+            overflow: hidden !important;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-col,
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text,
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text > *:not(.fi-badge),
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text-item {
+            display: block !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text-item,
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text-item-label,
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text-description,
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text > p {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text-item,
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text-item-label {
+            font-size: 12.5px !important;
+            line-height: 1.3 !important;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text-description,
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text > p {
+            font-size: 10.5px !important;
+            line-height: 1.25 !important;
+            color: #71717a !important;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-badge {
+            display: inline-flex !important;
+            width: auto !important;
+            align-self: flex-start !important;
+            font-size: 10px !important;
+            padding-block: 1px !important;
+            max-width: 100% !important;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi[data-tya-label]::before {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi.tya-kosong::after {
+            content: "\2013";
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #a1a1aa;
+        }
+
+        /* Judul satu baris. */
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-judul,
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-judul .fi-ta-text-item,
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-judul .fi-ta-text-item-label {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            min-width: 0 !important;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-judul .fi-ta-col,
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-judul .fi-ta-text {
+            min-width: 0 !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+        }
+
+        /* Saklar (Aktif) di kanan atas kartu. */
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-saklar.tya-saklar {
+            position: absolute !important;
+            top: 14px !important;
+            right: 12px !important;
+            left: auto !important;
+            width: auto !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border-radius: 0 !important;
+            z-index: 1 !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 40px !important;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-saklar.tya-saklar::before,
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-saklar.tya-saklar::after {
+            content: none !important;
+            display: none !important;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row:has(> td.tya-saklar) > td.tya-judul {
+            padding-right: 64px !important;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row:has(> td.tya-saklar) > td.tya-pilih {
+            right: 66px !important;
+        }
+
+        table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row:has(> td.tya-saklar):has(> td.tya-pilih) > td.tya-judul {
+            padding-right: 96px !important;
+        }
+
+        /* Tombol aksi: satu ukuran, nama dipotong rapi. */
+        table.fi-ta-table.tya-kartu td.tya-aksi .fi-icon-btn,
+        table.fi-ta-table.tya-kartu td.tya-aksi .fi-ta-actions .fi-btn,
+        table.fi-ta-table.tya-kartu td.tya-aksi .fi-ta-actions .fi-link {
+            height: 50px !important;
+            min-height: 50px !important;
+            max-height: 50px !important;
+            overflow: hidden !important;
+        }
+
+        /* ---- Tombol Tambah: bundar oranye "+" di kanan bawah ---- */
+        .tya-fab.tya-fab {
+            position: fixed !important;
+            right: 16px !important;
+            bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+            left: auto !important;
+            top: auto !important;
+            z-index: 35 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 56px !important;
+            height: 56px !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            min-height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: 0 !important;
+            border-radius: 9999px !important;
+            background: #f97316 !important;
+            color: transparent !important;
+            font-size: 0 !important;
+            line-height: 0 !important;
+            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.45) !important;
+            overflow: hidden !important;
+            text-decoration: none !important;
+        }
+
+        .tya-fab.tya-fab > * {
+            display: none !important;
+        }
+
+        .tya-fab.tya-fab::before {
+            content: "";
+            display: block;
+            width: 26px;
+            height: 26px;
+            background: #ffffff;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M12%204.5v15M4.5%2012h15%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M12%204.5v15M4.5%2012h15%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        }
+
+        .tya-fab.tya-fab:active {
+            transform: scale(0.94);
+        }
+
+        /* ---------- TEMA GELAP ---------- */
+        .dark table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text-description,
+        .dark table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi .fi-ta-text > p {
+            color: #a1a1aa !important;
+        }
+
+        .dark table.fi-ta-table.tya-kartu > tbody > tr.fi-ta-row > td.tya-isi.tya-kosong::after {
+            color: #71717a;
+        }
+
+        .dark .tya-fab.tya-fab {
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6) !important;
+        }
+    }
+</style>
+<script>
+    /* KARTU-TABEL-MOBILE-V2: saklar ke kanan atas, tanda kotak kosong, bersihkan
+     * gaya kolom beku (sticky) yang ditulis langsung di sel, dan tombol Tambah
+     * jadi tombol bundar. Hanya di layar < 768px; di layar lebar semua dikembalikan. */
+    (function () {
+        if (window.__tyaKartuV2) return;
+        window.__tyaKartuV2 = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+        var dijadwalkan = false;
+        var GAYA_BEKU = ['position', 'left', 'z-index', 'min-width', 'max-width', 'overflow', 'text-overflow', 'white-space', 'border-inline-end'];
+
+        function teks(el) {
+            return (el.textContent || '').replace(/\s+/g, ' ').trim();
+        }
+
+        function bersihkanBeku(el) {
+            if (!el.hasAttribute('data-tya-gaya')) el.setAttribute('data-tya-gaya', el.getAttribute('style') || '');
+            GAYA_BEKU.forEach(function (p) { el.style.removeProperty(p); });
+        }
+
+        function kembalikanBeku() {
+            document.querySelectorAll('[data-tya-gaya]').forEach(function (el) {
+                el.setAttribute('style', el.getAttribute('data-tya-gaya'));
+                el.removeAttribute('data-tya-gaya');
+            });
+        }
+
+        function tandaiKartu() {
+            document.querySelectorAll('table.fi-ta-table.tya-kartu').forEach(function (tabel) {
+                tabel.querySelectorAll(':scope > tbody > tr.fi-ta-row').forEach(function (tr) {
+                    tr.querySelectorAll('.tya-sticky-col, [style*="sticky"]').forEach(bersihkanBeku);
+
+                    var adaSaklar = false;
+                    Array.prototype.forEach.call(tr.children, function (td) {
+                        if (td.tagName !== 'TD') return;
+                        td.classList.remove('tya-saklar', 'tya-kosong');
+                        if (td.classList.contains('tya-aksi') || td.classList.contains('tya-pilih') || td.classList.contains('tya-judul')) return;
+
+                        if (!adaSaklar && td.querySelector('.fi-toggle, .fi-ta-toggle, [role="switch"]')) {
+                            td.classList.add('tya-saklar');
+                            adaSaklar = true;
+                            return;
+                        }
+
+                        if (td.classList.contains('tya-isi') && teks(td) === '' && !td.querySelector('img, svg, input, button, .fi-badge')) {
+                            td.classList.add('tya-kosong');
+                        }
+                    });
+                });
+            });
+        }
+
+        function tombolTambah(el) {
+            var href = el.getAttribute('href') || '';
+            var klik = el.getAttribute('wire:click') || '';
+            var label = teks(el).toLowerCase();
+            if (/\/create(\?|$|#)/.test(href)) return true;
+            if (/mount(Table)?Action\(\s*'create'/.test(klik)) return true;
+            return /^(\+\s*)?(tambah|buat|create|new|baru)\b/.test(label);
+        }
+
+        function pasangFab() {
+            var lama = document.querySelectorAll('.tya-fab');
+            var pilih = null;
+            var kandidat = document.querySelectorAll('.fi-header a, .fi-header button, .fi-ta-header-ctn .fi-ta-header a, .fi-ta-header-ctn .fi-ta-header button');
+
+            for (var i = 0; i < kandidat.length; i++) {
+                var el = kandidat[i];
+                if (el.closest('.fi-modal, .fi-dropdown-panel')) continue;
+                if (!el.classList.contains('fi-btn') && !el.classList.contains('fi-link') && !el.classList.contains('fi-ac-action')) continue;
+                if (tombolTambah(el)) { pilih = el; break; }
+            }
+
+            lama.forEach(function (el) { if (el !== pilih) el.classList.remove('tya-fab'); });
+            if (pilih && !pilih.classList.contains('tya-fab')) {
+                pilih.classList.add('tya-fab');
+                if (!pilih.getAttribute('aria-label')) pilih.setAttribute('aria-label', teks(pilih) || 'Tambah');
+            }
+        }
+
+        function proses() {
+            dijadwalkan = false;
+            if (!mq.matches) {
+                kembalikanBeku();
+                document.querySelectorAll('.tya-fab').forEach(function (el) { el.classList.remove('tya-fab'); });
+                return;
+            }
+            tandaiKartu();
+            pasangFab();
+        }
+
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            // setelah skrip kartu versi 1 (yang juga berjalan di frame berikutnya)
+            window.requestAnimationFrame(function () { window.requestAnimationFrame(proses); });
+        }
+
+        function mulai() {
+            jadwalkan();
+            new MutationObserver(jadwalkan).observe(document.body, { childList: true, subtree: true });
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai);
+        else mulai();
+
+        if (mq.addEventListener) mq.addEventListener('change', jadwalkan);
+        document.addEventListener('livewire:navigated', jadwalkan);
+
+        function hookLivewire() {
+            if (window.__tyaKartuV2Hook || !window.Livewire || !window.Livewire.hook) return;
+            window.__tyaKartuV2Hook = true;
+            window.Livewire.hook('commit', function (c) {
+                if (c && c.succeed) c.succeed(function () { setTimeout(jadwalkan, 60); });
+            });
+        }
+        hookLivewire();
+        document.addEventListener('livewire:init', hookLivewire);
+    })();
+</script>

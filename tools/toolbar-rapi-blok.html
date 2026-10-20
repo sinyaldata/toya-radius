@@ -1,0 +1,156 @@
+<style>
+    /* =====================================================================
+     * TOOLBAR-RAPI (2026-10-17) -- HP (< 768px):
+     *  - baris atas tabel jadi SATU baris rapi: [ Cari ... ][ Hapus ][ Filter ]
+     *    tombol aksi massal (Hapus, dll) jadi kotak ikon 44px sejajar kotak
+     *    cari (sebelumnya melayang di atas dengan teks "Hapus")
+     *  - tombol kepala halaman (Export Excel / PDF / Cetak) yang teksnya
+     *    TANPA <span> (mis. halaman Laporan Invoice) ikut jadi ikon saja
+     *  - kepala halaman transparan di atas warna oranye
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        /* ---------- 1. baris cari + aksi massal ---------- */
+        .fi-ta-header-toolbar:not(#tya-x) {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            gap: 8px !important;
+            min-height: 0 !important;
+        }
+
+        .fi-ta-header-toolbar:not(#tya-x) > .fi-ta-actions {
+            order: 2 !important;
+            flex: 0 0 auto !important;
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            gap: 8px !important;
+            margin: 0 !important;
+            width: auto !important;
+        }
+
+        .fi-ta-header-toolbar:not(#tya-x) > .fi-ta-actions.tya-kosong {
+            display: none !important;
+        }
+
+        .fi-ta-header-toolbar:not(#tya-x) > :not(.fi-ta-actions) {
+            order: 1 !important;
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            width: auto !important;
+            margin: 0 !important;
+        }
+
+        /* tombol aksi massal: kotak ikon (teks disembunyikan, termasuk teks tanpa span) */
+        .fi-ta-header-toolbar > .fi-ta-actions :is(.fi-btn, .fi-icon-btn):not(#tya-x) {
+            position: relative !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 44px !important;
+            min-width: 44px !important;
+            height: 44px !important;
+            min-height: 44px !important;
+            padding: 0 !important;
+            gap: 0 !important;
+            border: 0 !important;
+            border-radius: 12px !important;
+            background: #fff1f2 !important;
+            color: #e11d48 !important;
+            box-shadow: inset 0 0 0 1px rgba(225, 29, 72, .16) !important;
+            font-size: 0 !important;
+            line-height: 0 !important;
+            flex-direction: row !important;
+        }
+
+        .fi-ta-header-toolbar > .fi-ta-actions :is(.fi-btn, .fi-icon-btn):not(#tya-x) .fi-btn-label {
+            display: none !important;
+        }
+
+        .fi-ta-header-toolbar > .fi-ta-actions :is(.fi-btn, .fi-icon-btn):not(#tya-x) > :is(svg, .fi-icon) {
+            width: 20px !important;
+            height: 20px !important;
+            margin: 0 !important;
+            color: inherit !important;
+        }
+
+        /* belum ada yang dicentang -> pudar, tetap di tempatnya */
+        .fi-ta-header-toolbar > .fi-ta-actions :is(.fi-btn, .fi-icon-btn):is([disabled], .fi-disabled):not(#tya-x) {
+            opacity: .45 !important;
+        }
+
+        /* angka jumlah terpilih (badge) di pojok */
+        .fi-ta-header-toolbar > .fi-ta-actions :is(.fi-btn, .fi-icon-btn):not(#tya-x) .fi-btn-badge-ctn,
+        .fi-ta-header-toolbar > .fi-ta-actions :is(.fi-btn, .fi-icon-btn):not(#tya-x) .fi-icon-btn-badge-ctn {
+            position: absolute !important;
+            top: -6px !important;
+            right: -6px !important;
+            font-size: 10px !important;
+            line-height: 1 !important;
+        }
+
+        /* tombol aksi massal yang berupa grup dropdown ("Aksi terpilih") */
+        .fi-ta-header-toolbar > .fi-ta-actions .fi-dropdown-trigger :is(.fi-btn, .fi-icon-btn):not(#tya-x) {
+            background: #fff7ed !important;
+            color: #ea580c !important;
+            box-shadow: inset 0 0 0 1px rgba(249, 115, 22, .18) !important;
+        }
+
+        .dark .fi-ta-header-toolbar > .fi-ta-actions :is(.fi-btn, .fi-icon-btn):not(#tya-x) {
+            background: rgba(225, 29, 72, .14) !important;
+            color: #fb7185 !important;
+            box-shadow: none !important;
+        }
+
+        /* ---------- 2. tombol kepala halaman: ikon saja ---------- */
+        html body .fi-header .fi-header-actions-ctn .fi-btn:not(.tya-fab):not(#tya-x) {
+            font-size: 0 !important;
+            line-height: 0 !important;
+            gap: 0 !important;
+        }
+
+        /* ---------- 3. kepala halaman transparan di atas oranye ---------- */
+        body.tya-oranye .fi-header:not(#tya-x) {
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+    }
+</style>
+<script>
+    /* TOOLBAR-RAPI: tandai grup aksi massal yang kosong (tanpa :has, supaya ringan). */
+    (function () {
+        if (window.__tyaToolbarRapi) return;
+        window.__tyaToolbarRapi = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+        var dijadwalkan = false;
+
+        function proses() {
+            dijadwalkan = false;
+            if (!mq.matches) return;
+            document.querySelectorAll('.fi-ta-header-toolbar > .fi-ta-actions').forEach(function (a) {
+                var kosong = !a.querySelector('button, a, .fi-dropdown');
+                if (a.classList.contains('tya-kosong') !== kosong) a.classList.toggle('tya-kosong', kosong);
+            });
+        }
+
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            setTimeout(function () { window.requestAnimationFrame(proses); }, 150);
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', jadwalkan);
+        else jadwalkan();
+        new MutationObserver(function (daftar) {
+            if (dijadwalkan) return;
+            for (var i = 0; i < daftar.length; i++) {
+                var t = daftar[i].target;
+                if (t && t.closest && t.closest('.fi-ta-header-toolbar')) { jadwalkan(); return; }
+            }
+        }).observe(document.body || document.documentElement, { childList: true, subtree: true });
+        document.addEventListener('livewire:navigated', jadwalkan);
+        if (mq.addEventListener) mq.addEventListener('change', jadwalkan);
+    })();
+</script>

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f97316">
+<title>Toya Radius</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #f4f4f6; color: #18181b; }
+  .atas { position: relative; padding: 56px 24px 72px; color: #fff; text-align: center; overflow: hidden;
+    background: radial-gradient(circle at 92% 0%, rgba(255,255,255,.14) 0 90px, transparent 91px), linear-gradient(135deg, #fb923c, #f97316 55%, #ea580c);
+    border-radius: 0 0 32px 32px; }
+  .logo { width: 76px; height: 76px; margin: 0 auto 14px; border-radius: 22px; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1px rgba(255,255,255,.3); }
+  .logo svg { width: 42px; height: 42px; }
+  h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
+  .atas p { margin: 6px 0 0; font-size: 14px; color: rgba(255,255,255,.88); }
+  .kartu { position: relative; margin: -44px 18px 0; background: #fff; border-radius: 22px; padding: 22px 18px; box-shadow: 0 16px 34px -18px rgba(234,88,12,.45), 0 1px 3px rgba(0,0,0,.05); }
+  label { display: block; font-size: 13px; font-weight: 700; color: #52525b; margin-bottom: 8px; }
+  .isian { display: flex; align-items: center; height: 54px; border: 1.5px solid #e4e4e7; border-radius: 14px; padding: 0 14px; gap: 10px; background: #fff; }
+  .isian:focus-within { border-color: #f97316; box-shadow: 0 0 0 4px rgba(249,115,22,.12); }
+  .isian svg { width: 22px; height: 22px; color: #a1a1aa; flex: 0 0 auto; }
+  .isian input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; font-size: 17px; font-weight: 600; background: transparent; color: #18181b; text-transform: lowercase; }
+  .isian span { color: #a1a1aa; font-size: 14px; white-space: nowrap; }
+  .bantu { font-size: 12.5px; color: #71717a; margin: 10px 2px 0; line-height: 1.45; }
+  button.utama { width: 100%; height: 54px; margin-top: 18px; border: 0; border-radius: 14px; color: #fff; font-size: 16px; font-weight: 800; background: linear-gradient(135deg, #fb923c, #ea580c); box-shadow: 0 10px 22px -10px rgba(234,88,12,.8); }
+  button.utama:active { transform: scale(.98); }
+  button.utama[disabled] { opacity: .7; }
+  .galat { display: none; margin-top: 14px; padding: 11px 13px; border-radius: 12px; background: #fef2f2; color: #b91c1c; font-size: 13.5px; font-weight: 600; }
+  .galat.ada { display: block; }
+  .terakhir { margin: 22px 18px 0; }
+  .terakhir h2 { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #71717a; margin: 0 4px 10px; }
+  .isp { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; margin-bottom: 8px; border: 0; border-radius: 16px; background: #fff; text-align: left; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+  .isp i { width: 40px; height: 40px; border-radius: 12px; background: #fff7ed; color: #ea580c; display: flex; align-items: center; justify-content: center; font-style: normal; font-weight: 800; font-size: 16px; text-transform: uppercase; flex: 0 0 auto; }
+  .isp b { display: block; font-size: 15px; color: #18181b; }
+  .isp small { display: block; font-size: 12px; color: #a1a1aa; margin-top: 2px; }
+  .isp em { margin-left: auto; color: #d4d4d8; font-style: normal; font-size: 22px; }
+  .bawah { text-align: center; font-size: 12px; color: #a1a1aa; margin: 26px 0 24px; }
+  .muat { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 14px; background: linear-gradient(135deg, #fb923c, #f97316 55%, #ea580c); color: #fff; font-weight: 700; z-index: 10; }
+  .muat.ada { display: flex; }
+  .putar { width: 38px; height: 38px; border-radius: 50%; border: 4px solid rgba(255,255,255,.35); border-top-color: #fff; animation: putar .8s linear infinite; }
+  @keyframes putar { to { transform: rotate(360deg); } }
+  .lapis { position: fixed; inset: 0; display: none; align-items: flex-end; background: rgba(0,0,0,.45); z-index: 20; }
+  .lapis.ada { display: flex; }
+  .lembar { width: 100%; background: #fff; border-radius: 24px 24px 0 0; padding: 22px 20px calc(22px + env(safe-area-inset-bottom)); }
+  .lembar h3 { margin: 0 0 6px; font-size: 19px; }
+  .lembar p { margin: 0 0 16px; color: #52525b; font-size: 14px; line-height: 1.5; white-space: pre-line; }
+  .lembar .nanti { width: 100%; height: 48px; margin-top: 10px; border: 0; border-radius: 14px; background: #f4f4f5; color: #3f3f46; font-weight: 700; font-size: 15px; }
+</style>
+</head>
+<body>
+<div class="muat" id="muat"><div class="putar"></div><div id="muat-teks">Membuka…</div></div>
+
+<div class="atas">
+  <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a15 15 0 0 1 20 0"/><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1.2" fill="#fff"/></svg></div>
+  <h1>Toya Radius</h1>
+  <p>Billing ISP • Hotspot • PPPoE</p>
+</div>
+
+<form class="kartu" id="form" autocomplete="off">
+  <label for="kode">Kode ISP</label>
+  <div class="isian">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M16 9h2a2 2 0 0 1 2 2v10M3 21h18M8 7h4M8 11h4M8 15h4"/></svg>
+    <input id="kode" inputmode="text" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go">
+    <span>.toyaqi.web.id</span>
+  </div>
+  <p class="bantu">Kode ISP = bagian depan alamat aplikasi Anda. Contoh: alamat <b>madani</b>.toyaqi.web.id → kodenya <b>madani</b>. Untuk instalasi utama ketik <b>toyaqi</b>.</p>
+  <div class="galat" id="galat"></div>
+  <button class="utama" id="tombol" type="submit">Masuk</button>
+</form>
+
+<div class="terakhir" id="terakhir" hidden>
+  <h2>Pernah dibuka</h2>
+  <div id="daftar"></div>
+</div>
+
+<p class="bawah">Toya Radius <span id="versi"></span></p>
+
+<div class="lapis" id="lapis">
+  <div class="lembar">
+    <h3 id="lembar-judul">Versi baru tersedia</h3>
+    <p id="lembar-isi"></p>
+    <button class="utama" id="lembar-unduh" type="button" style="margin-top:0">Unduh &amp; Pasang</button>
+    <button class="nanti" id="lembar-nanti" type="button">Nanti saja</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  // Diisi otomatis oleh tools/bangun-apk.sh saat APK dibangun.
+  var VERSI = '__VERSI_NAMA__';
+  var KODE_VERSI = parseInt('__VERSI_KODE__', 10) || 1;
+  var PUSAT = 'https://toyaqi.web.id';
+  var KUNCI = 'toya-isp';
+  var KUNCI_DAFTAR = 'toya-isp-daftar';
+
+  var $ = function (id) { return document.getElementById(id); };
+  $('versi').textContent = 'v' + VERSI;
+
+  function baca(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
+  function tulis(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+  function galat(t) { $('galat').textContent = t; $('galat').classList.toggle('ada', !!t); }
+  function muat(ya, teks) { $('muat').classList.toggle('ada', ya); if (teks) $('muat-teks').textContent = teks; }
+
+  function ambil(url, ms) {
+    return new Promise(function (ok, gagal) {
+      var t = setTimeout(function () { gagal(new Error('waktu')); }, ms || 9000);
+      fetch(url, { headers: { 'Accept': 'application/json' }, cache: 'no-store' }).then(function (r) {
+        clearTimeout(t);
+        return r.json().then(function (j) { ok({ status: r.status, data: j }); }, function () { ok({ status: r.status, data: null }); });
+      }, function (e) { clearTimeout(t); gagal(e); });
+    });
+  }
+
+  function rapikanKode(s) {
+    s = (s || '').trim().toLowerCase();
+    s = s.replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace(/\.toyaqi\.web\.id$/, '');
+    return s.replace(/[^a-z0-9-]/g, '');
+  }
+
+  function buka(isp) {
+    muat(true, 'Membuka ' + (isp.nama || isp.kode) + '…');
+    window.location.replace(isp.url);
+  }
+
+  function simpan(isp) {
+    tulis(KUNCI, isp);
+    var d = baca(KUNCI_DAFTAR, []).filter(function (x) { return x.kode !== isp.kode; });
+    d.unshift(isp);
+    tulis(KUNCI_DAFTAR, d.slice(0, 6));
+  }
+
+  function tampilDaftar() {
+    var d = baca(KUNCI_DAFTAR, []);
+    $('terakhir').hidden = !d.length;
+    $('daftar').innerHTML = '';
+    d.forEach(function (isp) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'isp';
+      b.innerHTML = '<i></i><span><b></b><small></small></span><em>&rsaquo;</em>';
+      b.querySelector('i').textContent = (isp.nama || isp.kode).charAt(0);
+      b.querySelector('b').textContent = isp.nama || isp.kode;
+      b.querySelector('small').textContent = isp.kode === 'toyaqi' ? 'toyaqi.web.id' : isp.kode + '.toyaqi.web.id';
+      b.addEventListener('click', function () { simpan(isp); buka(isp); });
+      $('daftar').appendChild(b);
+    });
+  }
+
+  // ---------- cek versi baru (tidak menghalangi kalau gagal) ----------
+  function cekVersi() {
+    return ambil(PUSAT + '/api-app/versi', 3500).then(function (r) {
+      var v = r.data || {};
+      if (!v.kode || v.kode <= KODE_VERSI) return false;
+      $('lembar-isi').textContent = 'Versi ' + v.versi + ' sudah tersedia (Anda memakai v' + VERSI + ').' + (v.catatan ? '\n\n' + v.catatan : '');
+      $('lembar-nanti').hidden = !!v.wajib;
+      $('lapis').classList.add('ada');
+      return new Promise(function (selesai) {
+        $('lembar-unduh').onclick = function () {
+          if (window.ToyaApp && window.ToyaApp.bukaBrowser) window.ToyaApp.bukaBrowser(v.url);
+          else window.open(v.url, '_system');
+        };
+        $('lembar-nanti').onclick = function () { $('lapis').classList.remove('ada'); selesai(true); };
+      });
+    }, function () { return false; });
+  }
+
+  // ---------- kirim kode ISP ----------
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    galat('');
+    var kode = rapikanKode($('kode').value);
+    if (!kode) { galat('Isi kode ISP dulu.'); return; }
+    $('tombol').disabled = true;
+    $('tombol').textContent = 'Memeriksa…';
+    ambil(PUSAT + '/api-app/isp/' + encodeURIComponent(kode)).then(function (r) {
+      $('tombol').disabled = false;
+      $('tombol').textContent = 'Masuk';
+      if (r.status === 200 && r.data && r.data.ok) {
+        var isp = { kode: r.data.kode, nama: r.data.nama, url: r.data.url };
+        simpan(isp);
+        buka(isp);
+      } else if (r.status === 403) {
+        galat((r.data && r.data.pesan) || 'Langganan ISP ini sedang tidak aktif. Hubungi pengelola.');
+      } else {
+        galat((r.data && r.data.pesan) || 'Kode ISP "' + kode + '" tidak ditemukan. Periksa lagi ejaannya.');
+      }
+    }, function () {
+      $('tombol').disabled = false;
+      $('tombol').textContent = 'Masuk';
+      galat('Tidak bisa terhubung ke server. Periksa koneksi internet lalu coba lagi.');
+    });
+  });
+
+  // ---------- mulai ----------
+  var ganti = /[?&]ganti=1/.test(location.search);
+  var isp = baca(KUNCI, null);
+  tampilDaftar();
+  if (isp && isp.url && !ganti) {
+    muat(true, 'Membuka ' + (isp.nama || isp.kode) + '…');
+    cekVersi().then(function () { buka(isp); });
+  } else {
+    if (isp && isp.kode) $('kode').value = isp.kode;
+    cekVersi();
+  }
+})();
+</script>
+</body>
+</html>

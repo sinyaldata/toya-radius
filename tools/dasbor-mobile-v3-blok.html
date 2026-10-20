@@ -1,0 +1,430 @@
+<style>
+    /* =====================================================================
+     * DASBOR-MOBILE-V3 (2026-10-13) -- desain kartu ringkasan (HP < 768px)
+     * sesuai referensi user: gradasi oranye + lengkungan dekoratif, kotak
+     * ikon krem kiri atas, judul di sebelahnya, persentase kanan atas,
+     * nominal besar putih + ikon mata, rincian bawah, grafik batang kanan bawah.
+     * Bagian-bagian kartu dikenali skrip lalu ditata ulang dengan posisi
+     * absolut, jadi tidak tergantung susunan HTML widget aslinya.
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        .tya-statistik.tya-slide > .tya-k {
+            position: relative !important;
+            height: 176px !important;
+            min-height: 176px !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            border: 0 !important;
+            border-radius: 22px !important;
+            background: linear-gradient(135deg, #fb923c 0%, #f97316 45%, #ea580c 100%) !important;
+            box-shadow: 0 10px 24px -10px rgba(234, 88, 12, 0.55) !important;
+            color: #ffffff !important;
+            isolation: isolate;
+        }
+
+        /* lengkungan dekoratif */
+        .tya-statistik.tya-slide > .tya-k::before,
+        .tya-statistik.tya-slide > .tya-k::after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            border-radius: 9999px;
+            pointer-events: none;
+        }
+
+        .tya-statistik.tya-slide > .tya-k::before {
+            width: 210px;
+            height: 210px;
+            top: -120px;
+            right: -40px;
+            background: radial-gradient(circle at 30% 70%, rgba(253, 186, 116, 0.55), rgba(253, 186, 116, 0) 70%);
+        }
+
+        .tya-statistik.tya-slide > .tya-k::after {
+            width: 420px;
+            height: 300px;
+            right: -190px;
+            bottom: -210px;
+            background: linear-gradient(160deg, rgba(251, 146, 60, 0.85), rgba(249, 115, 22, 0.2));
+        }
+
+        /* semua isi asli: tanpa latar/posisi sendiri, teks putih */
+        .tya-k *:not(.tya-mata):not(.tya-k-ikon):not(.tya-k-label):not(.tya-k-nilai):not(.tya-k-sub):not(.tya-k-chip):not(.tya-k-spark):not(.tya-k-titik) {
+            position: static !important;
+            transform: none !important;
+        }
+
+        .tya-k :is(p, span, div, a, h2, h3, h4, dd, dt, small, strong) {
+            color: inherit !important;
+        }
+
+        .tya-k > *:not(.tya-k-ikon):not(.tya-k-label):not(.tya-k-nilai):not(.tya-k-sub):not(.tya-k-chip):not(.tya-k-spark):not(.tya-k-titik) {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* kotak ikon */
+        .tya-k .tya-k-ikon {
+            position: absolute !important;
+            top: 16px !important;
+            left: 16px !important;
+            width: 50px !important;
+            height: 50px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border: 0 !important;
+            border-radius: 15px !important;
+            background: linear-gradient(160deg, #fff7ed 0%, #fed7aa 100%) !important;
+            box-shadow: 0 4px 10px rgba(124, 45, 18, 0.18) !important;
+            color: #ea580c !important;
+        }
+
+        .tya-k .tya-k-ikon svg {
+            width: 24px !important;
+            height: 24px !important;
+            color: #ea580c !important;
+            stroke: currentColor;
+        }
+
+        /* judul */
+        .tya-k .tya-k-label {
+            position: absolute !important;
+            top: 16px !important;
+            left: 78px !important;
+            right: 108px !important;
+            height: 50px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            line-height: 1.2 !important;
+            color: #ffffff !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        /* persentase (kanan atas) */
+        .tya-k .tya-k-chip {
+            position: absolute !important;
+            top: 25px !important;
+            right: 16px !important;
+            left: auto !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            height: 30px !important;
+            padding: 0 12px !important;
+            border: 0 !important;
+            border-radius: 9999px !important;
+            background: #fee2e2 !important;
+            color: #dc2626 !important;
+            font-size: 13px !important;
+            font-weight: 800 !important;
+            box-shadow: none !important;
+        }
+
+        .tya-k .tya-k-chip * {
+            color: inherit !important;
+            background: transparent !important;
+        }
+
+        .tya-k .tya-k-chip.tya-k-naik {
+            background: #dcfce7 !important;
+            color: #15803d !important;
+        }
+
+        .tya-k .tya-k-chip svg {
+            width: 14px !important;
+            height: 14px !important;
+        }
+
+        .tya-k .tya-k-titik {
+            position: absolute !important;
+            top: 32px !important;
+            right: 20px !important;
+            left: auto !important;
+            margin: 0 !important;
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.35) !important;
+        }
+
+        /* nominal besar */
+        .tya-k .tya-k-nilai {
+            position: absolute !important;
+            top: 80px !important;
+            left: 16px !important;
+            right: 16px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            font-size: 30px !important;
+            font-weight: 800 !important;
+            line-height: 1.1 !important;
+            letter-spacing: -0.02em !important;
+            color: #ffffff !important;
+            white-space: nowrap !important;
+        }
+
+        .tya-k .tya-k-nilai .tya-mata {
+            width: 34px;
+            height: 34px;
+            margin-inline-start: 8px;
+        }
+
+        .tya-k .tya-k-nilai .tya-mata::before,
+        .tya-k .tya-k-nilai .tya-mata.tya-terbuka::before {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        /* rincian bawah */
+        .tya-k .tya-k-sub {
+            position: absolute !important;
+            left: 16px !important;
+            right: 96px !important;
+            bottom: 16px !important;
+            margin: 0 !important;
+            font-size: 12.5px !important;
+            font-weight: 500 !important;
+            line-height: 1.3 !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        .tya-k .tya-k-sub * {
+            color: inherit !important;
+            text-decoration-color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        /* grafik batang (kanan bawah) */
+        .tya-k .tya-k-spark {
+            position: absolute !important;
+            right: 16px !important;
+            bottom: 16px !important;
+            left: auto !important;
+            top: auto !important;
+            margin: 0 !important;
+            opacity: 1 !important;
+            color: #ffedd5 !important;
+        }
+
+        .tya-k .tya-k-spark,
+        .tya-k .tya-k-spark * {
+            background-color: transparent;
+        }
+
+        .tya-k .tya-k-spark > * {
+            background: linear-gradient(180deg, #ffffff, #fed7aa) !important;
+            opacity: 0.9 !important;
+            border-radius: 4px !important;
+        }
+
+        .tya-k .tya-k-spark svg,
+        .tya-k .tya-k-spark svg * {
+            color: #ffedd5 !important;
+            fill: currentColor;
+            background: none !important;
+        }
+
+        /* ---------- TEMA GELAP ---------- */
+        .dark .tya-statistik.tya-slide > .tya-k {
+            background: linear-gradient(135deg, #c2410c 0%, #9a3412 55%, #7c2d12 100%) !important;
+            box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.8) !important;
+        }
+
+        .dark .tya-statistik.tya-slide > .tya-k::before {
+            background: radial-gradient(circle at 30% 70%, rgba(251, 146, 60, 0.35), rgba(251, 146, 60, 0) 70%);
+        }
+
+        .dark .tya-statistik.tya-slide > .tya-k::after {
+            background: linear-gradient(160deg, rgba(234, 88, 12, 0.55), rgba(154, 52, 18, 0.1));
+        }
+
+        .dark .tya-k .tya-k-ikon {
+            background: rgba(255, 255, 255, 0.14) !important;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12) !important;
+        }
+
+        .dark .tya-k .tya-k-ikon svg {
+            color: #fed7aa !important;
+        }
+
+        .dark .tya-k .tya-k-chip {
+            background: rgba(254, 226, 226, 0.16) !important;
+            color: #fecaca !important;
+        }
+
+        .dark .tya-k .tya-k-chip.tya-k-naik {
+            background: rgba(220, 252, 231, 0.16) !important;
+            color: #bbf7d0 !important;
+        }
+
+        .dark .tya-k .tya-k-spark > * {
+            background: linear-gradient(180deg, rgba(255, 237, 213, 0.9), rgba(253, 186, 116, 0.6)) !important;
+        }
+    }
+</style>
+<script>
+    /* DASBOR-MOBILE-V3: kenali bagian kartu ringkasan lalu beri kelas desain. */
+    (function () {
+        if (window.__tyaDasborV3) return;
+        window.__tyaDasborV3 = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+        var dijadwalkan = false;
+        var LABEL = ['Pendapatan Hari Ini', 'Pendapatan Bulan Ini', 'Invoice Belum Dibayar', 'Online Sekarang'];
+        var KELAS = ['tya-k-ikon', 'tya-k-label', 'tya-k-nilai', 'tya-k-sub', 'tya-k-chip', 'tya-k-spark', 'tya-k-titik', 'tya-k-naik'];
+
+        function teks(el) {
+            return (el && el.textContent || '').replace(/\s+/g, ' ').trim();
+        }
+
+        /* naik selama induknya tidak menambah teks lain dan masih di dalam kartu */
+        function puncak(el, kartu) {
+            var t = teks(el);
+            while (el.parentElement && el.parentElement !== kartu && el.parentElement.children.length === 1 && teks(el.parentElement) === t) el = el.parentElement;
+            return el;
+        }
+
+        function bersihkan(kartu) {
+            kartu.classList.remove('tya-k');
+            KELAS.forEach(function (k) {
+                kartu.querySelectorAll('.' + k).forEach(function (e) { e.classList.remove(k); });
+            });
+        }
+
+        function tata(kartu) {
+            var label = null;
+            kartu.querySelectorAll('*').forEach(function (e) {
+                if (LABEL.indexOf(teks(e)) !== -1) label = e;
+            });
+            if (!label) return;
+            label = puncak(label, kartu);
+
+            var bagian = [];
+            function ambil(el, kls) {
+                if (!el || el === kartu) return;
+                el.classList.add(kls);
+                bagian.push(el);
+            }
+            function diBagian(el) {
+                return bagian.some(function (b) { return b === el || b.contains(el) || el.contains(b); });
+            }
+
+            ambil(label, 'tya-k-label');
+
+            // persentase
+            var chip = null;
+            kartu.querySelectorAll('*').forEach(function (e) {
+                if (/^[↓↑▲▼+\-−]?\s*[+\-−]?\d+([.,]\d+)?\s*%$/.test(teks(e))) chip = e;
+            });
+            if (chip) {
+                chip = puncak(chip, kartu);
+                ambil(chip, 'tya-k-chip');
+                if (!/[-−↓▼]/.test(teks(chip))) chip.classList.add('tya-k-naik');
+            }
+
+            // nominal: teks "Rp..." atau angka, huruf paling besar
+            var nilai = null, ukuran = 0;
+            kartu.querySelectorAll('*').forEach(function (e) {
+                if (diBagian(e) || e.closest('.tya-mata')) return;
+                var t = teks(e);
+                if (!/^(Rp\s?([\d.,]+|\*{6})|[\d.,]+)$/.test(t)) return;
+                var f = parseFloat(getComputedStyle(e).fontSize) || 0;
+                if (f > ukuran) { ukuran = f; nilai = e; }
+            });
+            if (nilai) ambil(puncak(nilai, kartu), 'tya-k-nilai');
+
+            // ikon: svg pertama di luar bagian lain, naik selama tanpa teks
+            var ikon = null;
+            kartu.querySelectorAll('svg').forEach(function (s) {
+                if (ikon || diBagian(s) || s.closest('.tya-mata')) return;
+                var el = s;
+                while (el.parentElement && el.parentElement !== kartu && el.parentElement.children.length === 1 && teks(el.parentElement) === '') el = el.parentElement;
+                ikon = el;
+            });
+            if (ikon) ambil(ikon, 'tya-k-ikon');
+
+            // grafik batang & titik status: elemen tanpa teks yang tersisa
+            var kosong = [];
+            kartu.querySelectorAll('*').forEach(function (e) {
+                if (diBagian(e) || e.closest('.tya-mata') || teks(e) !== '') return;
+                if (e.parentElement && e.parentElement !== kartu && teks(e.parentElement) === '' && !diBagian(e.parentElement)) return; // ambil yang paling luar saja
+                kosong.push(e);
+            });
+            kosong.forEach(function (e) {
+                var r = e.getBoundingClientRect();
+                if (e.children.length >= 3 || (e.tagName.toLowerCase() === 'svg' && r.width > 30)) {
+                    if (!kartu.querySelector('.tya-k-spark')) ambil(e, 'tya-k-spark');
+                } else if (r.width > 0 && r.width <= 24 && r.height <= 24 && !kartu.querySelector('.tya-k-titik') && !chip) {
+                    ambil(e, 'tya-k-titik');
+                }
+            });
+
+            // rincian: teks tersisa
+            var walker = document.createTreeWalker(kartu, NodeFilter.SHOW_TEXT, null);
+            var n, sub = null;
+            while ((n = walker.nextNode())) {
+                if (!n.data.trim() || !n.parentElement || diBagian(n.parentElement) || n.parentElement.closest('.tya-mata')) continue;
+                var el = n.parentElement;
+                while (el.parentElement && el.parentElement !== kartu && !bagian.some(function (b) { return el.parentElement.contains(b); })) el = el.parentElement;
+                sub = el;
+                break;
+            }
+            if (sub) ambil(sub, 'tya-k-sub');
+
+            kartu.classList.add('tya-k');
+        }
+
+        function proses() {
+            dijadwalkan = false;
+            var wadah = document.querySelector('.tya-statistik');
+            if (!wadah) return;
+            Array.prototype.forEach.call(wadah.children, function (k) {
+                if (k.id === 'tya-titik') return;
+                if (!mq.matches || !wadah.classList.contains('tya-slide')) { bersihkan(k); return; }
+                bersihkan(k);
+                tata(k);
+            });
+        }
+
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            // setelah skrip dasbor v1 & v2 (keduanya memakai requestAnimationFrame)
+            window.requestAnimationFrame(function () { window.requestAnimationFrame(function () { setTimeout(proses, 0); }); });
+        }
+
+        function mulai() {
+            jadwalkan();
+            new MutationObserver(function (daftar) {
+                for (var i = 0; i < daftar.length; i++) {
+                    var t = daftar[i].target;
+                    if (t && t.nodeType === 3) t = t.parentElement;
+                    if (!t || !t.closest || !t.closest('.tya-statistik')) continue;
+                    if (daftar[i].type === 'attributes') continue;
+                    jadwalkan();
+                    return;
+                }
+                jadwalkan();
+            }).observe(document.body, { childList: true, subtree: true });
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai);
+        else mulai();
+
+        if (mq.addEventListener) mq.addEventListener('change', jadwalkan);
+        document.addEventListener('livewire:navigated', jadwalkan);
+    })();
+</script>

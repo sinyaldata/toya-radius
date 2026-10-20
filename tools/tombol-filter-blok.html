@@ -1,0 +1,97 @@
+<style>
+    /* =====================================================================
+     * TOMBOL-FILTER-RAPI (2026-10-12) -- tombol "Tampilkan Filter" di atas tabel.
+     * Aturan lama mengunci tombol ini 32x32px (ukuran tombol ikon) lalu aturan
+     * lain melebarkannya; hasilnya teks turun 2 baris dan terpotong, badge
+     * melayang di luar. Di sini: satu baris, tinggi sama dengan kotak Search,
+     * badge bulat kecil menempel rapi di pojok kanan atas.
+     * ===================================================================== */
+    .fi-ta-header-ctn .fi-ta-filters-above-content-ctn .fi-ta-filters-trigger-action-ctn .fi-btn,
+    .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn {
+        position: relative !important;
+        display: inline-flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.45rem !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        max-height: 32px !important;
+        padding: 0 0.95rem !important;
+        white-space: nowrap !important;
+        line-height: 1 !important;
+        font-size: 0.8125rem !important;
+        font-weight: 600 !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
+    }
+
+    .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn > span,
+    .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn .fi-btn-label {
+        white-space: nowrap !important;
+        font-size: inherit !important;
+    }
+
+    .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn > .fi-icon,
+    .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn > svg {
+        width: 16px !important;
+        height: 16px !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Badge jumlah filter aktif: bulat kecil di pojok kanan atas tombol. */
+    .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn .fi-btn-badge-ctn {
+        position: absolute !important;
+        top: -8px !important;
+        right: -8px !important;
+        left: auto !important;
+        inset-inline-start: auto !important;
+        transform: none !important;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 9999px !important;
+        padding: 0 !important;
+        width: auto !important;
+        z-index: 2 !important;
+    }
+
+    .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn .fi-badge {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0 !important;
+        min-width: 18px !important;
+        height: 18px !important;
+        padding: 0 5px !important;
+        border: 0 !important;
+        border-radius: 9999px !important;
+        background: #ea580c !important;
+        color: #ffffff !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        box-shadow: 0 0 0 2px #ffffff !important;
+    }
+
+    .dark .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn .fi-badge {
+        box-shadow: 0 0 0 2px #18181b !important;
+    }
+
+    /* Ikon/titik kecil di dalam badge tidak perlu -- cukup angkanya. */
+    .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn .fi-badge .fi-icon,
+    .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn .fi-badge svg,
+    .fi-ta-header-ctn .fi-ta-filters-trigger-action-ctn .fi-btn .fi-badge::before {
+        display: none !important;
+        content: none !important;
+    }
+
+    /* HP: tombol selebar layar (aturan lama), tetap satu baris. */
+    @media (max-width: 767px) {
+        .fi-ta-header-ctn .fi-ta-filters-above-content-ctn > .fi-ta-filters-trigger-action-ctn .fi-btn {
+            width: 100% !important;
+        }
+    }
+</style>

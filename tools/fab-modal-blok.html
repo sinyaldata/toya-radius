@@ -1,0 +1,58 @@
+<style>
+    /* =====================================================================
+     * FAB-MODAL (2026-10-17) -- tombol bulat "+" (tambah data) di HP
+     * DISEMBUNYIKAN selama ada popup/form terbuka (Tambah Outlet, NAS,
+     * User Hotspot, dll), lalu muncul lagi setelah popup ditutup.
+     * ===================================================================== */
+    body.tya-ada-modal #tya-fab:not(#tya-x),
+    body.tya-ada-modal .tya-fab:not(#tya-x) {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        transform: scale(.6) !important;
+    }
+
+    #tya-fab {
+        transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s;
+    }
+</style>
+<script>
+    /* FAB-MODAL: tandai body saat ada popup Filament terbuka. */
+    (function () {
+        if (window.__tyaFabModal) return;
+        window.__tyaFabModal = true;
+
+        var antre = false;
+
+        function periksa() {
+            antre = false;
+            var ada = !!document.querySelector('.fi-modal.fi-modal-open, .fi-modal-open .fi-modal-window, [role="dialog"][aria-modal="true"]:not(#tya-mpenuh)');
+            if (document.body.classList.contains('tya-ada-modal') !== ada) document.body.classList.toggle('tya-ada-modal', ada);
+        }
+
+        function jadwalkan() {
+            if (antre) return;
+            antre = true;
+            window.requestAnimationFrame(periksa);
+        }
+
+        function mulai() {
+            periksa();
+            // hanya perubahan kelas pada elemen popup yang diperhatikan (ringan)
+            new MutationObserver(function (daftar) {
+                for (var i = 0; i < daftar.length; i++) {
+                    var t = daftar[i].target;
+                    if (t.nodeType === 1 && (t.classList.contains('fi-modal') || t.classList.contains('fi-modal-window-ctn') || t.classList.contains('fi-modal-window'))) { jadwalkan(); return; }
+                }
+            }).observe(document.body, { attributes: true, attributeFilter: ['class', 'style'], subtree: true, childList: false });
+            // event bawaan Filament saat popup dibuka/ditutup
+            ['open-modal', 'close-modal', 'modal-opened', 'modal-closed', 'close-modal-quietly'].forEach(function (n) {
+                window.addEventListener(n, function () { setTimeout(jadwalkan, 30); setTimeout(jadwalkan, 350); });
+            });
+            document.addEventListener('livewire:navigated', jadwalkan);
+        }
+
+        if (document.body) mulai();
+        else document.addEventListener('DOMContentLoaded', mulai);
+    })();
+</script>

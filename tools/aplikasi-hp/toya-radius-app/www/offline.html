@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tidak ada koneksi</title>
+<style>
+  html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #f4f4f6; color: #18181b; }
+  .w { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; text-align: center; box-sizing: border-box; }
+  .ik { width: 84px; height: 84px; border-radius: 26px; background: #fff7ed; color: #ea580c; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+  .ik svg { width: 44px; height: 44px; }
+  h1 { font-size: 20px; margin: 0 0 8px; }
+  p { color: #71717a; font-size: 14.5px; line-height: 1.5; margin: 0 0 22px; max-width: 300px; }
+  button { width: 100%; max-width: 300px; height: 52px; border: 0; border-radius: 14px; font-size: 16px; font-weight: 800; }
+  .a { color: #fff; background: linear-gradient(135deg, #fb923c, #ea580c); }
+  .b { margin-top: 10px; background: #fff; color: #3f3f46; box-shadow: inset 0 0 0 1px #e4e4e7; }
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M8.5 16a5 5 0 0 1 7 0"/><path d="M5 12.5a10 10 0 0 1 4.2-2.5"/><path d="M19 12.5a10 10 0 0 0-2.6-1.8"/><path d="M2 9a15 15 0 0 1 4.3-2.8"/><path d="M10.6 5.1A15 15 0 0 1 22 9"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></div>
+  <h1>Tidak bisa terhubung</h1>
+  <p>Periksa koneksi internet HP Anda. Kalau internet normal, server mungkin sedang sibuk sebentar.</p>
+  <button class="a" onclick="coba()">Coba lagi</button>
+  <button class="b" onclick="location.replace('index.html?ganti=1')">Ganti ISP</button>
+</div>
+<script>
+  function coba() {
+    try {
+      var isp = JSON.parse(localStorage.getItem('toya-isp'));
+      if (isp && isp.url) { location.replace(isp.url); return; }
+    } catch (e) {}
+    location.replace('index.html');
+  }
+</script>
+</body>
+</html>

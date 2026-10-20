@@ -1,0 +1,70 @@
+<style>
+    /* =====================================================================
+     * SIAP-TAMPIL-V2 (2026-10-18) -- HP (< 768px):
+     *  - isi halaman baru ditampilkan SETELAH semua skrip tampilan selesai
+     *    bekerja (kartu, bar atas, menu), jadi tampilan lama tidak sempat
+     *    terlihat beberapa detik. Pasangannya ada di <head>
+     *    (tya-kepala.blade.php, batas aman 2,5 detik).
+     *  - popup form (Tambah / Edit) lebih ringkas: tidak sampai bawah layar,
+     *    di tengah, tombol Batal / Simpan tidak tertutup bilah CPU-RAM.
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn:not(#tya-x) {
+            padding: 20px 12px !important;
+            align-items: center !important;
+        }
+
+        .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window:not(#tya-x):not(#tya-y) {
+            max-height: calc(100dvh - 180px) !important;
+            margin-block: auto !important;
+        }
+
+        /* selama popup terbuka: bilah CPU-RAM & bar bawah disembunyikan,
+           bar atas ikut redup di belakang popup */
+        body.tya-ada-modal .tya-footer:not(#tya-x),
+        body.tya-ada-modal .tya-bottom-nav:not(#tya-x) {
+            display: none !important;
+        }
+
+        body.tya-ada-modal .fi-topbar-ctn:not(#tya-x),
+        body.tya-ada-modal .fi-topbar:not(#tya-x) {
+            z-index: 5 !important;
+        }
+    }
+</style>
+<script>
+    /* SIAP-TAMPIL-V2: tampilkan halaman setelah skrip tampilan lain selesai mengubah DOM.
+       Perubahan teks saja (mis. jam "Waktu Server" tiap detik) diabaikan.
+       Tenang 120 ms, paling cepat 150 ms, paling lama 700 ms. */
+    (function () {
+        var d = document.documentElement;
+        if (d.classList.contains('tya-siap')) return;
+        var tunda = null;
+        var mulai = Date.now();
+        var obs = null;
+        function selesai() {
+            if (obs) obs.disconnect();
+            clearTimeout(tunda);
+            d.classList.add('tya-siap');
+        }
+        function hanyaTeks(m) {
+            if (m.type === 'characterData') return true;
+            if (m.type !== 'childList') return false;
+            var i;
+            for (i = 0; i < m.addedNodes.length; i++) if (m.addedNodes[i].nodeType === 1) return false;
+            for (i = 0; i < m.removedNodes.length; i++) if (m.removedNodes[i].nodeType === 1) return false;
+            return true;
+        }
+        function tenang(daftar) {
+            if (daftar && daftar.length && daftar.every(hanyaTeks)) return;
+            clearTimeout(tunda);
+            var sisa = Math.max(120, 150 - (Date.now() - mulai));
+            tunda = setTimeout(selesai, sisa);
+        }
+        obs = new MutationObserver(tenang);
+        obs.observe(document.body || d, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+        tenang();
+        setTimeout(selesai, 700);
+        window.addEventListener('pageshow', function (e) { if (e.persisted) selesai(); });
+    })();
+</script>

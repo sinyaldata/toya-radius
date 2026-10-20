@@ -1,0 +1,128 @@
+<style>
+    /* =====================================================================
+     * BERSIH-KEMBALI (2026-10-17) -- tampilan lebih bersih (HP & PC):
+     *  - keterangan panjang di bawah judul kartu/bagian form DISEMBUNYIKAN
+     *    (mis. "Alamat/IP PUBLIC yang bisa dijangkau router ...")
+     *  - teks bantuan kecil di bawah/atas isian form disembunyikan
+     *  - teks contoh (placeholder) di dalam isian form dikosongkan
+     *    (kotak Cari tabel & pencarian global tetap ada tulisannya)
+     *  + tombol kembali (<-) di HP kembali ke HALAMAN SEBELUMNYA (lihat skrip)
+     * Pesan konfirmasi di popup (mis. "Yakin hapus?") TIDAK disembunyikan.
+     * ===================================================================== */
+    html body .fi-main .fi-section-header-description:not(#tya-x),
+    html body .fi-modal-content .fi-section-header-description:not(#tya-x),
+    html body .fi-header .fi-header-subheading:not(#tya-x) {
+        display: none !important;
+    }
+
+    /* teks bantuan isian (helperText / teks di atas & bawah isian) */
+    html body .fi-fo-field .fi-fo-field-content-col .fi-sc-text:not(#tya-x),
+    html body .fi-fo-field-wrp-helper-text:not(#tya-x) {
+        display: none !important;
+    }
+
+    /* kartu bagian yang judulnya tinggal satu baris: rata tengah ikon & judul */
+    html body .fi-section-header:not(#tya-x) {
+        align-items: center !important;
+    }
+
+    /* placeholder isian form dikosongkan */
+    html body .fi-fo-field :is(input, textarea):not(#tya-x)::placeholder {
+        color: transparent !important;
+        opacity: 0 !important;
+    }
+
+    html body .fi-fo-field .fi-select-input-placeholder:not(#tya-x),
+    html body .fi-fo-field .choices__placeholder:not(#tya-x) {
+        color: transparent !important;
+    }
+</style>
+<script>
+    /* BERSIH-KEMBALI: tombol kembali -> halaman sebelumnya (riwayat dicatat sendiri). */
+    (function () {
+        if (window.__tyaBersihKembali) return;
+        window.__tyaBersihKembali = true;
+
+        var KUNCI = 'tya-riwayat';
+        var MAKS = 30;
+
+        function baca() {
+            try {
+                var r = JSON.parse(sessionStorage.getItem(KUNCI) || '[]');
+                return Array.isArray(r) ? r : [];
+            } catch (e) { return []; }
+        }
+
+        function simpan(r) {
+            try { sessionStorage.setItem(KUNCI, JSON.stringify(r.slice(-MAKS))); } catch (e) {}
+        }
+
+        // alamat tanpa ?filter dll (perubahan filter tabel tidak dihitung pindah halaman)
+        function ini() {
+            return location.pathname.replace(/\/+$/, '') || '/';
+        }
+
+        function panel() {
+            return '/' + (location.pathname.split('/').filter(Boolean)[0] || '');
+        }
+
+        // catat halaman yang sedang dibuka
+        function catat() {
+            var r = baca();
+            var u = ini();
+            var simpanUtuh = location.pathname + location.search;
+            if (r.length >= 2 && r[r.length - 2].p === u) {
+                r.pop(); // kita baru saja mundur
+            } else if (!r.length || r[r.length - 1].p !== u) {
+                r.push({ p: u, u: simpanUtuh });
+            } else {
+                r[r.length - 1].u = simpanUtuh;
+            }
+            simpan(r);
+        }
+
+        // halaman "induk" kalau riwayat kosong: /admin/pppoe-users/5/edit -> /admin/pppoe-users
+        function induk() {
+            var b = location.pathname.split('/').filter(Boolean);
+            if (b.length <= 1) return panel();
+            var akhir = b[b.length - 1];
+            if (akhir === 'edit' || akhir === 'view' || /^\d+$/.test(b[b.length - 2] || '')) b = b.slice(0, Math.max(1, b.length - 2));
+            else b = b.slice(0, -1);
+            if (b.length >= 2 && /^\d+$/.test(b[b.length - 1])) b = b.slice(0, -1);
+            return '/' + b.join('/');
+        }
+
+        function mundur() {
+            var r = baca();
+            var u = ini();
+            var tujuan = null;
+            if (r.length >= 2 && r[r.length - 1].p === u) tujuan = r[r.length - 2].u;
+            if (!tujuan) tujuan = induk();
+
+            var sebelum = location.href;
+            if (r.length >= 2 && window.history.length > 1) {
+                window.history.back();
+                // kalau ternyata tidak ada halaman sebelumnya di browser, buka langsung
+                setTimeout(function () {
+                    if (location.href === sebelum) location.href = tujuan;
+                }, 450);
+            } else {
+                location.href = tujuan;
+            }
+        }
+
+        // ambil alih klik tombol kembali (tombolnya dibuat blok lain)
+        window.addEventListener('click', function (e) {
+            var b = e.target && e.target.closest ? e.target.closest('.tya-mtop-kembali') : null;
+            if (!b) return;
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            mundur();
+        }, true);
+
+        catat();
+        document.addEventListener('livewire:navigated', catat);
+        window.addEventListener('pageshow', function (e) { if (e.persisted) catat(); });
+    })();
+</script>

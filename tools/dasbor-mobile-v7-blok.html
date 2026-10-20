@@ -1,0 +1,68 @@
+<script>
+    /* DASBOR-MOBILE-V7 (2026-10-13): di HP (< 768px) widget Top 20 Invoice
+     * (versi kartu geser) dipindah tepat di bawah menu ikon. Di layar lebar
+     * dikembalikan ke tempat asalnya. */
+    (function () {
+        if (window.__tyaDasborV7) return;
+        window.__tyaDasborV7 = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+        var penanda = null;   // komentar penanda posisi asli
+        var dipindah = null;  // elemen yang dipindah
+
+        function widgetInvoice() {
+            var hp = document.querySelector('[data-tya-inv-hp]');
+            return hp ? (hp.closest('[wire\\:id]') || hp.closest('.fi-wi-widget') || hp) : null;
+        }
+
+        function proses() {
+            var menu = document.getElementById('tya-menu-utama');
+            var w = widgetInvoice();
+
+            if (!mq.matches || !menu || menu.classList.contains('tya-diganti')) {
+                if (dipindah && penanda && penanda.parentNode) {
+                    penanda.parentNode.insertBefore(dipindah, penanda);
+                }
+                return;
+            }
+            if (!w) return;
+
+            // naik sampai jadi saudara dari menu (anak langsung induk yang sama)
+            var blok = w;
+            while (blok.parentElement && !blok.parentElement.contains(menu)) blok = blok.parentElement;
+            if (!blok.parentElement || blok === menu || blok.contains(menu)) return;
+
+            if (dipindah !== blok) {
+                dipindah = blok;
+                penanda = document.createComment('tya-posisi-invoice');
+                blok.parentNode.insertBefore(penanda, blok);
+            }
+            if (menu.nextElementSibling !== blok) menu.after(blok);
+            blok.style.gridColumn = '1 / -1';
+        }
+
+        var dijadwalkan = false;
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            window.requestAnimationFrame(function () { window.requestAnimationFrame(function () { setTimeout(function () { dijadwalkan = false; proses(); }, 0); }); });
+        }
+
+        function mulai() {
+            jadwalkan();
+            new MutationObserver(function (d) {
+                for (var i = 0; i < d.length; i++) {
+                    var t = d[i].target;
+                    if (t && t.closest && t.closest('[data-tya-inv-hp], #tya-lembar, #tya-titik')) continue;
+                    jadwalkan();
+                    return;
+                }
+            }).observe(document.body, { childList: true, subtree: true });
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai);
+        else mulai();
+        if (mq.addEventListener) mq.addEventListener('change', jadwalkan);
+        document.addEventListener('livewire:navigated', jadwalkan);
+    })();
+</script>

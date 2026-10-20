@@ -1,0 +1,174 @@
+<style>
+    /* =====================================================================
+     * PENUTUP-MODAL-FORM (2026-10-12) -- ditaruh PALING AKHIR.
+     * Satu aturan penutup untuk SEMUA modal form (Create/Edit Bandwidth,
+     * Group User, Profile Hotspot, NAS, dst). Menggantikan tumpukan aturan
+     * modal lama (theme.css + berkas ini) yang saling menimpa sehingga tombol
+     * Batal/Simpan menutupi field paling bawah.
+     *
+     * Susunan yang dipakai (sesuai struktur asli Filament v4:
+     * .fi-modal-window > .fi-modal-header + .fi-modal-content + .fi-modal-footer):
+     *   - jendela   : kolom flex, tinggi maksimal = layar
+     *   - header    : diam di atas
+     *   - isi form  : SATU-SATUNYA bagian yang bisa digulir
+     *   - footer    : diam di bawah, latar padat, TIDAK menimpa isi form
+     * Selektor sengaja lebih spesifik dari aturan lama, jadi menang tanpa
+     * peduli urutan pemuatan CSS. Modal slide-over & layar penuh tidak disentuh.
+     * ===================================================================== */
+    .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn {
+        overflow-y: auto !important;
+    }
+
+    .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window {
+        display: flex !important;
+        flex-direction: column !important;
+        width: min(720px, calc(100vw - 2rem)) !important;
+        max-width: min(720px, calc(100vw - 2rem)) !important;
+        max-height: calc(100dvh - 2rem) !important;
+        overflow: hidden !important;
+    }
+
+    /* Modal berisi wizard (mis. Profile Hotspot) lebih lebar supaya 4 langkah muat. */
+    .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window:has(.fi-sc-wizard) {
+        width: min(960px, calc(100vw - 2rem)) !important;
+        max-width: min(960px, calc(100vw - 2rem)) !important;
+    }
+
+    /* Modal konfirmasi tanpa form (Hapus, dll) tetap kecil. */
+    .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window:not(.fi-modal-window-has-content) {
+        width: min(28rem, calc(100vw - 2rem)) !important;
+        max-width: min(28rem, calc(100vw - 2rem)) !important;
+    }
+
+    .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window > .fi-modal-header {
+        position: static !important;
+        flex: 0 0 auto !important;
+        box-shadow: none !important;
+    }
+
+    .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window > .fi-modal-content {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        overscroll-behavior: contain;
+    }
+
+    .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window > .fi-modal-footer {
+        position: static !important;
+        flex: 0 0 auto !important;
+        z-index: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 0.6rem !important;
+        min-height: 0 !important;
+        padding: 0.85rem 1.5rem !important;
+        background: #ffffff !important;
+        border-top: 1px solid #e4e4e7 !important;
+        box-shadow: 0 -8px 16px -14px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    .dark .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window > .fi-modal-footer {
+        background: #18181b !important;
+        border-top-color: rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 -8px 16px -14px rgba(0, 0, 0, 0.9) !important;
+    }
+
+    /* Tombol Batal (warna abu bawaan Filament) dibuat netral -- hanya Simpan yang oranye. */
+    .fi-modal .fi-modal-footer .fi-btn:not(.fi-color),
+    .fi-modal .fi-modal-footer .fi-btn.fi-color-gray {
+        background: #ffffff !important;
+        color: #3f3f46 !important;
+        border: 1px solid #d4d4d8 !important;
+        box-shadow: none !important;
+    }
+
+    .fi-modal .fi-modal-footer .fi-btn:not(.fi-color):hover,
+    .fi-modal .fi-modal-footer .fi-btn.fi-color-gray:hover {
+        background: #f4f4f5 !important;
+    }
+
+    .dark .fi-modal .fi-modal-footer .fi-btn:not(.fi-color),
+    .dark .fi-modal .fi-modal-footer .fi-btn.fi-color-gray {
+        background: rgba(255, 255, 255, 0.06) !important;
+        color: #e4e4e7 !important;
+        border-color: rgba(255, 255, 255, 0.14) !important;
+    }
+
+    .dark .fi-modal .fi-modal-footer .fi-btn:not(.fi-color):hover,
+    .dark .fi-modal .fi-modal-footer .fi-btn.fi-color-gray:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    /* Kepala wizard: langkah berbagi lebar sama rata, judul boleh turun baris --
+     * tidak ada lagi "HARGA & DESKRIPS..." yang terpotong di tepi. */
+    @media (min-width: 768px) {
+        .fi-sc-wizard .fi-sc-wizard-header {
+            display: grid !important;
+            grid-auto-flow: column !important;
+            grid-auto-columns: minmax(0, 1fr) !important;
+            overflow-x: auto !important;
+        }
+
+        .fi-sc-wizard .fi-sc-wizard-header-step {
+            min-width: 0 !important;
+        }
+
+        .fi-sc-wizard .fi-sc-wizard-header-step-btn {
+            width: 100% !important;
+            min-width: 0 !important;
+            gap: 0.6rem !important;
+            padding: 0.65rem 0.75rem !important;
+        }
+
+        .fi-sc-wizard .fi-sc-wizard-header-step-text {
+            width: auto !important;
+            max-width: none !important;
+            min-width: 0 !important;
+        }
+
+        .fi-sc-wizard .fi-sc-wizard-header-step-label {
+            white-space: normal !important;
+            overflow-wrap: anywhere;
+            line-height: 1.25 !important;
+            letter-spacing: 0.02em !important;
+        }
+
+        .fi-sc-wizard .fi-sc-wizard-header-step-icon-ctn {
+            width: 2.25rem !important;
+            height: 2.25rem !important;
+            flex-shrink: 0 !important;
+        }
+
+        .fi-modal .fi-sc-wizard .fi-sc-wizard-header-step-description {
+            display: none !important;
+        }
+    }
+
+    /* HP / layar sangat sempit. */
+    @media (max-width: 639px) {
+        .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn {
+            padding: 0.5rem !important;
+        }
+
+        .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window,
+        .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window:has(.fi-sc-wizard) {
+            width: calc(100vw - 1rem) !important;
+            max-width: calc(100vw - 1rem) !important;
+            max-height: calc(100dvh - 1rem) !important;
+        }
+
+        .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window > .fi-modal-footer {
+            padding: 0.7rem 1rem !important;
+        }
+
+        .fi-modal .fi-modal-footer .fi-modal-footer-actions {
+            width: 100% !important;
+        }
+
+        .fi-modal .fi-modal-footer .fi-modal-footer-actions .fi-btn {
+            flex: 1 1 0 !important;
+        }
+    }
+</style>

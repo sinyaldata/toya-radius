@@ -1,0 +1,45 @@
+<style>
+    /* =====================================================================
+     * DROPDOWN-TAMPIL (2026-10-17) -- daftar pilihan dropdown (Select
+     * berpencarian Filament v4, mis. "Pilih Akun VPN" di Tambah NAS) tidak
+     * kelihatan di popup & halaman Pengaturan: daftarnya ditempel DI DALAM
+     * kotak isian, sedangkan kotak isian & kartu bagian diberi
+     * overflow:hidden (blok FORM-PRO) supaya sudutnya bulat -> daftar
+     * terpotong. Di sini dibuat overflow:visible lagi; sudut tetap bulat
+     * lewat radius di potongan kiri/kanan kotak isian.
+     * ===================================================================== */
+    :is(body.tya-hal-pengaturan .fi-main, .fi-modal .fi-modal-content) .fi-fo-field:not(#tya-x):not(#tya-y) .fi-input-wrp,
+    :is(body.tya-hal-pengaturan .fi-main, .fi-modal .fi-modal-content) .fi-section:not(#tya-x):not(#tya-y),
+    :is(body.tya-hal-pengaturan .fi-main, .fi-modal .fi-modal-content) .fi-section:not(#tya-x):not(#tya-y) > .fi-section-content-ctn,
+    :is(body.tya-hal-pengaturan .fi-main, .fi-modal .fi-modal-content) .fi-sc-wizard-step:not(#tya-x):not(#tya-y),
+    .fi-modal .fi-modal-content .fi-sc-wizard:not(#tya-x):not(#tya-y) {
+        overflow: visible !important;
+    }
+
+    /* sudut bulat tanpa overflow:hidden */
+    :is(body.tya-hal-pengaturan .fi-main, .fi-modal .fi-modal-content) .fi-fo-field:not(#tya-x):not(#tya-y) .fi-input-wrp > .fi-input-wrp-prefix {
+        border-start-start-radius: 9px !important;
+        border-end-start-radius: 9px !important;
+    }
+
+    :is(body.tya-hal-pengaturan .fi-main, .fi-modal .fi-modal-content) .fi-fo-field:not(#tya-x):not(#tya-y) .fi-input-wrp > .fi-input-wrp-suffix {
+        border-start-end-radius: 9px !important;
+        border-end-end-radius: 9px !important;
+    }
+
+    :is(body.tya-hal-pengaturan .fi-main, .fi-modal .fi-modal-content) .fi-fo-field:not(#tya-x):not(#tya-y) .fi-input-wrp > .fi-input-wrp-content-ctn:last-child {
+        border-start-end-radius: 9px;
+        border-end-end-radius: 9px;
+    }
+
+    /* daftar pilihan selalu di lapisan atas */
+    .fi-select-input .fi-dropdown-panel:not(#tya-x),
+    .fi-select-input-ctn > .fi-dropdown-panel:not(#tya-x) {
+        z-index: 60 !important;
+    }
+
+    /* kotak isian yang sedang dibuka dropdown-nya naik ke atas isian lain */
+    :is(body.tya-hal-pengaturan .fi-main, .fi-modal .fi-modal-content) .fi-fo-field:not(#tya-x) .fi-input-wrp:focus-within {
+        z-index: 20 !important;
+    }
+</style>

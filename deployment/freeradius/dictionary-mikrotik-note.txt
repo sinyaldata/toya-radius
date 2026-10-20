@@ -1,0 +1,13 @@
+# Wajib agar atribut `Mikrotik-Rate-Limit` di radreply dikenali FreeRADIUS.
+#
+# 1. Pastikan dictionary MikroTik ter-include. Cek /etc/freeradius/3.0/dictionary:
+#      $INCLUDE dictionary.mikrotik
+#
+#    Jika belum ada, tambahkan baris tersebut. File dictionary.mikrotik biasanya
+#    sudah tersedia bawaan paket freeradius-dictionary di Debian/Ubuntu.
+#
+# 2. Restart FreeRADIUS setelah perubahan:
+#      systemctl restart freeradius
+#
+# 3. Verifikasi atribut terbaca:
+#      radiusd -XC   # cek konfigurasi valid tanpa menjalankan service

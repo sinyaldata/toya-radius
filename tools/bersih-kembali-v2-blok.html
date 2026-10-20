@@ -1,0 +1,225 @@
+<style>
+    /* =====================================================================
+     * BERSIH-KEMBALI-V2 (2026-10-17) -- tampilan lebih bersih (HP & PC):
+     *  - keterangan panjang di bawah judul kartu/bagian form DISEMBUNYIKAN
+     *    (mis. "Alamat/IP PUBLIC yang bisa dijangkau router ...")
+     *  - teks bantuan kecil di bawah/atas isian form disembunyikan
+     *  - teks contoh (placeholder) di dalam isian form dikosongkan
+     *    (kotak Cari tabel & pencarian global tetap ada tulisannya)
+     *  + tombol kembali (<-) di HP kembali ke HALAMAN SEBELUMNYA (lihat skrip);
+     *    V2: halaman yang dibuka dari sub menu (Pelanggan / Laporan / Setting /
+     *    Lainnya) kembali ke SUB MENU itu, bukan ke Dasbor polos
+     * Pesan konfirmasi di popup (mis. "Yakin hapus?") TIDAK disembunyikan.
+     * ===================================================================== */
+    html body .fi-main .fi-section-header-description:not(#tya-x),
+    html body .fi-modal-content .fi-section-header-description:not(#tya-x),
+    html body .fi-header .fi-header-subheading:not(#tya-x) {
+        display: none !important;
+    }
+
+    /* teks bantuan isian (helperText / teks di atas & bawah isian) */
+    html body .fi-fo-field .fi-fo-field-content-col .fi-sc-text:not(#tya-x),
+    html body .fi-fo-field-wrp-helper-text:not(#tya-x) {
+        display: none !important;
+    }
+
+    /* kartu bagian yang judulnya tinggal satu baris: rata tengah ikon & judul */
+    html body .fi-section-header:not(#tya-x) {
+        align-items: center !important;
+    }
+
+    /* placeholder isian form dikosongkan */
+    html body .fi-fo-field :is(input, textarea):not(#tya-x)::placeholder {
+        color: transparent !important;
+        opacity: 0 !important;
+    }
+
+    html body .fi-fo-field .fi-select-input-placeholder:not(#tya-x),
+    html body .fi-fo-field .choices__placeholder:not(#tya-x) {
+        color: transparent !important;
+    }
+</style>
+<script>
+    /* BERSIH-KEMBALI-V2: tombol kembali -> halaman sebelumnya (riwayat dicatat sendiri). */
+    (function () {
+        if (window.__tyaBersihKembaliV2) return;
+        window.__tyaBersihKembaliV2 = true;
+
+        var KUNCI = 'tya-riwayat';
+        var MAKS = 30;
+
+        function baca() {
+            try {
+                var r = JSON.parse(sessionStorage.getItem(KUNCI) || '[]');
+                return Array.isArray(r) ? r : [];
+            } catch (e) { return []; }
+        }
+
+        function simpan(r) {
+            try { sessionStorage.setItem(KUNCI, JSON.stringify(r.slice(-MAKS))); } catch (e) {}
+        }
+
+        // alamat tanpa ?filter dll (perubahan filter tabel tidak dihitung pindah halaman)
+        function ini() {
+            return location.pathname.replace(/\/+$/, '') || '/';
+        }
+
+        function panel() {
+            return '/' + (location.pathname.split('/').filter(Boolean)[0] || '');
+        }
+
+        // catat halaman yang sedang dibuka
+        function catat() {
+            var r = baca();
+            var u = ini();
+            var simpanUtuh = location.pathname + location.search;
+            if (r.length >= 2 && r[r.length - 2].p === u) {
+                r.pop(); // kita baru saja mundur
+            } else if (!r.length || r[r.length - 1].p !== u) {
+                r.push({ p: u, u: simpanUtuh });
+            } else {
+                r[r.length - 1].u = simpanUtuh;
+            }
+            simpan(r);
+        }
+
+        // halaman "induk" kalau riwayat kosong: /admin/pppoe-users/5/edit -> /admin/pppoe-users
+        function induk() {
+            var b = location.pathname.split('/').filter(Boolean);
+            if (b.length <= 1) return panel();
+            var akhir = b[b.length - 1];
+            if (akhir === 'edit' || akhir === 'view' || /^\d+$/.test(b[b.length - 2] || '')) b = b.slice(0, Math.max(1, b.length - 2));
+            else b = b.slice(0, -1);
+            if (b.length >= 2 && /^\d+$/.test(b[b.length - 1])) b = b.slice(0, -1);
+            return '/' + b.join('/');
+        }
+
+        // ---------- asal sub menu ----------
+        // Sub menu layar penuh & lembar menu Dasbor hanyalah lapisan di atas
+        // Dasbor (bukan halaman), jadi dicatat sendiri: tombol bar bawah /
+        // grup menu mana yang membukanya, dan halaman tujuan yang dipilih.
+        var KUNCI_ASAL = 'tya-asal-submenu';
+        var KUNCI_BUKA = 'tya-buka-submenu';
+        var labelBuka = null;
+
+        function teks(el) {
+            return el ? (el.textContent || '').replace(/\s+/g, ' ').trim() : '';
+        }
+
+        // tombol pembuka sub menu dicatat saat jari menyentuh (klik-nya
+        // dipakai & dihentikan oleh blok sub menu)
+        function catatPembuka(e) {
+            var t = e.target && e.target.closest ? e.target : null;
+            if (!t) return;
+            var bn = t.closest('.tya-bottom-nav .tya-bn-item, .tya-bnav .tya-bn-item');
+            if (bn) { labelBuka = { bn: teks(bn.querySelector('.tya-bn-label') || bn) }; return; }
+            var grup = t.closest('#tya-menu-utama [data-tya-grup]');
+            if (grup) labelBuka = { grup: teks(grup.querySelector('.tya-menu-label') || grup) };
+        }
+        window.addEventListener('pointerdown', catatPembuka, true);
+        window.addEventListener('touchstart', catatPembuka, { capture: true, passive: true });
+
+        window.addEventListener('click', function (e) {
+            var t = e.target && e.target.closest ? e.target : null;
+            if (!t) return;
+            catatPembuka(e);
+            var a = t.closest('#tya-mpenuh a.tya-mp-baris, #tya-lembar a.tya-menu-item');
+            if (a && labelBuka) {
+                try {
+                    var ke = new URL(a.getAttribute('href'), location.href).pathname.replace(/\/+$/, '');
+                    sessionStorage.setItem(KUNCI_ASAL, JSON.stringify({ ke: ke, dari: ini(), buka: labelBuka }));
+                } catch (er) {}
+            }
+        }, true);
+
+        function bacaAsal() {
+            try { return JSON.parse(sessionStorage.getItem(KUNCI_ASAL) || 'null'); } catch (e) { return null; }
+        }
+
+        // di Dasbor: buka lagi sub menu yang diminta (setelah tombol kembali)
+        function bukaLagi() {
+            var minta = null;
+            try { minta = JSON.parse(sessionStorage.getItem(KUNCI_BUKA) || 'null'); } catch (e) {}
+            if (!minta) return;
+            if (minta.dari && minta.dari !== ini()) return;
+            try { sessionStorage.removeItem(KUNCI_BUKA); } catch (e) {}
+            var coba = 0;
+            (function ulang() {
+                var target = null;
+                if (minta.bn) {
+                    document.querySelectorAll('.tya-bn-item').forEach(function (x) {
+                        if (!target && teks(x.querySelector('.tya-bn-label') || x) === minta.bn) target = x;
+                    });
+                } else if (minta.grup) {
+                    document.querySelectorAll('#tya-menu-utama [data-tya-grup]').forEach(function (x) {
+                        if (!target && teks(x.querySelector('.tya-menu-label') || x) === minta.grup) target = x;
+                    });
+                }
+                if (target) {
+                    labelBuka = minta;
+                    target.click();
+                    return;
+                }
+                if (++coba < 25) setTimeout(ulang, 150);
+            })();
+        }
+
+        function mundur() {
+            var asal = bacaAsal();
+            if (asal && asal.ke === ini()) {
+                // halaman ini dibuka dari sub menu -> kembali ke sub menu itu
+                try {
+                    sessionStorage.setItem(KUNCI_BUKA, JSON.stringify({ bn: asal.buka.bn, grup: asal.buka.grup, dari: asal.dari }));
+                    sessionStorage.removeItem(KUNCI_ASAL);
+                } catch (e) {}
+                var rr = baca();
+                if (rr.length >= 2 && rr[rr.length - 2].p === asal.dari && window.history.length > 1) {
+                    var sblm = location.href;
+                    window.history.back();
+                    setTimeout(function () { if (location.href === sblm) location.href = asal.dari; }, 450);
+                } else {
+                    location.href = asal.dari;
+                }
+                return;
+            }
+
+            var r = baca();
+            var u = ini();
+            var tujuan = null;
+            if (r.length >= 2 && r[r.length - 1].p === u) tujuan = r[r.length - 2].u;
+            if (!tujuan) tujuan = induk();
+
+            var sebelum = location.href;
+            if (r.length >= 2 && window.history.length > 1) {
+                window.history.back();
+                // kalau ternyata tidak ada halaman sebelumnya di browser, buka langsung
+                setTimeout(function () {
+                    if (location.href === sebelum) location.href = tujuan;
+                }, 450);
+            } else {
+                location.href = tujuan;
+            }
+        }
+
+        // ambil alih klik tombol kembali (tombolnya dibuat blok lain)
+        window.addEventListener('click', function (e) {
+            var b = e.target && e.target.closest ? e.target.closest('.tya-mtop-kembali') : null;
+            if (!b) return;
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            mundur();
+        }, true);
+
+        catat();
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(bukaLagi, 200); });
+        else setTimeout(bukaLagi, 200);
+        document.addEventListener('livewire:navigated', catat);
+        window.addEventListener('pageshow', function (e) {
+            if (!e.persisted) return;
+            catat();
+            // halaman Dasbor dipulihkan dari cache browser: tunggu lembar lama tertutup dulu
+            setTimeout(bukaLagi, 350);
+        });
+    })();
+</script>

@@ -1,0 +1,733 @@
+<style>
+    /* =====================================================================
+     * MENU-PENUH-V2 (2026-10-17) -- HP: tombol Pelanggan / Laporan / Setting di
+     * bar bawah membuka sub menu LAYAR PENUH ala aplikasi m-banking:
+     *  - kepala oranye (tombol kembali, judul, keterangan, kotak cari)
+     *  - daftar menu dalam kartu putih: ikon, nama, angka (badge), panah
+     *  - muncul bergeser dari kanan; tombol Back HP juga menutupnya
+     * Isi menu diambil dari menu samping (sidebar) yang sudah ada, jadi
+     * otomatis ikut kalau menu ditambah/dihapus. V2: tombol Pelanggan
+     * (div + Alpine, bukan link) ikut ditangkap, popover kecilnya tidak
+     * muncul lagi; tiap menu diberi ikon sesuai namanya.
+     * ===================================================================== */
+    #tya-mpenuh {
+        display: none;
+    }
+
+    @media (max-width: 767px) {
+        #tya-mpenuh {
+            display: block;
+            position: fixed;
+            inset: 0;
+            z-index: 9990;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            background: #f4f4f6;
+            color: #18181b;
+            transform: translateX(100%);
+            visibility: hidden;
+            transition: transform .28s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .28s;
+            scrollbar-width: none;
+        }
+
+        #tya-mpenuh::-webkit-scrollbar {
+            display: none;
+        }
+
+        #tya-mpenuh.tya-mp-buka {
+            transform: none;
+            visibility: visible;
+            transition: transform .28s cubic-bezier(.2, .8, .2, 1), visibility 0s;
+        }
+
+        html.tya-mp-kunci,
+        html.tya-mp-kunci body {
+            overflow: hidden !important;
+        }
+
+        /* ---------- kepala oranye ---------- */
+        #tya-mpenuh .tya-mp-kepala {
+            position: relative;
+            padding: 0 16px 46px;
+            background:
+                radial-gradient(circle at 92% 8%, rgba(255, 255, 255, .12) 0 70px, transparent 71px),
+                radial-gradient(circle at 6% 100%, rgba(255, 255, 255, .08) 0 54px, transparent 55px),
+                linear-gradient(90deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
+            border-radius: 0 0 26px 26px;
+            color: #ffffff;
+        }
+
+        #tya-mpenuh .tya-mp-bar {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 60px;
+            padding-top: env(safe-area-inset-top, 0px);
+            margin: 0 -16px;
+            padding-inline: 12px;
+            background: linear-gradient(90deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
+        }
+
+        #tya-mpenuh .tya-mp-tutup {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: 0;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .2);
+            color: #ffffff;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #tya-mpenuh .tya-mp-tutup:active {
+            transform: scale(.94);
+        }
+
+        #tya-mpenuh .tya-mp-tutup::before {
+            content: "";
+            width: 22px;
+            height: 22px;
+            background-color: currentColor;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M19%2012H5M11%206l-6%206%206%206%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M19%2012H5M11%206l-6%206%206%206%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        }
+
+        #tya-mpenuh .tya-mp-judul {
+            flex: 1 1 auto;
+            min-width: 0;
+            padding-inline-end: 50px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #tya-mpenuh .tya-mp-sapa {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 2px 18px;
+        }
+
+        #tya-mpenuh .tya-mp-sapa-ikon {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .2);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25);
+        }
+
+        #tya-mpenuh .tya-mp-sapa-ikon svg {
+            width: 26px;
+            height: 26px;
+            color: #ffffff;
+        }
+
+        #tya-mpenuh .tya-mp-besar {
+            font-size: 21px;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -.01em;
+        }
+
+        #tya-mpenuh .tya-mp-kecil {
+            margin-top: 3px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, .85);
+        }
+
+        #tya-mpenuh .tya-mp-cari {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 46px;
+            padding-inline: 14px;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 8px 20px -10px rgba(124, 45, 18, .45);
+        }
+
+        #tya-mpenuh .tya-mp-cari::before {
+            content: "";
+            flex: 0 0 auto;
+            width: 19px;
+            height: 19px;
+            background-color: #a1a1aa;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%226.5%22%2F%3E%3Cpath%20d%3D%22M20%2020l-4.2-4.2%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%226.5%22%2F%3E%3Cpath%20d%3D%22M20%2020l-4.2-4.2%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        }
+
+        #tya-mpenuh .tya-mp-cari input {
+            flex: 1 1 auto;
+            min-width: 0;
+            height: 100%;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
+            font-size: 15px;
+            color: #18181b;
+        }
+
+        #tya-mpenuh .tya-mp-cari input::placeholder {
+            color: #a1a1aa;
+        }
+
+        /* ---------- isi: kartu daftar menu ---------- */
+        #tya-mpenuh .tya-mp-isi {
+            position: relative;
+            z-index: 1;
+            margin-top: -26px;
+            padding: 0 16px calc(28px + env(safe-area-inset-bottom, 0px));
+        }
+
+        #tya-mpenuh .tya-mp-grup + .tya-mp-grup {
+            margin-top: 18px;
+        }
+
+        #tya-mpenuh .tya-mp-grup-judul {
+            margin: 0 4px 8px;
+            font-size: 11.5px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: #71717a;
+        }
+
+        #tya-mpenuh .tya-mp-grup:first-child .tya-mp-grup-judul {
+            display: none;
+        }
+
+        #tya-mpenuh .tya-mp-kartu {
+            overflow: hidden;
+            border-radius: 18px;
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, .04);
+            box-shadow: 0 12px 28px -14px rgba(234, 88, 12, .3), 0 1px 3px rgba(0, 0, 0, .05);
+        }
+
+        #tya-mpenuh .tya-mp-baris {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            min-height: 64px;
+            padding: 10px 14px;
+            color: inherit;
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #tya-mpenuh .tya-mp-baris + .tya-mp-baris::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 67px;
+            right: 14px;
+            border-top: 1px solid #f0f0f2;
+        }
+
+        #tya-mpenuh .tya-mp-baris:active {
+            background: #fff7ed;
+        }
+
+        #tya-mpenuh .tya-mp-baris.tya-mp-anak {
+            padding-left: 30px;
+        }
+
+        #tya-mpenuh .tya-mp-ikon {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #fff7ed;
+            box-shadow: inset 0 0 0 1px rgba(249, 115, 22, .14);
+        }
+
+        #tya-mpenuh .tya-mp-ikon svg {
+            width: 21px;
+            height: 21px;
+            color: #ea580c;
+        }
+
+        #tya-mpenuh .tya-mp-teks {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        #tya-mpenuh .tya-mp-label {
+            display: block;
+            font-size: 14.5px;
+            font-weight: 650;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #tya-mpenuh .tya-mp-ket {
+            display: block;
+            margin-top: 2px;
+            font-size: 12px;
+            color: #a1a1aa;
+        }
+
+        #tya-mpenuh .tya-mp-lencana {
+            flex: 0 0 auto;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 7px;
+            border-radius: 999px;
+            background: #fee2e2;
+            color: #dc2626;
+            font-size: 11.5px;
+            font-weight: 800;
+            line-height: 22px;
+            text-align: center;
+        }
+
+        #tya-mpenuh .tya-mp-panah {
+            flex: 0 0 auto;
+            width: 18px;
+            height: 18px;
+            background-color: #c4c4cc;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M9%205l7%207-7%207%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M9%205l7%207-7%207%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        }
+
+        /* menu yang sedang dibuka */
+        #tya-mpenuh .tya-mp-baris.tya-mp-aktif .tya-mp-ikon {
+            background: linear-gradient(135deg, #fb923c, #ea580c);
+            box-shadow: 0 6px 14px -6px rgba(234, 88, 12, .7);
+        }
+
+        #tya-mpenuh .tya-mp-baris.tya-mp-aktif .tya-mp-ikon svg {
+            color: #ffffff;
+        }
+
+        #tya-mpenuh .tya-mp-baris.tya-mp-aktif .tya-mp-label {
+            color: #ea580c;
+        }
+
+        #tya-mpenuh .tya-mp-sembunyi {
+            display: none !important;
+        }
+
+        #tya-mpenuh .tya-mp-kosong {
+            display: none;
+            padding: 34px 16px;
+            text-align: center;
+            font-size: 14px;
+            color: #a1a1aa;
+        }
+
+        #tya-mpenuh.tya-mp-tidak-ada .tya-mp-kosong {
+            display: block;
+        }
+
+        /* ---------- tema gelap ---------- */
+        .dark #tya-mpenuh {
+            background: #0e0e11;
+            color: #f4f4f5;
+        }
+
+        .dark #tya-mpenuh .tya-mp-cari {
+            background: #1c1c21;
+            box-shadow: 0 8px 20px -10px rgba(0, 0, 0, .7);
+        }
+
+        .dark #tya-mpenuh .tya-mp-cari input {
+            color: #f4f4f5;
+        }
+
+        .dark #tya-mpenuh .tya-mp-grup-judul {
+            color: #a1a1aa;
+        }
+
+        .dark #tya-mpenuh .tya-mp-kartu {
+            background: #1c1c21;
+            border-color: rgba(255, 255, 255, .06);
+            box-shadow: 0 12px 28px -14px rgba(0, 0, 0, .7);
+        }
+
+        .dark #tya-mpenuh .tya-mp-baris + .tya-mp-baris::before {
+            border-top-color: rgba(255, 255, 255, .06);
+        }
+
+        .dark #tya-mpenuh .tya-mp-baris:active {
+            background: rgba(249, 115, 22, .08);
+        }
+
+        .dark #tya-mpenuh .tya-mp-ikon {
+            background: rgba(249, 115, 22, .14);
+            box-shadow: none;
+        }
+
+        .dark #tya-mpenuh .tya-mp-ikon svg {
+            color: #fb923c;
+        }
+
+        .dark #tya-mpenuh .tya-mp-baris.tya-mp-aktif .tya-mp-label {
+            color: #fb923c;
+        }
+
+        .dark #tya-mpenuh .tya-mp-lencana {
+            background: rgba(220, 38, 38, .18);
+            color: #fca5a5;
+        }
+
+        .dark #tya-mpenuh .tya-mp-panah {
+            background-color: #52525b;
+        }
+    }
+
+    @media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+        #tya-mpenuh,
+        #tya-mpenuh.tya-mp-buka {
+            transition: none;
+        }
+    }
+</style>
+<script>
+    /* MENU-PENUH-V2: Pelanggan / Laporan / Setting di bar bawah -> sub menu layar penuh. */
+    (function () {
+        if (window.__tyaMenuPenuhV2) return;
+        window.__tyaMenuPenuhV2 = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+
+        var IKON = {
+            pelanggan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M15.5 4.8a3.4 3.4 0 0 1 0 6.4M18 14.8c2 .7 3.2 2.4 3.5 5.2"/></svg>',
+            laporan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M21.5 20h-19"/></svg>',
+            setting: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+            bawaan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>'
+        };
+
+        // ikon per nama menu (item di grup ber-ikon tidak punya ikon sendiri di Filament)
+        var IKON_NAMA = [
+            [/reset|percobaan|kosongkan/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12a9 9 0 1 0 3-6.7L3 8\"/><path d=\"M3 3v5h5\"/></svg>"],
+            [/pppoe/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 22v-5\"/><path d=\"M9 8V2\"/><path d=\"M15 8V2\"/><path d=\"M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8z\"/></svg>"],
+            [/static ip|ip statis|\bip\b/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h18\"/><path d=\"M12 3a14 14 0 0 1 0 18\"/><path d=\"M12 3a14 14 0 0 0 0 18\"/></svg>"],
+            [/member/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2.5\"/><circle cx=\"9\" cy=\"11\" r=\"2\"/><path d=\"M6 16c.6-1.3 1.6-2 3-2s2.4.7 3 2\"/><path d=\"M14.5 10h4\"/><path d=\"M14.5 13.5h3\"/></svg>"],
+            [/offline|putus/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 3l18 18\"/><path d=\"M8.5 16a5 5 0 0 1 7 0\"/><path d=\"M5 12.5a10 10 0 0 1 4.2-2.5\"/><path d=\"M19 12.5a10 10 0 0 0-2.6-1.8\"/><path d=\"M2 9a15 15 0 0 1 4.3-2.8\"/><path d=\"M10.6 5.1A15 15 0 0 1 22 9\"/><path d=\"M12 20h.01\"/></svg>"],
+            [/online|hotspot|wifi/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2 9a15 15 0 0 1 20 0\"/><path d=\"M5 12.5a10 10 0 0 1 14 0\"/><path d=\"M8.5 16a5 5 0 0 1 7 0\"/><path d=\"M12 20h.01\"/></svg>"],
+            [/isolir|blokir|suspend/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"5\" y=\"11\" width=\"14\" height=\"10\" rx=\"2\"/><path d=\"M8 11V7a4 4 0 0 1 8 0v4\"/></svg>"],
+            [/voucher|tiket/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z\"/><path d=\"M13 6v2M13 11v2M13 16v2\"/></svg>"],
+            [/penjualan|omzet|pendapatan/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 17l6-6 4 4 8-8\"/><path d=\"M15 7h6v6\"/></svg>"],
+            [/laba|rugi/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 12A9 9 0 1 1 12 3v9z\"/><path d=\"M15 3.5A9 9 0 0 1 20.5 9H15z\"/></svg>"],
+            [/komisi|fee/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9 15l6-6\"/><circle cx=\"9.5\" cy=\"9.5\" r=\".8\"/><circle cx=\"14.5\" cy=\"14.5\" r=\".8\"/></svg>"],
+            [/tagihan otomatis|jadwal|otomatis/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 10h18\"/><path d=\"M8 3v4\"/><path d=\"M16 3v4\"/><path d=\"M12 13.5v3l2 1\"/></svg>"],
+            [/invoice|tagihan|faktur/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z\"/><path d=\"M9 8h6\"/><path d=\"M9 12h6\"/><path d=\"M9 16h3\"/></svg>"],
+            [/profil saya|akun saya|profil/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/><path d=\"M6.5 18.5c1.3-2 3.2-3 5.5-3s4.2 1 5.5 3\"/></svg>"],
+            [/perusahaan|usaha|outlet|toko/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16\"/><path d=\"M16 9h2a2 2 0 0 1 2 2v10\"/><path d=\"M3 21h18\"/><path d=\"M8 7h4M8 11h4M8 15h4\"/></svg>"],
+            [/backup|cadangan|database/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"12\" cy=\"5\" rx=\"8\" ry=\"3\"/><path d=\"M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5\"/><path d=\"M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6\"/></svg>"],
+            [/telegram|bot/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2L11 13\"/><path d=\"M22 2l-7 20-4-9-9-4z\"/></svg>"],
+            [/whatsapp|\bwa\b|pesan/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 12a8.5 8.5 0 0 1-12.6 7.5L3 21l1.5-5.2A8.5 8.5 0 1 1 21 12z\"/></svg>"],
+            [/export|import|ekspor|impor/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7 20V4\"/><path d=\"M3 8l4-4 4 4\"/><path d=\"M17 4v16\"/><path d=\"M13 16l4 4 4-4\"/></svg>"],
+            [/hak akses|akses|izin|role|peran/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z\"/><path d=\"M9 12l2 2 4-4\"/></svg>"],
+            [/user|pengguna|admin|kasir|mitra/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5\"/><path d=\"M15.5 4.8a3.4 3.4 0 0 1 0 6.4\"/><path d=\"M18 14.8c2 .7 3.2 2.4 3.5 5.2\"/></svg>"],
+            [/mikrotik|router|nas|server/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"7\" rx=\"2\"/><rect x=\"3\" y=\"13\" width=\"18\" height=\"7\" rx=\"2\"/><path d=\"M7 7.5h.01M7 16.5h.01\"/></svg>"],
+            [/bandwidth|kecepatan/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 14l4-4\"/><path d=\"M3.5 18a9 9 0 1 1 17 0\"/></svg>"],
+            [/paket|profile|layanan/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 8l-9-5-9 5 9 5 9-5z\"/><path d=\"M3 8v8l9 5 9-5V8\"/><path d=\"M12 13v8\"/></svg>"],
+            [/transaksi|kas|bayar|pembayaran|payment/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"2.5\" y=\"6\" width=\"19\" height=\"12\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2.5\"/><path d=\"M6 9.5v5M18 9.5v5\"/></svg>"],
+            [/keuangan|dompet|saldo/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3.5\" y=\"6\" width=\"17\" height=\"13\" rx=\"2.5\"/><path d=\"M16 12.5h4.5\"/><path d=\"M5 6l9-3 1.5 3\"/></svg>"],
+            [/area|wilayah|peta|lokasi|odp/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z\"/><circle cx=\"12\" cy=\"9.5\" r=\"2.5\"/></svg>"],
+            [/ftth|olt|onu|jaringan/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"9\" y=\"3\" width=\"6\" height=\"5\" rx=\"1\"/><rect x=\"3\" y=\"16\" width=\"6\" height=\"5\" rx=\"1\"/><rect x=\"15\" y=\"16\" width=\"6\" height=\"5\" rx=\"1\"/><path d=\"M12 8v4M6 16v-2h12v2\"/></svg>"],
+            [/log|riwayat|aktivitas/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12a9 9 0 1 0 3-6.7L3 8\"/><path d=\"M3 3v5h5\"/><path d=\"M12 7v5l3 2\"/></svg>"],
+            [/notifikasi|pengingat/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\"/><path d=\"M10.3 21a1.9 1.9 0 0 0 3.4 0\"/></svg>"],
+            [/email|smtp|surel/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"M3 7l9 6 9-6\"/></svg>"],
+            [/tema|tampilan|warna/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3a9 9 0 1 0 0 18c1 0 1.5-.8 1.5-1.6 0-1.2-1-1.4-1-2.4 0-.9.7-1.5 1.6-1.5H16a5 5 0 0 0 5-5c0-4.1-4-7.5-9-7.5z\"/><circle cx=\"7.5\" cy=\"11\" r=\"1\"/><circle cx=\"10.5\" cy=\"7.5\" r=\"1\"/><circle cx=\"15\" cy=\"8\" r=\"1\"/></svg>"],
+            [/pengaturan|setting|umum|konfigurasi/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1\"/></svg>"],
+            [/laporan|report|statistik/i, "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 20V10M10 20V4M16 20v-7M21.5 20h-19\"/></svg>"]
+        ];
+
+        function ikonNama(label) {
+            for (var i = 0; i < IKON_NAMA.length; i++) {
+                if (IKON_NAMA[i][0].test(label)) return IKON_NAMA[i][1];
+            }
+            return null;
+        }
+
+        // tombol di bar bawah -> grup menu samping yang dibuka
+        var JENIS = {
+            pelanggan: { tombol: /pelanggan|customer/, grup: /pelanggan|customer/i, judul: 'Pelanggan', besar: 'Menu Pelanggan', kecil: 'Kelola semua pelanggan Anda' },
+            laporan: { tombol: /laporan|report/, grup: /laporan|report/i, judul: 'Laporan', besar: 'Menu Laporan', kecil: 'Pantau penjualan & keuangan usaha' },
+            setting: { tombol: /setting|pengaturan/, grup: /pengaturan|setting/i, judul: 'Pengaturan', besar: 'Menu Pengaturan', kecil: 'Atur aplikasi sesuai kebutuhan' }
+        };
+
+        var terbuka = false;
+        var adaRiwayat = false;
+        var tujuan = null;
+        var tundaPergi = null;
+
+        function bukaHalaman(t) {
+            if (!t) return;
+            if (t.spa && window.Livewire && typeof window.Livewire.navigate === 'function') window.Livewire.navigate(t.href);
+            else window.location.href = t.href;
+        }
+
+        // ke menu yang dipilih: buang dulu riwayat lembar (agar Back HP tidak perlu 2x)
+        function pergi(href, spa) {
+            var t = { href: href, spa: spa };
+            if (adaRiwayat) {
+                tujuan = t;
+                adaRiwayat = false;
+                history.back();
+                clearTimeout(tundaPergi);
+                tundaPergi = setTimeout(function () {
+                    if (tujuan) { var x = tujuan; tujuan = null; bukaHalaman(x); }
+                }, 400);
+            } else {
+                bukaHalaman(t);
+            }
+        }
+
+        function teks(el) {
+            return el ? (el.textContent || '').replace(/\s+/g, ' ').trim() : '';
+        }
+
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+
+        function jenisTombol(el) {
+            // bar bawah asli: label ada di .tya-bn-label (tombol Pelanggan juga memuat teks popover-nya)
+            var t = teks(el.querySelector('.tya-bn-label') || el).toLowerCase();
+            if (t.length > 30) return null;
+            for (var k in JENIS) {
+                if (JENIS[k].tombol.test(t)) return k;
+            }
+            return null;
+        }
+
+        // tombol ada di bar bawah? (kelas .tya-bnav dari blok lain, atau elemen "fixed" di dasar layar)
+        function diBarBawah(el) {
+            if (el.closest('.tya-bottom-nav, .tya-bnav, .tya-bnav-v3')) return true;
+            if (el.closest('.fi-sidebar, .fi-topbar, .fi-modal, #tya-mpenuh, #tya-lembar, #tya-menu-utama, .fi-main')) return false;
+            var p = el;
+            for (var d = 0; p && p !== document.body && d < 10; d++, p = p.parentElement) {
+                if (window.getComputedStyle(p).position === 'fixed') {
+                    return p.getBoundingClientRect().bottom >= window.innerHeight - 6;
+                }
+            }
+            return false;
+        }
+
+        function infoItem(li, ikonCadangan, anak) {
+            var a = li.querySelector(':scope > .fi-sidebar-item-btn');
+            if (!a) return null;
+            var svg = a.querySelector('svg.fi-sidebar-item-icon');
+            var badge = a.querySelector('.fi-badge, .fi-sidebar-item-badge-ctn');
+            var label = teks(a.querySelector('.fi-sidebar-item-label')) || teks(a);
+            return {
+                href: a.getAttribute('href') || '#',
+                label: label,
+                ikon: ikonNama(label) || (svg ? svg.outerHTML : (ikonCadangan || IKON.bawaan)),
+                aktif: li.classList.contains('fi-active'),
+                badge: badge ? teks(badge) : '',
+                anak: !!anak
+            };
+        }
+
+        function itemGrup(lis, ikonGrup) {
+            var hasil = [];
+            lis.forEach(function (li) {
+                var i = infoItem(li, ikonGrup, false);
+                if (!i) return;
+                hasil.push(i);
+                li.querySelectorAll(':scope > .fi-sidebar-sub-group-items > li.fi-sidebar-item').forEach(function (c) {
+                    var s = infoItem(c, i.ikon, true);
+                    if (s) hasil.push(s);
+                });
+            });
+            return hasil;
+        }
+
+        function kumpulkan(jenis) {
+            var j = JENIS[jenis];
+            var hasil = [];
+            document.querySelectorAll('.fi-sidebar-nav .fi-sidebar-group').forEach(function (g) {
+                var btn = g.querySelector(':scope > .fi-sidebar-group-btn');
+                var label = g.getAttribute('data-group-label') || (btn ? teks(btn.querySelector('.fi-sidebar-group-label')) : '');
+                if (!label || !j.grup.test(label)) return;
+                var gi = btn ? btn.querySelector('svg') : null;
+                var items = itemGrup(Array.prototype.slice.call(g.querySelectorAll(':scope > .fi-sidebar-group-items > li.fi-sidebar-item')), gi ? gi.outerHTML : null);
+                if (items.length) hasil.push({ label: label, items: items });
+            });
+            if (!hasil.length) {
+                // tidak ada grupnya: kumpulkan menu yang namanya cocok (mis. "Laporan Penjualan")
+                var items = [];
+                document.querySelectorAll('.fi-sidebar-nav li.fi-sidebar-item').forEach(function (li) {
+                    var i = infoItem(li, null, false);
+                    if (i && j.grup.test(i.label)) items.push(i);
+                });
+                if (items.length) hasil.push({ label: j.judul, items: items });
+            }
+            return hasil;
+        }
+
+        function wadah() {
+            var w = document.getElementById('tya-mpenuh');
+            if (!w) {
+                w = document.createElement('div');
+                w.id = 'tya-mpenuh';
+                w.setAttribute('role', 'dialog');
+                w.setAttribute('aria-modal', 'true');
+                document.body.appendChild(w);
+                w.addEventListener('click', function (e) {
+                    if (e.target.closest('.tya-mp-tutup')) {
+                        e.preventDefault();
+                        tutup(true);
+                        return;
+                    }
+                    var a = e.target.closest('a.tya-mp-baris');
+                    if (!a || e.ctrlKey || e.metaKey || e.shiftKey) return;
+                    e.preventDefault();
+                    pergi(a.getAttribute('href'), a.hasAttribute('data-tya-spa'));
+                });
+                w.addEventListener('input', function (e) {
+                    if (e.target.matches('.tya-mp-cari input')) saring(e.target.value);
+                });
+            }
+            return w;
+        }
+
+        function saring(q) {
+            var w = document.getElementById('tya-mpenuh');
+            if (!w) return;
+            q = (q || '').toLowerCase().trim();
+            var ada = 0;
+            w.querySelectorAll('.tya-mp-grup').forEach(function (g) {
+                var n = 0;
+                g.querySelectorAll('.tya-mp-baris').forEach(function (b) {
+                    var cocok = !q || (b.getAttribute('data-cari') || '').indexOf(q) !== -1;
+                    b.classList.toggle('tya-mp-sembunyi', !cocok);
+                    if (cocok) n++;
+                });
+                g.classList.toggle('tya-mp-sembunyi', n === 0);
+                ada += n;
+            });
+            w.classList.toggle('tya-mp-tidak-ada', ada === 0);
+        }
+
+        function buka(jenis, data, spa) {
+            var j = JENIS[jenis];
+            var w = wadah();
+            var html = '<div class="tya-mp-kepala">'
+                + '<div class="tya-mp-bar"><button type="button" class="tya-mp-tutup" aria-label="Kembali"></button><div class="tya-mp-judul">' + esc(j.judul) + '</div></div>'
+                + '<div class="tya-mp-sapa"><span class="tya-mp-sapa-ikon">' + IKON[jenis] + '</span><div><div class="tya-mp-besar">' + esc(j.besar) + '</div><div class="tya-mp-kecil">' + esc(j.kecil) + '</div></div></div>'
+                + '<label class="tya-mp-cari"><input type="search" placeholder="Cari menu ' + esc(j.judul.toLowerCase()) + '..." autocomplete="off" enterkeyhint="search"></label>'
+                + '</div><div class="tya-mp-isi">';
+            data.forEach(function (g) {
+                html += '<div class="tya-mp-grup"><div class="tya-mp-grup-judul">' + esc(g.label) + '</div><div class="tya-mp-kartu">';
+                g.items.forEach(function (i) {
+                    html += '<a class="tya-mp-baris' + (i.aktif ? ' tya-mp-aktif' : '') + (i.anak ? ' tya-mp-anak' : '') + '" href="' + esc(i.href) + '"'
+                        + (spa ? ' data-tya-spa' : '') + ' data-cari="' + esc((i.label + ' ' + g.label).toLowerCase()) + '">'
+                        + '<span class="tya-mp-ikon">' + i.ikon + '</span>'
+                        + '<span class="tya-mp-teks"><span class="tya-mp-label">' + esc(i.label) + '</span></span>'
+                        + (i.badge && i.badge !== '0' ? '<span class="tya-mp-lencana">' + esc(i.badge) + '</span>' : '')
+                        + '<span class="tya-mp-panah"></span></a>';
+                });
+                html += '</div></div>';
+            });
+            html += '<div class="tya-mp-kosong">Menu tidak ditemukan</div></div>';
+            w.innerHTML = html;
+            w.classList.remove('tya-mp-tidak-ada');
+            w.setAttribute('aria-label', j.besar);
+            w.scrollTop = 0;
+            // paksa reflow agar animasi geser berjalan
+            void w.offsetWidth;
+            w.classList.add('tya-mp-buka');
+            document.documentElement.classList.add('tya-mp-kunci');
+            terbuka = true;
+            if (!adaRiwayat) {
+                try {
+                    history.pushState({ tyaMenuPenuh: 1 }, '', location.href);
+                    adaRiwayat = true;
+                } catch (e) { adaRiwayat = false; }
+            }
+        }
+
+        function tutup(pakaiBack) {
+            var w = document.getElementById('tya-mpenuh');
+            if (w) w.classList.remove('tya-mp-buka');
+            document.documentElement.classList.remove('tya-mp-kunci');
+            terbuka = false;
+            if (pakaiBack && adaRiwayat) {
+                adaRiwayat = false;
+                history.back();
+            } else {
+                adaRiwayat = false;
+            }
+        }
+
+        // tangkap ketukan di bar bawah lebih dulu (fase capture di window)
+        window.addEventListener('click', function (e) {
+            if (!mq.matches || !e.target || !e.target.closest) return;
+            var t = e.target.closest('.tya-bn-item, a, button, [role="button"]');
+            // ketukan di dalam popover lama tombol Pelanggan -> pakai tombol induknya
+            if (t && t.closest('.tya-bn-popover')) t = t.closest('.tya-bn-item') || t;
+            if (!t || !diBarBawah(t)) return;
+            var jenis = jenisTombol(t);
+            if (!jenis) return;
+            var data = kumpulkan(jenis);
+            if (!data.length) return; // tidak ada sub menu -> perilaku lama
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            buka(jenis, data, t.hasAttribute('wire:navigate'));
+        }, true);
+
+        // tombol Back HP / browser menutup lembar
+        window.addEventListener('popstate', function () {
+            if (tujuan) {
+                var x = tujuan;
+                tujuan = null;
+                clearTimeout(tundaPergi);
+                bukaHalaman(x);
+                return;
+            }
+            if (terbuka) {
+                adaRiwayat = false;
+                tutup(false);
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (terbuka && e.key === 'Escape') tutup(true);
+        });
+
+        // pindah halaman (Livewire) atau layar dilebarkan -> tutup
+        document.addEventListener('livewire:navigated', function () {
+            if (terbuka) tutup(false);
+        });
+        if (mq.addEventListener) {
+            mq.addEventListener('change', function () {
+                if (!mq.matches && terbuka) tutup(true);
+            });
+        }
+        window.addEventListener('pageshow', function (e) {
+            if (e.persisted && terbuka) tutup(false);
+        });
+    })();
+</script>

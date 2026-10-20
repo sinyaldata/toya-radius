@@ -1,0 +1,450 @@
+<style>
+    /* =====================================================================
+     * PENGATURAN-RAPI (2026-10-17) -- semua halaman menu "Pengaturan"
+     * (Profil Saya, Perusahaan, User, Backup & Data, Tagihan Otomatis,
+     * Export/Import, Bot Telegram, Hak Akses, Halaman Isolir, ...):
+     *  - kartu section putih: kotak ikon oranye + judul tebal + keterangan
+     *  - ikon kecil abu di DALAM kotak isian (bukan kotak ikon besar di
+     *    luar) -- dipilih otomatis dari nama label (Email -> amplop, dst)
+     *  - isian lebih ringkas & rapat. Terang & gelap, HP & PC.
+     * Halaman dikenali dari menu samping yang aktif (grup "Pengaturan").
+     * ===================================================================== */
+    :root {
+        --tya-i-user: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%228%22%20r%3D%224%22%2F%3E%3Cpath%20d%3D%22M4%2021c0-4.4%203.6-7%208-7s8%202.6%208%207%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-mail: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%2218%22%20height%3D%2214%22%20rx%3D%222%22%2F%3E%3Cpath%20d%3D%22M3.5%206.5%2012%2013l8.5-6.5%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-lock: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%224.5%22%20y%3D%2210.5%22%20width%3D%2215%22%20height%3D%2210%22%20rx%3D%222%22%2F%3E%3Cpath%20d%3D%22M8%2010.5V7a4%204%200%200%201%208%200v3.5%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-phone: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%203.5h3.2l1.6%204.2-2.1%201.3a11%2011%200%200%200%205.3%205.3l1.3-2.1%204.2%201.6V17a2.5%202.5%200%200%201-2.5%202.5A15.5%2015.5%200%200%201%202.5%206%202.5%202.5%200%200%201%205%203.5z%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-pin: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%2021s-7-6.2-7-11.5a7%207%200%201%201%2014%200C19%2014.8%2012%2021%2012%2021z%22%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%229.5%22%20r%3D%222.5%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-clock: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%2F%3E%3Cpath%20d%3D%22M12%207v5l3%202%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-building: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M4%2021V5a1.5%201.5%200%200%201%201.5-1.5h8A1.5%201.5%200%200%201%2015%205v16M15%209h3.5A1.5%201.5%200%200%201%2020%2010.5V21M3%2021h18M8%207.5h3M8%2011h3M8%2014.5h3%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-globe: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%2F%3E%3Cpath%20d%3D%22M3%2012h18M12%203c2.5%202.6%203.8%205.6%203.8%209s-1.3%206.4-3.8%209c-2.5-2.6-3.8-5.6-3.8-9S9.5%205.6%2012%203z%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-server: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223.5%22%20y%3D%224%22%20width%3D%2217%22%20height%3D%227%22%20rx%3D%221.5%22%2F%3E%3Crect%20x%3D%223.5%22%20y%3D%2213%22%20width%3D%2217%22%20height%3D%227%22%20rx%3D%221.5%22%2F%3E%3Cpath%20d%3D%22M7.5%207.5h.01M7.5%2016.5h.01%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-shield: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%203%204.5%206v5.5c0%204.6%203.2%208.4%207.5%209.5%204.3-1.1%207.5-4.9%207.5-9.5V6z%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-key: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%2215%22%20r%3D%224%22%2F%3E%3Cpath%20d%3D%22m10.8%2012.2%208.7-8.7M16.5%206.5l2.5%202.5M14%209l2%202%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-link: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2014a4%204%200%200%200%205.7%200l3-3a4%204%200%200%200-5.7-5.7l-1%201M14%2010a4%204%200%200%200-5.7%200l-3%203a4%204%200%200%200%205.7%205.7l1-1%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-money: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%222.5%22%20y%3D%226%22%20width%3D%2219%22%20height%3D%2212%22%20rx%3D%222%22%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%222.6%22%2F%3E%3Cpath%20d%3D%22M6%209.5v.01M18%2014.5v.01%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-calendar: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223.5%22%20y%3D%225%22%20width%3D%2217%22%20height%3D%2215.5%22%20rx%3D%222.5%22%2F%3E%3Cpath%20d%3D%22M3.5%2010h17M8%203v4M16%203v4%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-hash: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%209h14M4%2015h14M10%204%208%2020M16%204l-2%2016%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-send: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M21%203%2010.5%2013.5M21%203l-6.5%2018-4-7.5L3%209.5z%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-message: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M4%205h16v11H9l-5%204z%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-text: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M4%206h16M4%2011h16M4%2016h10%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-list: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8.5%206.5h12M8.5%2012h12M8.5%2017.5h12M4%206.5h.01M4%2012h.01M4%2017.5h.01%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-pencil: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16.9%204.5l2.6%202.6M7.5%2019.5h-3v-3L16.1%204.9a1.5%201.5%200%200%201%202.1%200l1%201a1.5%201.5%200%200%201%200%202.1z%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%2218%22%20height%3D%2216%22%20rx%3D%222.5%22%2F%3E%3Ccircle%20cx%3D%228.5%22%20cy%3D%229.5%22%20r%3D%221.8%22%2F%3E%3Cpath%20d%3D%22m21%2016-5-5L5%2020%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-database: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%227%22%20ry%3D%223%22%2F%3E%3Cpath%20d%3D%22M5%206v6c0%201.7%203.1%203%207%203s7-1.3%207-3V6M5%2012v6c0%201.7%203.1%203%207%203s7-1.3%207-3v-6%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-receipt: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%203h12v18l-3-2-3%202-3-2-3%202zM9%208h6M9%2012h6%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-ban: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%2F%3E%3Cpath%20d%3D%22m5.6%205.6%2012.8%2012.8%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-gear: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223%22%2F%3E%3Cpath%20d%3D%22M19.4%2015a1.6%201.6%200%200%200%20.3%201.8l.1.1a2%202%200%201%201-2.8%202.8l-.1-.1a1.6%201.6%200%200%200-1.8-.3%201.6%201.6%200%200%200-1%201.5V21a2%202%200%201%201-4%200v-.1a1.6%201.6%200%200%200-1-1.5%201.6%201.6%200%200%200-1.8.3l-.1.1a2%202%200%201%201-2.8-2.8l.1-.1a1.6%201.6%200%200%200%20.3-1.8%201.6%201.6%200%200%200-1.5-1H3a2%202%200%201%201%200-4h.1a1.6%201.6%200%200%200%201.5-1%201.6%201.6%200%200%200-.3-1.8l-.1-.1a2%202%200%201%201%202.8-2.8l.1.1a1.6%201.6%200%200%200%201.8.3H9a1.6%201.6%200%200%200%201-1.5V3a2%202%200%201%201%204%200v.1a1.6%201.6%200%200%200%201%201.5%201.6%201.6%200%200%200%201.8-.3l.1-.1a2%202%200%201%201%202.8%202.8l-.1.1a1.6%201.6%200%200%200-.3%201.8V9a1.6%201.6%200%200%200%201.5%201H21a2%202%200%201%201%200%204h-.1a1.6%201.6%200%200%200-1.5%201z%22%2F%3E%3C%2Fsvg%3E");
+        --tya-i-wifi: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8.3%2015.7a5.3%205.3%200%200%201%207.4%200M5.1%2012.5a9.8%209.8%200%200%201%2013.8%200M2%209.3c5.6-5.6%2014.4-5.6%2020%200M12%2019h.01%22%2F%3E%3C%2Fsvg%3E");
+    }
+
+    body.tya-hal-pengaturan [data-tya-ikon="user"] { --tya-ikon: var(--tya-i-user); }
+    body.tya-hal-pengaturan [data-tya-ikon="mail"] { --tya-ikon: var(--tya-i-mail); }
+    body.tya-hal-pengaturan [data-tya-ikon="lock"] { --tya-ikon: var(--tya-i-lock); }
+    body.tya-hal-pengaturan [data-tya-ikon="phone"] { --tya-ikon: var(--tya-i-phone); }
+    body.tya-hal-pengaturan [data-tya-ikon="pin"] { --tya-ikon: var(--tya-i-pin); }
+    body.tya-hal-pengaturan [data-tya-ikon="clock"] { --tya-ikon: var(--tya-i-clock); }
+    body.tya-hal-pengaturan [data-tya-ikon="building"] { --tya-ikon: var(--tya-i-building); }
+    body.tya-hal-pengaturan [data-tya-ikon="globe"] { --tya-ikon: var(--tya-i-globe); }
+    body.tya-hal-pengaturan [data-tya-ikon="server"] { --tya-ikon: var(--tya-i-server); }
+    body.tya-hal-pengaturan [data-tya-ikon="shield"] { --tya-ikon: var(--tya-i-shield); }
+    body.tya-hal-pengaturan [data-tya-ikon="key"] { --tya-ikon: var(--tya-i-key); }
+    body.tya-hal-pengaturan [data-tya-ikon="link"] { --tya-ikon: var(--tya-i-link); }
+    body.tya-hal-pengaturan [data-tya-ikon="money"] { --tya-ikon: var(--tya-i-money); }
+    body.tya-hal-pengaturan [data-tya-ikon="calendar"] { --tya-ikon: var(--tya-i-calendar); }
+    body.tya-hal-pengaturan [data-tya-ikon="hash"] { --tya-ikon: var(--tya-i-hash); }
+    body.tya-hal-pengaturan [data-tya-ikon="send"] { --tya-ikon: var(--tya-i-send); }
+    body.tya-hal-pengaturan [data-tya-ikon="message"] { --tya-ikon: var(--tya-i-message); }
+    body.tya-hal-pengaturan [data-tya-ikon="text"] { --tya-ikon: var(--tya-i-text); }
+    body.tya-hal-pengaturan [data-tya-ikon="list"] { --tya-ikon: var(--tya-i-list); }
+    body.tya-hal-pengaturan [data-tya-ikon="pencil"] { --tya-ikon: var(--tya-i-pencil); }
+    body.tya-hal-pengaturan [data-tya-ikon="image"] { --tya-ikon: var(--tya-i-image); }
+    body.tya-hal-pengaturan [data-tya-ikon="database"] { --tya-ikon: var(--tya-i-database); }
+    body.tya-hal-pengaturan [data-tya-ikon="receipt"] { --tya-ikon: var(--tya-i-receipt); }
+    body.tya-hal-pengaturan [data-tya-ikon="ban"] { --tya-ikon: var(--tya-i-ban); }
+    body.tya-hal-pengaturan [data-tya-ikon="gear"] { --tya-ikon: var(--tya-i-gear); }
+    body.tya-hal-pengaturan [data-tya-ikon="wifi"] { --tya-ikon: var(--tya-i-wifi); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="user"] { --tya-ikon: var(--tya-i-user); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="mail"] { --tya-ikon: var(--tya-i-mail); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="lock"] { --tya-ikon: var(--tya-i-lock); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="phone"] { --tya-ikon: var(--tya-i-phone); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="pin"] { --tya-ikon: var(--tya-i-pin); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="clock"] { --tya-ikon: var(--tya-i-clock); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="building"] { --tya-ikon: var(--tya-i-building); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="globe"] { --tya-ikon: var(--tya-i-globe); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="server"] { --tya-ikon: var(--tya-i-server); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="shield"] { --tya-ikon: var(--tya-i-shield); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="key"] { --tya-ikon: var(--tya-i-key); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="link"] { --tya-ikon: var(--tya-i-link); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="money"] { --tya-ikon: var(--tya-i-money); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="calendar"] { --tya-ikon: var(--tya-i-calendar); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="hash"] { --tya-ikon: var(--tya-i-hash); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="send"] { --tya-ikon: var(--tya-i-send); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="message"] { --tya-ikon: var(--tya-i-message); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="text"] { --tya-ikon: var(--tya-i-text); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="list"] { --tya-ikon: var(--tya-i-list); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="pencil"] { --tya-ikon: var(--tya-i-pencil); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="image"] { --tya-ikon: var(--tya-i-image); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="database"] { --tya-ikon: var(--tya-i-database); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="receipt"] { --tya-ikon: var(--tya-i-receipt); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="ban"] { --tya-ikon: var(--tya-i-ban); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="gear"] { --tya-ikon: var(--tya-i-gear); }
+    body.tya-hal-pengaturan .fi-section-header[data-tya-ikon="wifi"] { --tya-ikon: var(--tya-i-wifi); }
+
+    /* ---------- matikan kotak ikon besar (FORM-IKON-KOTAK) di sini ---------- */
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x),
+    body.tya-hal-pengaturan .fi-main .fi-fo-field-wrp:not(#tya-x) {
+        padding-inline-start: 0 !important;
+        min-height: 0 !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x)::before,
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x)::after,
+    body.tya-hal-pengaturan .fi-main .fi-fo-field-wrp:not(#tya-x)::before,
+    body.tya-hal-pengaturan .fi-main .fi-fo-field-wrp:not(#tya-x)::after {
+        content: none !important;
+        display: none !important;
+    }
+
+    /* ikon bawaan field (prefixIcon) kembali di dalam kotak isian */
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) .fi-input-wrp-prefix:not(.fi-input-wrp-prefix-has-label) {
+        width: auto !important;
+        min-width: 0 !important;
+        padding-inline: .8rem .7rem !important;
+        border-inline-end: 1px solid #e4e4e7 !important;
+        align-self: stretch !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) .fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator) {
+        position: static !important;
+        inset: auto !important;
+        transform: none !important;
+        width: 18px !important;
+        height: 18px !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        background: none !important;
+        box-shadow: none !important;
+        color: #71717a !important;
+    }
+
+    /* ---------- kotak isian ---------- */
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) .fi-input-wrp {
+        position: relative !important;
+        min-height: 42px !important;
+        border-radius: 10px !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+        border: 1px solid #e4e4e7 !important;
+        overflow: hidden !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) .fi-input-wrp:focus-within {
+        border-color: #f97316 !important;
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, .14) !important;
+    }
+
+    /* ikon otomatis untuk isian tanpa prefixIcon */
+    body.tya-hal-pengaturan .fi-main .fi-fo-field[data-tya-ikon]:not(#tya-x) .fi-input-wrp:not(:has(.fi-input-wrp-prefix > .fi-icon))::before {
+        content: "";
+        flex: 0 0 auto;
+        align-self: center;
+        width: 18px;
+        height: 18px;
+        margin-inline: .8rem .7rem;
+        background-color: #71717a;
+        -webkit-mask: var(--tya-ikon) center / contain no-repeat;
+        mask: var(--tya-ikon) center / contain no-repeat;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-fo-field[data-tya-ikon]:not(#tya-x) .fi-input-wrp:not(:has(.fi-input-wrp-prefix > .fi-icon)) > .fi-input-wrp-content-ctn {
+        border-inline-start: 1px solid #e4e4e7 !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-fo-field[data-tya-ikon]:not(#tya-x) .fi-input-wrp:has(textarea)::before {
+        align-self: flex-start;
+        margin-top: .8rem;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) .fi-input-wrp :is(.fi-input, .fi-select-input, select, textarea) {
+        min-height: 40px !important;
+        font-size: 13.5px !important;
+        font-weight: 500 !important;
+        background: transparent !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) .fi-input-wrp textarea {
+        padding-block: .7rem !important;
+        width: 100% !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) .fi-input-wrp > .fi-input-wrp-content-ctn {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) :is(.fi-fo-field-label, .fi-fo-field-wrp-label) {
+        font-size: 12.5px !important;
+        font-weight: 600 !important;
+        color: #3f3f46 !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) .fi-fo-field-label-content {
+        color: inherit !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-sc.fi-grid,
+    body.tya-hal-pengaturan .fi-main .fi-fo-component-ctn {
+        row-gap: 1rem !important;
+        column-gap: 1.25rem !important;
+    }
+
+    /* ---------- kartu section ---------- */
+    body.tya-hal-pengaturan .fi-main .fi-section:not(.fi-section-not-contained):not(.fi-aside):not(#tya-x) {
+        border-radius: 16px !important;
+        background: #ffffff !important;
+        border: 1px solid #ececef !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, .04) !important;
+        overflow: hidden !important;
+        --tw-ring-shadow: 0 0 #0000;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-header {
+        display: flex !important;
+        align-items: flex-start !important;
+        gap: .85rem !important;
+        padding: 1.15rem 1.35rem .35rem !important;
+        border: 0 !important;
+        background: transparent !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-header::before {
+        content: "";
+        flex: 0 0 auto;
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+        background: #fff7ed;
+        box-shadow: inset 0 0 0 1px rgba(249, 115, 22, .12);
+    }
+
+    /* ikon oranye di atas kotak (ikon yang sama dengan isian, diwarnai lewat mask) */
+    body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-header {
+        position: relative !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-header::after {
+        content: "";
+        position: absolute;
+        left: calc(1.35rem + 10px);
+        top: calc(1.15rem + 10px);
+        width: 20px;
+        height: 20px;
+        background-color: #ea580c;
+        -webkit-mask: var(--tya-ikon, var(--tya-i-gear)) center / contain no-repeat;
+        mask: var(--tya-ikon, var(--tya-i-gear)) center / contain no-repeat;
+        pointer-events: none;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-header > .fi-icon {
+        display: none !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) .fi-section-header-heading {
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        letter-spacing: 0 !important;
+        text-transform: none !important;
+        color: #18181b !important;
+        line-height: 1.3 !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) .fi-section-header-description {
+        font-size: 12px !important;
+        color: #71717a !important;
+        margin-top: .15rem !important;
+        line-height: 1.45 !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-content-ctn {
+        border-top: 0 !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-content-ctn > .fi-section-content {
+        padding: 1rem 1.35rem 1.4rem !important;
+    }
+
+    body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) + .fi-section,
+    body.tya-hal-pengaturan .fi-main .fi-sc > .fi-grid-col + .fi-grid-col > .fi-section {
+        margin-top: 0 !important;
+    }
+
+    /* tombol simpan */
+    body.tya-hal-pengaturan .fi-main .fi-form-actions .fi-btn,
+    body.tya-hal-pengaturan .fi-main .fi-sc-actions .fi-btn,
+    body.tya-hal-pengaturan .fi-main form > .fi-ac .fi-btn {
+        border-radius: 10px !important;
+        min-height: 2.6rem !important;
+        padding-inline: 1.2rem !important;
+        font-weight: 700 !important;
+    }
+
+    @media (max-width: 767px) {
+        body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-header {
+            padding: 1rem 1rem .25rem !important;
+        }
+
+        body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-header::after {
+            left: calc(1rem + 10px);
+            top: calc(1rem + 10px);
+        }
+
+        body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-content-ctn > .fi-section-content {
+            padding: .9rem 1rem 1.15rem !important;
+        }
+    }
+
+    /* ---------- tema gelap ---------- */
+    .dark body.tya-hal-pengaturan .fi-main .fi-section:not(.fi-section-not-contained):not(.fi-aside):not(#tya-x) {
+        background: #1c1c20 !important;
+        border-color: rgba(255, 255, 255, .08) !important;
+    }
+
+    .dark body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-header::before {
+        background-color: rgba(249, 115, 22, .14);
+        box-shadow: none;
+    }
+
+    .dark body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) > .fi-section-header::after {
+        background-color: #fb923c;
+    }
+
+    .dark body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) .fi-section-header-heading {
+        color: #fafafa !important;
+    }
+
+    .dark body.tya-hal-pengaturan .fi-main .fi-section:not(#tya-x) .fi-section-header-description {
+        color: #a1a1aa !important;
+    }
+
+    .dark body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) .fi-input-wrp {
+        background: #141417 !important;
+        border-color: rgba(255, 255, 255, .1) !important;
+    }
+
+    .dark body.tya-hal-pengaturan .fi-main .fi-fo-field[data-tya-ikon]:not(#tya-x) .fi-input-wrp::before {
+        background-color: #a1a1aa;
+    }
+
+    .dark body.tya-hal-pengaturan .fi-main .fi-fo-field[data-tya-ikon]:not(#tya-x) .fi-input-wrp:not(:has(.fi-input-wrp-prefix > .fi-icon)) > .fi-input-wrp-content-ctn,
+    .dark body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) .fi-input-wrp-prefix:not(.fi-input-wrp-prefix-has-label) {
+        border-color: rgba(255, 255, 255, .1) !important;
+    }
+
+    .dark body.tya-hal-pengaturan .fi-main .fi-fo-field:not(#tya-x) :is(.fi-fo-field-label, .fi-fo-field-wrp-label) {
+        color: #d4d4d8 !important;
+    }
+</style>
+<script>
+    /* PENGATURAN-RAPI: kenali halaman Pengaturan + pilih ikon dari label. */
+    (function () {
+        if (window.__tyaPengaturan) return;
+        window.__tyaPengaturan = true;
+
+        var IKON_FIELD = [
+            [/password|kata sandi|sandi/, 'lock'],
+            [/e-?mail/, 'mail'],
+            [/nama isp|rt-?rw|perusahaan|nama usaha|brand/, 'building'],
+            [/telegram|chat id|bot/, 'send'],
+            [/whats ?app|kontak|no\.? ?hp|nomor hp|telepon|telp|phone|\bhp\b|\bwa\b/, 'phone'],
+            [/alamat|lokasi|koordinat/, 'pin'],
+            [/zona|waktu|jam|interval|menit|detik|jadwal/, 'clock'],
+            [/vpn|tunnel/, 'shield'],
+            [/domain|website|situs/, 'globe'],
+            [/\bip\b|host|server|radius|nas|mikrotik/, 'server'],
+            [/token|secret|rahasia|api key|kunci|\bkey\b/, 'key'],
+            [/url|link|webhook/, 'link'],
+            [/harga|biaya|nominal|tarif|denda|komisi|saldo|\brp\b|idr/, 'money'],
+            [/tanggal|tgl|hari|bulan|tahun|jatuh tempo|periode/, 'calendar'],
+            [/logo|foto|gambar|avatar|icon|ikon/, 'image'],
+            [/backup|database|cadangan/, 'database'],
+            [/tagihan|invoice/, 'receipt'],
+            [/isolir|blokir|suspend/, 'ban'],
+            [/ssid|wifi|hotspot/, 'wifi'],
+            [/pesan|template|catatan|keterangan|deskripsi|teks|footer|header|judul/, 'message'],
+            [/nama|username|pengguna|user|pemilik|admin/, 'user'],
+            [/port|kode|nomor|jumlah|batas|maks|min|limit|urutan|id\b/, 'hash']
+        ];
+        var IKON_SECTION = [
+            [/perusahaan|isp|usaha/, 'building'],
+            [/akun|profil/, 'user'],
+            [/vpn|tunnel/, 'shield'],
+            [/radius|server|mikrotik|nas/, 'server'],
+            [/telegram|bot/, 'send'],
+            [/whats ?app|notifikasi|pesan|template/, 'message'],
+            [/tagihan|invoice|otomatis|pembayaran/, 'receipt'],
+            [/backup|data|import|export|cadangan/, 'database'],
+            [/isolir|blokir/, 'ban'],
+            [/hak|akses|peran|role|izin|keamanan|password/, 'key'],
+            [/user|pengguna/, 'user'],
+            [/tampilan|logo|tema/, 'image'],
+            [/jadwal|waktu/, 'clock']
+        ];
+
+        function cocok(daftar, teks, cadangan) {
+            for (var i = 0; i < daftar.length; i++) {
+                if (daftar[i][0].test(teks)) return daftar[i][1];
+            }
+            return cadangan;
+        }
+
+        function halamanPengaturan() {
+            var aktif = document.querySelector('.fi-sidebar-item.fi-active, .fi-sidebar-item-active');
+            var grup = aktif ? aktif.closest('.fi-sidebar-group') : null;
+            var label = grup ? grup.querySelector('.fi-sidebar-group-label, .fi-sidebar-group-btn') : null;
+            if (label && /pengaturan|setting/i.test(label.textContent || '')) return true;
+            return /\/(settings?|pengaturan|profile|profil)(\/|$|-)/i.test(location.pathname);
+        }
+
+        var dijadwalkan = false;
+        function proses() {
+            dijadwalkan = false;
+            var ya = halamanPengaturan();
+            document.body.classList.toggle('tya-hal-pengaturan', ya);
+            if (!ya) return;
+
+            document.querySelectorAll('.fi-main .fi-fo-field').forEach(function (f) {
+                if (f.hasAttribute('data-tya-ikon') || !f.querySelector('.fi-input-wrp')) return;
+                var lab = f.querySelector('.fi-fo-field-label-content, .fi-fo-field-label');
+                var t = ((lab && lab.textContent) || '').toLowerCase().trim();
+                var cadangan = f.querySelector('textarea') ? 'text' : (f.querySelector('select, .fi-select-input') ? 'list' : 'pencil');
+                f.setAttribute('data-tya-ikon', cocok(IKON_FIELD, t, cadangan));
+            });
+
+            document.querySelectorAll('.fi-main .fi-section > .fi-section-header').forEach(function (h) {
+                if (h.hasAttribute('data-tya-ikon')) return;
+                var j = h.querySelector('.fi-section-header-heading');
+                var t = ((j && j.textContent) || '').toLowerCase().trim();
+                h.setAttribute('data-tya-ikon', cocok(IKON_SECTION, t, 'gear'));
+            });
+        }
+
+        var tunda = null;
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            clearTimeout(tunda);
+            tunda = setTimeout(function () { window.requestAnimationFrame(proses); }, 60);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', jadwalkan);
+        } else {
+            jadwalkan();
+        }
+        new MutationObserver(jadwalkan).observe(document.documentElement, { childList: true, subtree: true });
+        document.addEventListener('livewire:navigated', jadwalkan);
+    })();
+</script>

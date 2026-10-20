@@ -1,0 +1,46 @@
+OPSI KOMISI "SELISIH HARGA JUAL - HARGA BELI" UNTUK OUTLET & RESELLER
+======================================================================
+Berkas: tambah-opsi-komisi.py   (md5 f7fa1d427ed61e57c6dfe04935a7347d, 11703 byte)
+
+Skrip ini MENYISIPKAN perubahan di tempat ke 3 berkas (bukan menimpa), jadi perubahan lain
+di berkas-berkas itu tidak hilang:
+  app/Filament/Resources/OutletResource.php
+  app/Filament/Resources/ResellerResource.php
+  app/Models/Outlet.php   (hanya menambah 'commission_type' ke $fillable bila belum ada)
+
+LANGKAH (sebagai user deploy, tanpa sudo)
+-----------------------------------------
+1) Pastikan berkasnya benar (hasil harus: tambah-opsi-komisi.py: OK):
+     cd /var/www/toya-radius/tools
+     echo "f7fa1d427ed61e57c6dfe04935a7347d  tambah-opsi-komisi.py" | md5sum -c -
+
+2) Simulasi dulu -- tidak mengubah apa pun:
+     cd /var/www/toya-radius
+     python3 tools/tambah-opsi-komisi.py --dry-run
+   Harus tertulis 3 berkas "AKAN DIUBAH". Bila ada yang "GAGAL ... TIDAK ADA berkas yang diubah",
+   kirim pesannya ke saya (artinya berkas di server berbeda dari yang saya perkirakan).
+
+3) Pasang:
+     python3 tools/tambah-opsi-komisi.py
+     php8.4 artisan optimize:clear
+     sudo systemctl restart php8.4-fpm
+
+4) Periksa di aplikasi (1 menit):
+     Mitra -> Outlet -> Edit salah satu outlet -> langkah "Komisi & Catatan"
+       - muncul pilihan "Tipe Komisi"
+       - pilih "Selisih Harga Jual - Harga Beli voucher" -> kolom "Komisi (%)" hilang
+       - Simpan -> di tabel kolom "Komisi" menampilkan "Selisih harga"
+     Mitra -> Reseller -> Edit -> langkah "Saldo, Komisi & Catatan" -> pilihan yang sama.
+
+PEMBATALAN
+----------
+     python3 tools/tambah-opsi-komisi.py --kembalikan
+     php8.4 artisan optimize:clear && sudo systemctl restart php8.4-fpm
+Cadangan tersimpan di samping berkas aslinya: <berkas>.bak-komisi-<waktu>.
+
+CARA KOMISI SELISIH HARGA DIHITUNG
+----------------------------------
+Per voucher yang terjual:  komisi = harga jual voucher - harga beli (modal) voucher itu
+(tidak pernah negatif). Memakai harga yang tersimpan di tiap voucher, bukan harga paket sekarang.
+Dipakai oleh Laporan Penjualan, PDF, Laba/Rugi, dan bot Telegram -- tanpa perubahan lain.
+Komisi dihitung saat laporan dibuka: mengubah tipe ikut mengubah angka periode lama.

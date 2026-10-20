@@ -1,0 +1,263 @@
+<style>
+    /* =====================================================================
+     * DASBOR-ORANYE (2026-10-17) -- "Pilihan B" dasbor HP (< 768px):
+     *  - bar atas oranye bergradasi (foto, sapaan, ikon invoice & keluar putih)
+     *  - warna oranye memanjang ke bawah di belakang kartu ringkasan, jadi
+     *    kartu tampak mengambang
+     *  - kartu ringkasan (Pendapatan, dst) jadi PUTIH: ikon di kotak oranye
+     *    muda, nominal hitam tebal, persen merah/hijau, grafik oranye
+     *  - tema gelap: bar atas tetap oranye, kartu abu gelap
+     * Hanya di halaman Dasbor; halaman lain tidak berubah.
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        body.tya-dasbor-oranye {
+            --tya-oranye: linear-gradient(90deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
+        }
+
+        /* ---------- bar atas ---------- */
+        body.tya-dasbor-oranye .fi-topbar-ctn:not(#tya-x) {
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+
+        body.tya-dasbor-oranye .fi-topbar-ctn:not(#tya-x) .fi-topbar,
+        body.tya-dasbor-oranye .fi-topbar.tya-mtop-aktif:not(#tya-x) {
+            background:
+                radial-gradient(circle at 92% -20%, rgba(255, 255, 255, .12) 0 52px, transparent 53px),
+                var(--tya-oranye) !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+
+        body.tya-dasbor-oranye #tya-mtop .tya-mtop-sapa {
+            color: rgba(255, 255, 255, .85) !important;
+        }
+
+        body.tya-dasbor-oranye #tya-mtop .tya-mtop-nama {
+            color: #ffffff !important;
+        }
+
+        body.tya-dasbor-oranye #tya-mtop .tya-mtop-foto {
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .85) !important;
+        }
+
+        body.tya-dasbor-oranye #tya-mtop :is(.tya-mtop-invoice, .tya-mtop-keluar) {
+            background: rgba(255, 255, 255, .2) !important;
+            box-shadow: none !important;
+            border: 0 !important;
+        }
+
+        body.tya-dasbor-oranye #tya-mtop :is(.tya-mtop-invoice, .tya-mtop-keluar)::before {
+            background-color: #ffffff !important;
+        }
+
+        body.tya-dasbor-oranye #tya-mtop .tya-lencana {
+            box-shadow: 0 0 0 2px #f97316 !important;
+        }
+
+        /* ---------- oranye memanjang di belakang kartu ---------- */
+        body.tya-dasbor-oranye .fi-main:not(#tya-x) {
+            position: relative !important;
+        }
+
+        /* jarak antara bar atas & isi halaman (di belakang bar) ikut oranye */
+        body.tya-dasbor-oranye .fi-main-ctn:not(#tya-x) {
+            background: var(--tya-oranye) left top / 100% var(--tya-atas, 0px) no-repeat !important;
+        }
+
+        body.tya-dasbor-oranye .fi-main:not(#tya-x)::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--tya-pita, 96px);
+            background: var(--tya-oranye);
+            border-radius: 0 0 26px 26px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body.tya-dasbor-oranye .fi-main:not(#tya-x) > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ---------- kartu ringkasan putih ---------- */
+        body.tya-dasbor-oranye .tya-statistik.tya-slide > .tya-k:not(#tya-x) {
+            background: #ffffff !important;
+            color: #18181b !important;
+            border: 1px solid rgba(0, 0, 0, .03) !important;
+            box-shadow: 0 12px 28px -8px rgba(234, 88, 12, .28), 0 1px 3px rgba(0, 0, 0, .06) !important;
+        }
+
+        body.tya-dasbor-oranye .tya-statistik.tya-slide > .tya-k:not(#tya-x)::before,
+        body.tya-dasbor-oranye .tya-statistik.tya-slide > .tya-k:not(#tya-x)::after {
+            display: none !important;
+        }
+
+        body.tya-dasbor-oranye .tya-k .tya-k-ikon:not(#tya-x) {
+            background: #fff7ed !important;
+            box-shadow: inset 0 0 0 1px rgba(249, 115, 22, .15) !important;
+        }
+
+        body.tya-dasbor-oranye .tya-k .tya-k-ikon:not(#tya-x) svg {
+            color: #ea580c !important;
+        }
+
+        body.tya-dasbor-oranye .tya-k :is(.tya-k-label, .tya-k-nilai):not(#tya-x) {
+            color: #18181b !important;
+        }
+
+        body.tya-dasbor-oranye .tya-k .tya-k-nilai .tya-mata:not(#tya-x)::before {
+            background: #71717a !important;
+        }
+
+        body.tya-dasbor-oranye .tya-k .tya-k-sub:not(#tya-x) {
+            color: #71717a !important;
+        }
+
+        body.tya-dasbor-oranye .tya-k .tya-k-chip:not(#tya-x) {
+            background: rgba(220, 38, 38, .09) !important;
+            color: #dc2626 !important;
+        }
+
+        body.tya-dasbor-oranye .tya-k .tya-k-chip.tya-k-naik:not(#tya-x) {
+            background: rgba(22, 163, 74, .1) !important;
+            color: #15803d !important;
+        }
+
+        body.tya-dasbor-oranye .tya-k .tya-k-titik:not(#tya-x) {
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, .2) !important;
+        }
+
+        body.tya-dasbor-oranye .tya-k .tya-k-spark:not(#tya-x) {
+            color: #f97316 !important;
+        }
+
+        body.tya-dasbor-oranye .tya-k .tya-k-spark:not(#tya-x) > * {
+            background: linear-gradient(180deg, #fb923c, #f97316) !important;
+        }
+
+        body.tya-dasbor-oranye .tya-k .tya-k-spark:not(#tya-x) svg,
+        body.tya-dasbor-oranye .tya-k .tya-k-spark:not(#tya-x) svg * {
+            color: #f97316 !important;
+        }
+
+        /* ---------- tema gelap: bar oranye tetap, kartu abu gelap ---------- */
+        .dark body.tya-dasbor-oranye .tya-statistik.tya-slide > .tya-k:not(#tya-x) {
+            background: #1c1c21 !important;
+            color: #f4f4f5 !important;
+            border-color: rgba(255, 255, 255, .06) !important;
+            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, .55) !important;
+        }
+
+        .dark body.tya-dasbor-oranye .tya-k .tya-k-ikon:not(#tya-x) {
+            background: rgba(249, 115, 22, .14) !important;
+            box-shadow: none !important;
+        }
+
+        .dark body.tya-dasbor-oranye .tya-k .tya-k-ikon:not(#tya-x) svg {
+            color: #fb923c !important;
+        }
+
+        .dark body.tya-dasbor-oranye .tya-k :is(.tya-k-label, .tya-k-nilai):not(#tya-x) {
+            color: #f4f4f5 !important;
+        }
+
+        .dark body.tya-dasbor-oranye .tya-k .tya-k-sub:not(#tya-x) {
+            color: #a1a1aa !important;
+        }
+
+        .dark body.tya-dasbor-oranye .tya-k .tya-k-nilai .tya-mata:not(#tya-x)::before {
+            background: #a1a1aa !important;
+        }
+
+        .dark body.tya-dasbor-oranye .tya-k .tya-k-chip:not(#tya-x) {
+            background: rgba(220, 38, 38, .16) !important;
+            color: #fca5a5 !important;
+        }
+
+        .dark body.tya-dasbor-oranye .tya-k .tya-k-chip.tya-k-naik:not(#tya-x) {
+            background: rgba(22, 163, 74, .16) !important;
+            color: #86efac !important;
+        }
+    }
+</style>
+<script>
+    /* DASBOR-ORANYE: aktifkan di Dasbor HP + hitung panjang warna oranye. */
+    (function () {
+        if (window.__tyaDasborOranye) return;
+        window.__tyaDasborOranye = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+        var meta = null;
+        var warnaLama = null;
+        var dijadwalkan = false;
+        var tunda = null;
+
+        function diDasbor() {
+            return location.pathname.split('/').filter(Boolean).length <= 1;
+        }
+
+        // warna bilah alamat browser HP ikut oranye di Dasbor
+        function warnaBrowser(ya) {
+            if (!meta) {
+                meta = document.querySelector('meta[name="theme-color"]');
+                if (!meta) {
+                    meta = document.createElement('meta');
+                    meta.name = 'theme-color';
+                    document.head.appendChild(meta);
+                }
+                warnaLama = meta.getAttribute('content');
+            }
+            if (ya) meta.setAttribute('content', '#f97316');
+            else if (warnaLama) meta.setAttribute('content', warnaLama);
+            else meta.removeAttribute('content');
+        }
+
+        function proses() {
+            dijadwalkan = false;
+            var ya = mq.matches && diDasbor() && !!document.getElementById('tya-mtop');
+            document.body.classList.toggle('tya-dasbor-oranye', ya);
+            warnaBrowser(ya);
+            if (!ya) return;
+
+            var main = document.querySelector('.fi-main');
+            var kartu = document.querySelector('.tya-statistik.tya-slide');
+            if (!main) return;
+            var pita = 96;
+            if (kartu && kartu.offsetParent !== null) {
+                var rm = main.getBoundingClientRect();
+                var rk = kartu.getBoundingClientRect();
+                pita = Math.round(rk.top - rm.top + main.scrollTop + rk.height * 0.55);
+                if (pita < 40 || pita > 600) pita = 96;
+            }
+            // jarak dari atas pembungkus sampai awal isi halaman
+            var ctn = main.parentElement;
+            var atas = ctn ? Math.round(main.getBoundingClientRect().top - ctn.getBoundingClientRect().top) : 0;
+            if (atas < 0 || atas > 200) atas = 0;
+            if (main.style.getPropertyValue('--tya-pita') !== pita + 'px') main.style.setProperty('--tya-pita', pita + 'px');
+            if (ctn && ctn.style.getPropertyValue('--tya-atas') !== atas + 'px') ctn.style.setProperty('--tya-atas', atas + 'px');
+        }
+
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            clearTimeout(tunda);
+            tunda = setTimeout(function () { window.requestAnimationFrame(proses); }, 80);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', jadwalkan);
+        } else {
+            jadwalkan();
+        }
+        new MutationObserver(jadwalkan).observe(document.body || document.documentElement, { childList: true, subtree: true });
+        window.addEventListener('resize', jadwalkan);
+        window.addEventListener('load', jadwalkan);
+        document.addEventListener('livewire:navigated', jadwalkan);
+        if (mq.addEventListener) mq.addEventListener('change', jadwalkan);
+    })();
+</script>

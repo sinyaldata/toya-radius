@@ -1,0 +1,691 @@
+<style>
+    /* =====================================================================
+     * DASBOR-MOBILE-V2 (2026-10-13) -- HP (< 768px):
+     *  - kartu ringkasan jadi SLIDE: 1 kartu tampil, geser kiri/kanan, titik penanda
+     *  - ikon mata di nominal Pendapatan Hari Ini & Bulan Ini (bawaan: tersembunyi)
+     *  - menu ikon hanya MENU UTAMA; grup -> sub menu muncul di jendela bawah
+     *  - ikon Invoice Belum Dibayar di bar atas, di sebelah tombol keluar
+     * ===================================================================== */
+    #tya-titik,
+    #tya-menu-utama,
+    #tya-lembar {
+        display: none;
+    }
+
+    @media (max-width: 767px) {
+        /* ---- slide kartu ---- */
+        .tya-statistik.tya-slide {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            grid-template-columns: none !important;
+            gap: 12px !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            scroll-snap-type: x mandatory !important;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 2px !important;
+        }
+
+        .tya-statistik.tya-slide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tya-statistik.tya-slide > * {
+            flex: 0 0 100% !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            scroll-snap-align: center !important;
+            scroll-snap-stop: always !important;
+            grid-column: auto !important;
+            margin: 0 !important;
+        }
+
+        #tya-titik {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin: 10px 0 2px;
+            grid-column: 1 / -1;
+        }
+
+        #tya-titik button {
+            width: 7px;
+            height: 7px;
+            padding: 0;
+            border: 0;
+            border-radius: 9999px;
+            background: #d4d4d8;
+            transition: width 0.2s ease, background 0.2s ease;
+        }
+
+        #tya-titik button.tya-aktif {
+            width: 20px;
+            background: #f97316;
+        }
+
+        .dark #tya-titik button {
+            background: #3f3f46;
+        }
+
+        .dark #tya-titik button.tya-aktif {
+            background: #f97316;
+        }
+
+        /* ---- ikon mata ---- */
+        .tya-mata {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            margin-inline-start: 6px;
+            padding: 0;
+            border: 0;
+            border-radius: 9999px;
+            background: transparent;
+            vertical-align: middle;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tya-mata::before {
+            content: "";
+            width: 20px;
+            height: 20px;
+            background: #a1a1aa;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3.98%208.22A10.5%2010.5%200%200%200%201.93%2012C3.23%2016.34%207.24%2019.5%2012%2019.5c.99%200%201.95-.14%202.86-.4M6.23%206.23A10.45%2010.45%200%200%201%2012%204.5c4.76%200%208.77%203.16%2010.07%207.5a10.52%2010.52%200%200%201-4.29%205.77M6.23%206.23%203%203m3.23%203.23%203.65%203.65m7.89%207.89L21%2021m-3.23-3.23-3.65-3.65m0%200a3%203%200%201%200-4.24-4.24m4.24%204.24L9.88%209.88%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3.98%208.22A10.5%2010.5%200%200%200%201.93%2012C3.23%2016.34%207.24%2019.5%2012%2019.5c.99%200%201.95-.14%202.86-.4M6.23%206.23A10.45%2010.45%200%200%201%2012%204.5c4.76%200%208.77%203.16%2010.07%207.5a10.52%2010.52%200%200%201-4.29%205.77M6.23%206.23%203%203m3.23%203.23%203.65%203.65m7.89%207.89L21%2021m-3.23-3.23-3.65-3.65m0%200a3%203%200%201%200-4.24-4.24m4.24%204.24L9.88%209.88%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        }
+
+        .tya-mata.tya-terbuka::before {
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M2.04%2012.32a1%201%200%200%201%200-.64C3.42%207.51%207.36%204.5%2012%204.5s8.57%203%209.96%207.18a1%201%200%200%201%200%20.64C20.58%2016.49%2016.64%2019.5%2012%2019.5s-8.57-3-9.96-7.18z%22%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E");
+            mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M2.04%2012.32a1%201%200%200%201%200-.64C3.42%207.51%207.36%204.5%2012%204.5s8.57%203%209.96%207.18a1%201%200%200%201%200%20.64C20.58%2016.49%2016.64%2019.5%2012%2019.5s-8.57-3-9.96-7.18z%22%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E");
+            background: #f97316;
+        }
+
+        /* ---- menu utama (gantikan menu ikon versi 1) ---- */
+        #tya-menu-ikon.tya-diganti {
+            display: none !important;
+        }
+
+        #tya-menu-utama {
+            display: block;
+            grid-column: 1 / -1;
+            margin: 12px 0;
+            padding: 14px 10px 6px;
+            background: #ffffff;
+            border: 1px solid #ececef;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+        }
+
+        #tya-menu-utama .tya-menu-judul,
+        #tya-lembar .tya-lembar-judul {
+            margin: 0 6px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #71717a;
+        }
+
+        #tya-menu-utama .tya-menu-grid,
+        #tya-lembar .tya-menu-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 4px;
+        }
+
+        #tya-lembar .tya-menu-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            row-gap: 8px;
+        }
+
+        #tya-menu-utama .tya-menu-item,
+        #tya-lembar .tya-menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 2px 8px;
+            border: 0;
+            border-radius: 12px;
+            background: transparent;
+            text-decoration: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #tya-menu-utama .tya-menu-ikon,
+        #tya-lembar .tya-menu-ikon {
+            position: relative;
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: #fff7ed;
+            color: #ea580c;
+        }
+
+        #tya-menu-utama .tya-menu-ikon svg,
+        #tya-lembar .tya-menu-ikon svg {
+            width: 22px !important;
+            height: 22px !important;
+            margin: 0 !important;
+            color: inherit !important;
+        }
+
+        #tya-menu-utama .tya-menu-grup .tya-menu-ikon::after {
+            content: "";
+            position: absolute;
+            right: 4px;
+            bottom: 4px;
+            width: 6px;
+            height: 6px;
+            border-radius: 9999px;
+            background: #f97316;
+        }
+
+        #tya-menu-utama .tya-menu-label,
+        #tya-lembar .tya-menu-label {
+            width: 100%;
+            font-size: 10px;
+            font-weight: 600;
+            line-height: 1.2;
+            text-align: center;
+            color: #3f3f46;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            overflow-wrap: anywhere;
+        }
+
+        #tya-menu-utama .tya-aktif .tya-menu-ikon,
+        #tya-lembar .tya-aktif .tya-menu-ikon {
+            background: #f97316;
+            color: #ffffff;
+        }
+
+        #tya-menu-utama .tya-menu-grup.tya-aktif .tya-menu-ikon::after {
+            background: #ffffff;
+        }
+
+        /* ---- jendela sub menu (dari bawah) ---- */
+        #tya-lembar.tya-buka {
+            display: block;
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+        }
+
+        #tya-lembar .tya-lembar-latar {
+            position: absolute;
+            inset: 0;
+            background: rgba(9, 9, 11, 0.5);
+        }
+
+        #tya-lembar .tya-lembar-isi {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-height: 75dvh;
+            overflow-y: auto;
+            padding: 10px 12px calc(16px + env(safe-area-inset-bottom, 0px));
+            background: #ffffff;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.18);
+            animation: tya-naik 0.2s ease-out;
+        }
+
+        #tya-lembar .tya-lembar-pegangan {
+            width: 40px;
+            height: 4px;
+            margin: 0 auto 12px;
+            border-radius: 9999px;
+            background: #d4d4d8;
+        }
+
+        @keyframes tya-naik {
+            from { transform: translateY(30px); opacity: 0.4; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .dark #tya-menu-utama {
+            background: #18181b;
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: none;
+        }
+
+        .dark #tya-lembar .tya-lembar-isi {
+            background: #18181b;
+        }
+
+        .dark #tya-lembar .tya-lembar-pegangan {
+            background: #3f3f46;
+        }
+
+        .dark #tya-menu-utama .tya-menu-judul,
+        .dark #tya-lembar .tya-lembar-judul {
+            color: #a1a1aa;
+        }
+
+        .dark #tya-menu-utama .tya-menu-ikon,
+        .dark #tya-lembar .tya-menu-ikon {
+            background: rgba(249, 115, 22, 0.13);
+            color: #fb923c;
+        }
+
+        .dark #tya-menu-utama .tya-aktif .tya-menu-ikon,
+        .dark #tya-lembar .tya-aktif .tya-menu-ikon {
+            background: #f97316;
+            color: #ffffff;
+        }
+
+        .dark #tya-menu-utama .tya-menu-label,
+        .dark #tya-lembar .tya-menu-label {
+            color: #d4d4d8;
+        }
+
+        /* ---- ikon invoice belum bayar di bar atas ---- */
+        #tya-mtop .tya-mtop-invoice {
+            position: relative;
+            flex: 0 0 auto;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #fff7ed;
+            text-decoration: none;
+        }
+
+        #tya-mtop .tya-mtop-invoice::before {
+            content: "";
+            width: 22px;
+            height: 22px;
+            background: #ea580c;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M19.5%2014.25v-2.63A3.38%203.38%200%200%200%2016.13%208.25h-1.5A1.13%201.13%200%200%201%2013.5%207.13v-1.5A3.38%203.38%200%200%200%2010.13%202.25H8.25m0%2012.75h7.5m-7.5%203H12M10.5%202.25H5.63c-.62%200-1.13.5-1.13%201.13v17.25c0%20.62.5%201.13%201.13%201.13h12.75c.62%200%201.13-.5%201.13-1.13V11.25a9%209%200%200%200-9-9z%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M19.5%2014.25v-2.63A3.38%203.38%200%200%200%2016.13%208.25h-1.5A1.13%201.13%200%200%201%2013.5%207.13v-1.5A3.38%203.38%200%200%200%2010.13%202.25H8.25m0%2012.75h7.5m-7.5%203H12M10.5%202.25H5.63c-.62%200-1.13.5-1.13%201.13v17.25c0%20.62.5%201.13%201.13%201.13h12.75c.62%200%201.13-.5%201.13-1.13V11.25a9%209%200%200%200-9-9z%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        }
+
+        #tya-mtop .tya-mtop-invoice .tya-lencana {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 1;
+            box-shadow: 0 0 0 2px #ffffff;
+        }
+
+        .dark #tya-mtop .tya-mtop-invoice {
+            background: rgba(249, 115, 22, 0.14);
+        }
+
+        .dark #tya-mtop .tya-mtop-invoice::before {
+            background: #fb923c;
+        }
+
+        .dark #tya-mtop .tya-mtop-invoice .tya-lencana {
+            box-shadow: 0 0 0 2px #18181b;
+        }
+    }
+</style>
+<script>
+    /* DASBOR-MOBILE-V2 */
+    (function () {
+        if (window.__tyaDasborV2) return;
+        window.__tyaDasborV2 = true;
+
+        var mq = window.matchMedia('(max-width: 767px)');
+        var dijadwalkan = false;
+        var LABEL_UANG = ['Pendapatan Hari Ini', 'Pendapatan Bulan Ini'];
+        var POLA_RP = /Rp\s?[\d.,]+/g;
+        var terbuka = {};            // label kartu -> true bila nominal ditampilkan
+        var asliTeks = new WeakMap(); // text node -> teks asli
+        var IKON_BAWAAN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6zm0 9.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25zM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6zm0 9.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25z"/></svg>';
+
+        function teks(el) {
+            return (el && el.textContent || '').replace(/\s+/g, ' ').trim();
+        }
+
+        function esc(s) {
+            return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
+        }
+
+        // ---------------- slide kartu ----------------
+        function slide() {
+            var wadah = document.querySelector('.tya-statistik');
+            if (!wadah) return null;
+            wadah.classList.add('tya-slide');
+            var kartu = Array.prototype.filter.call(wadah.children, function (c) {
+                return c.offsetParent !== null || getComputedStyle(c).display !== 'none';
+            });
+
+            var titik = document.getElementById('tya-titik');
+            if (!titik) {
+                titik = document.createElement('div');
+                titik.id = 'tya-titik';
+            }
+            if (titik.childElementCount !== kartu.length) {
+                titik.innerHTML = '';
+                kartu.forEach(function (k, i) {
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.setAttribute('aria-label', 'Kartu ' + (i + 1));
+                    b.addEventListener('click', function () {
+                        var w = document.querySelector('.tya-statistik.tya-slide');
+                        var target = w ? w.children[i] : null;
+                        if (w && target) w.scrollTo({ left: target.offsetLeft - w.children[0].offsetLeft, behavior: 'smooth' });
+                    });
+                    titik.appendChild(b);
+                });
+            }
+            if (wadah.nextElementSibling !== titik) wadah.after(titik);
+
+            if (!wadah.__tyaGeser) {
+                wadah.__tyaGeser = true;
+                wadah.addEventListener('scroll', function () { tandaiTitik(wadah); }, { passive: true });
+            }
+            tandaiTitik(wadah);
+            return wadah;
+        }
+
+        function tandaiTitik(wadah) {
+            var titik = document.getElementById('tya-titik');
+            if (!titik || !wadah.clientWidth) return;
+            var awal = wadah.children[0] ? wadah.children[0].offsetLeft : 0;
+            var i = 0, jarak = Infinity;
+            Array.prototype.forEach.call(wadah.children, function (c, j) {
+                var d = Math.abs(c.offsetLeft - awal - wadah.scrollLeft);
+                if (d < jarak) { jarak = d; i = j; }
+            });
+            Array.prototype.forEach.call(titik.children, function (b, j) { b.classList.toggle('tya-aktif', j === i); });
+        }
+
+        // ---------------- sembunyikan nominal ----------------
+        function kartuDenganLabel(wadah, label) {
+            var hasil = null;
+            Array.prototype.forEach.call(wadah.children, function (k) {
+                if (!hasil && teks(k).indexOf(label) !== -1) hasil = k;
+            });
+            return hasil;
+        }
+
+        function nodeUang(kartu) {
+            var hasil = [];
+            var w = document.createTreeWalker(kartu, NodeFilter.SHOW_TEXT, null);
+            var n;
+            while ((n = w.nextNode())) {
+                if (n.parentElement && n.parentElement.closest('.tya-mata')) continue;
+                var asli = asliTeks.get(n);
+                if (asli !== undefined && n.data !== asli && n.data.indexOf('******') === -1) asli = undefined; // diperbarui Livewire
+                if (asli === undefined) {
+                    POLA_RP.lastIndex = 0;
+                    if (!POLA_RP.test(n.data)) continue;
+                    asliTeks.set(n, n.data);
+                }
+                hasil.push(n);
+            }
+            return hasil;
+        }
+
+        function terapkanUang(kartu, label) {
+            var tampil = !!terbuka[label];
+            nodeUang(kartu).forEach(function (n) {
+                var asli = asliTeks.get(n);
+                var target = tampil ? asli : asli.replace(POLA_RP, 'Rp ******');
+                if (n.data !== target) n.data = target;
+            });
+
+            // tombol mata di sebelah nominal utama (teks yang isinya hanya "Rp...")
+            var utama = null;
+            kartu.querySelectorAll('*').forEach(function (el) {
+                if (utama || el.closest('.tya-mata')) return;
+                var t = teks(el).replace(/\s*$/, '');
+                if (/^Rp\s?([\d.,]+|\*{6})$/.test(t) && el.children.length <= 1) utama = el;
+            });
+            if (!utama) return;
+            var mata = utama.querySelector(':scope > .tya-mata');
+            if (!mata) {
+                mata = document.createElement('button');
+                mata.type = 'button';
+                mata.className = 'tya-mata';
+                mata.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    terbuka[label] = !terbuka[label];
+                    jadwalkan();
+                });
+                utama.appendChild(mata);
+            }
+            mata.classList.toggle('tya-terbuka', tampil);
+            mata.setAttribute('aria-label', tampil ? 'Sembunyikan nominal' : 'Tampilkan nominal');
+        }
+
+        function uang(wadah) {
+            LABEL_UANG.forEach(function (label) {
+                var k = kartuDenganLabel(wadah, label);
+                if (k) terapkanUang(k, label);
+            });
+        }
+
+        // ---------------- menu utama + sub menu ----------------
+        function infoItem(li, ikonCadangan) {
+            var a = li.querySelector(':scope > .fi-sidebar-item-btn');
+            if (!a) return null;
+            var ikon = a.querySelector('svg.fi-sidebar-item-icon') || null;
+            return {
+                href: a.getAttribute('href') || '#',
+                label: teks(li.querySelector(':scope > .fi-sidebar-item-btn .fi-sidebar-item-label')) || teks(a),
+                ikon: ikon ? ikon.outerHTML : (ikonCadangan || IKON_BAWAAN),
+                aktif: li.classList.contains('fi-active') || li.classList.contains('fi-sidebar-item-has-active-child-items'),
+                anak: Array.prototype.map.call(li.querySelectorAll(':scope > .fi-sidebar-sub-group-items > li.fi-sidebar-item'), function (c) { return infoItem(c, ikon ? ikon.outerHTML : ikonCadangan); }).filter(Boolean),
+            };
+        }
+
+        function daftarUtama() {
+            var hasil = [];
+            document.querySelectorAll('.fi-sidebar-nav .fi-sidebar-group').forEach(function (g) {
+                var btn = g.querySelector(':scope > .fi-sidebar-group-btn');
+                var gi = btn ? btn.querySelector(':scope > svg') : null;
+                var items = Array.prototype.map.call(g.querySelectorAll(':scope > .fi-sidebar-group-items > li.fi-sidebar-item'), function (li) {
+                    return infoItem(li, gi ? gi.outerHTML : null);
+                }).filter(Boolean);
+                if (!items.length) return;
+
+                var label = btn ? teks(btn.querySelector('.fi-sidebar-group-label')) : '';
+                if (label) {
+                    var ikonGrup = gi ? gi.outerHTML : (items[0].ikon || IKON_BAWAAN);
+                    hasil.push({ grup: true, label: label, ikon: ikonGrup, anak: items, aktif: items.some(function (i) { return i.aktif; }) });
+                } else {
+                    items.forEach(function (i) { hasil.push(i); });
+                }
+            });
+            // item di luar grup (versi lama Filament)
+            document.querySelectorAll('.fi-sidebar-nav > ul > li.fi-sidebar-item, .fi-sidebar-nav-groups > li.fi-sidebar-item').forEach(function (li) {
+                var i = infoItem(li, null);
+                if (i) hasil.push(i);
+            });
+            return hasil;
+        }
+
+        var menuTerakhir = [];
+
+        function bukaLembar(m) {
+            var l = document.getElementById('tya-lembar');
+            if (!l) {
+                l = document.createElement('div');
+                l.id = 'tya-lembar';
+                document.body.appendChild(l);
+            }
+            var html = '<div class="tya-lembar-latar"></div><div class="tya-lembar-isi" role="dialog" aria-label="' + esc(m.label) + '"><div class="tya-lembar-pegangan"></div><div class="tya-lembar-judul">' + esc(m.label) + '</div><div class="tya-menu-grid">';
+            var daftar = m.grup ? m.anak : [{ href: m.href, label: m.label, ikon: m.ikon, aktif: m.aktif }].concat(m.anak);
+            daftar.forEach(function (s) {
+                html += '<a class="tya-menu-item ' + (s.aktif ? 'tya-aktif' : '') + '" href="' + esc(s.href) + '"><span class="tya-menu-ikon">' + s.ikon + '</span><span class="tya-menu-label">' + esc(s.label) + '</span></a>';
+            });
+            l.innerHTML = html + '</div></div>';
+            l.querySelector('.tya-lembar-latar').addEventListener('click', tutupLembar);
+            l.classList.add('tya-buka');
+        }
+
+        function tutupLembar() {
+            var l = document.getElementById('tya-lembar');
+            if (l) l.classList.remove('tya-buka');
+        }
+
+        function menuUtama() {
+            var lama = document.getElementById('tya-menu-ikon');
+            if (!lama) return;
+            lama.classList.add('tya-diganti');
+
+            var menu = daftarUtama();
+            if (!menu.length) return;
+            menuTerakhir = menu;
+
+            var box = document.getElementById('tya-menu-utama');
+            var kunci = JSON.stringify(menu.map(function (m) { return [m.label, m.href || '', m.aktif, (m.anak || []).length]; }));
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'tya-menu-utama';
+                box.addEventListener('click', function (e) {
+                    var t = e.target.closest('[data-tya-grup]');
+                    if (!t) return;
+                    e.preventDefault();
+                    var m = menuTerakhir[parseInt(t.getAttribute('data-tya-grup'), 10)];
+                    if (m) bukaLembar(m);
+                });
+            }
+            if (box.getAttribute('data-kunci') !== kunci) {
+                box.setAttribute('data-kunci', kunci);
+                var html = '<div class="tya-menu-judul">Menu</div><div class="tya-menu-grid">';
+                menu.forEach(function (m, i) {
+                    var punyaSub = m.grup || (m.anak && m.anak.length);
+                    var kelas = 'tya-menu-item ' + (punyaSub ? 'tya-menu-grup ' : '') + (m.aktif ? 'tya-aktif' : '');
+                    var isi = '<span class="tya-menu-ikon">' + m.ikon + '</span><span class="tya-menu-label">' + esc(m.label) + '</span>';
+                    html += punyaSub
+                        ? '<button type="button" class="' + kelas + '" data-tya-grup="' + i + '">' + isi + '</button>'
+                        : '<a class="' + kelas + '" href="' + esc(m.href) + '">' + isi + '</a>';
+                });
+                box.innerHTML = html + '</div>';
+            }
+            if (lama.nextElementSibling !== box) lama.after(box);
+        }
+
+        // ---------------- ikon invoice di bar atas ----------------
+        function linkInvoice() {
+            var cocok = null;
+            document.querySelectorAll('.fi-sidebar-nav li.fi-sidebar-item').forEach(function (li) {
+                if (cocok) return;
+                var a = li.querySelector(':scope > .fi-sidebar-item-btn');
+                if (!a) return;
+                var lbl = teks(a).toLowerCase();
+                var href = (a.getAttribute('href') || '').toLowerCase();
+                if (/belum\s*(di)?bayar|belum\s*lunas|tunggak|unpaid/.test(lbl) || /unpaid|belum-bayar|belum-lunas/.test(href)) {
+                    var badge = li.querySelector('.fi-sidebar-item-badge-ctn, .fi-badge');
+                    cocok = { href: a.getAttribute('href'), label: teks(li.querySelector('.fi-sidebar-item-label')) || 'Invoice belum dibayar', jumlah: badge ? teks(badge) : '' };
+                }
+            });
+            return cocok;
+        }
+
+        function jumlahDariKartu() {
+            var w = document.querySelector('.tya-statistik');
+            if (!w) return '';
+            var k = kartuDenganLabel(w, 'Invoice Belum Dibayar');
+            var m = k ? teks(k).match(/(\d[\d.]*)\s*tagihan/i) : null;
+            return m ? m[1] : '';
+        }
+
+        function ikonInvoice() {
+            var bar = document.getElementById('tya-mtop');
+            if (!bar) return;
+            var info = linkInvoice();
+            var a = bar.querySelector('.tya-mtop-invoice');
+            if (!info) { if (a) a.remove(); return; }
+            if (!a) {
+                a = document.createElement('a');
+                a.className = 'tya-mtop-invoice';
+                bar.insertBefore(a, bar.querySelector('.tya-mtop-keluar'));
+            }
+            a.href = info.href;
+            a.setAttribute('aria-label', info.label);
+            a.setAttribute('title', info.label);
+            var jml = info.jumlah || jumlahDariKartu();
+            try {
+                if (jml) sessionStorage.setItem('tya-jml-invoice', jml); else jml = sessionStorage.getItem('tya-jml-invoice') || '';
+            } catch (e) {}
+            var l = a.querySelector('.tya-lencana');
+            if (jml && jml !== '0') {
+                if (!l) { l = document.createElement('span'); l.className = 'tya-lencana'; a.appendChild(l); }
+                var tampil = parseInt(String(jml).replace(/\D/g, ''), 10) > 99 ? '99+' : jml;
+                if (l.textContent !== tampil) l.textContent = tampil;
+            } else if (l) {
+                l.remove();
+            }
+        }
+
+        function proses() {
+            dijadwalkan = false;
+            if (!mq.matches) {
+                document.querySelectorAll('.tya-slide').forEach(function (x) { x.classList.remove('tya-slide'); });
+                ['tya-titik', 'tya-menu-utama', 'tya-lembar'].forEach(function (id) { var e = document.getElementById(id); if (e) e.remove(); });
+                // kembalikan nominal asli
+                LABEL_UANG.forEach(function (l) { terbuka[l] = true; });
+                var w0 = document.querySelector('.tya-statistik');
+                if (w0) uang(w0);
+                document.querySelectorAll('.tya-mata').forEach(function (m) { m.remove(); });
+                LABEL_UANG.forEach(function (l) { terbuka[l] = false; });
+                return;
+            }
+            var w = slide();
+            if (w) uang(w);
+            menuUtama();
+            ikonInvoice();
+        }
+
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            // dua frame: setelah skrip dasbor versi 1 menyusun kartu & menu
+            window.requestAnimationFrame(function () { window.requestAnimationFrame(proses); });
+        }
+
+        function mulai() {
+            jadwalkan();
+            new MutationObserver(function (daftar) {
+                for (var i = 0; i < daftar.length; i++) {
+                    var t = daftar[i].target;
+                    if (t && t.nodeType === 3) t = t.parentElement;
+                    if (t && t.closest && t.closest('#tya-menu-utama, #tya-lembar, #tya-titik, .tya-mata')) continue;
+                    jadwalkan();
+                    return;
+                }
+            }).observe(document.body, { childList: true, subtree: true, characterData: true });
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai);
+        else mulai();
+
+        if (mq.addEventListener) mq.addEventListener('change', jadwalkan);
+        document.addEventListener('livewire:navigated', jadwalkan);
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') tutupLembar(); });
+    })();
+</script>

@@ -1,0 +1,59 @@
+<style>
+    /* =====================================================================
+     * SIAP-TAMPIL (2026-10-18) -- HP (< 768px):
+     *  - isi halaman baru ditampilkan SETELAH semua skrip tampilan selesai
+     *    bekerja (kartu, bar atas, menu), jadi tampilan lama tidak sempat
+     *    terlihat beberapa detik. Pasangannya ada di <head>
+     *    (tya-kepala.blade.php, batas aman 2,5 detik).
+     *  - popup form (Tambah / Edit) lebih ringkas: tidak sampai bawah layar,
+     *    di tengah, tombol Batal / Simpan tidak tertutup bilah CPU-RAM.
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn:not(#tya-x) {
+            padding: 20px 12px !important;
+            align-items: center !important;
+        }
+
+        .fi-modal:not(.fi-modal-slide-over):not(.fi-width-screen) > .fi-modal-window-ctn > .fi-modal-window:not(#tya-x):not(#tya-y) {
+            max-height: calc(100dvh - 180px) !important;
+            margin-block: auto !important;
+        }
+
+        /* selama popup terbuka: bilah CPU-RAM & bar bawah disembunyikan,
+           bar atas ikut redup di belakang popup */
+        body.tya-ada-modal .tya-footer:not(#tya-x),
+        body.tya-ada-modal .tya-bottom-nav:not(#tya-x) {
+            display: none !important;
+        }
+
+        body.tya-ada-modal .fi-topbar-ctn:not(#tya-x),
+        body.tya-ada-modal .fi-topbar:not(#tya-x) {
+            z-index: 5 !important;
+        }
+    }
+</style>
+<script>
+    /* SIAP-TAMPIL: tampilkan halaman setelah skrip tampilan lain selesai mengubah DOM
+       (tenang 180 ms tanpa perubahan), paling lama 1,5 detik. */
+    (function () {
+        var d = document.documentElement;
+        if (d.classList.contains('tya-siap')) return;
+        var tunda = null;
+        var mulai = Date.now();
+        var obs = null;
+        function selesai() {
+            if (obs) obs.disconnect();
+            clearTimeout(tunda);
+            d.classList.add('tya-siap');
+        }
+        function tenang() {
+            clearTimeout(tunda);
+            tunda = setTimeout(selesai, Date.now() - mulai < 250 ? 250 : 180);
+        }
+        obs = new MutationObserver(tenang);
+        obs.observe(document.body || d, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
+        tenang();
+        setTimeout(selesai, 1500);
+        window.addEventListener('pageshow', function (e) { if (e.persisted) selesai(); });
+    })();
+</script>

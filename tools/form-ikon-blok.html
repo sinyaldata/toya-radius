@@ -1,0 +1,176 @@
+<style>
+    /* =====================================================================
+     * FORM-IKON-KOTAK (2026-10-12) -- gaya form seperti contoh user:
+     * kotak ikon di kiri setiap field, label di atas, input besar & tebal.
+     *  - field yang punya ->prefixIcon(): ikon itu yang dipindah ke kotak
+     *  - field tanpa ikon: ikon sesuai jenis (pilihan / saklar / tanggal /
+     *    teks panjang / angka / lainnya pensil) supaya semua baris sejajar
+     * Berlaku di modal & halaman Create/Edit; filter tabel & field ber-label
+     * sebaris tidak disentuh. Terang & gelap.
+     * ===================================================================== */
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label) {
+        position: relative !important;
+        padding-inline-start: 64px !important;
+        min-height: 56px !important;
+    }
+
+    /* --- kotak ikon (dipakai dua jalur di bawah) --- */
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)))::before {
+        content: "";
+        position: absolute;
+        inset-inline-start: 0;
+        top: 14px;
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background-color: #fff7ed;
+        background-image: none;
+        box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.14);
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)))::after {
+        content: "";
+        position: absolute;
+        inset-inline-start: 15px;
+        top: 29px;
+        width: 22px;
+        height: 22px;
+        background-color: #f97316;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16.86%204.49l2.65%202.65M7.5%2019.5H4.5v-3L16.06%204.94a1.5%201.5%200%200%201%202.12%200l.88.88a1.5%201.5%200%200%201%200%202.12z%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16.86%204.49l2.65%202.65M7.5%2019.5H4.5v-3L16.06%204.94a1.5%201.5%200%200%201%202.12%200l.88.88a1.5%201.5%200%200%201%200%202.12z%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+        pointer-events: none;
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator))):has(select, .fi-select-input, .fi-fo-select)::after {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8.25%206.75h12M8.25%2012h12M8.25%2017.25h12M3.75%206.75h.01M3.75%2012h.01M3.75%2017.25h.01%22%2F%3E%3C%2Fsvg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8.25%206.75h12M8.25%2012h12M8.25%2017.25h12M3.75%206.75h.01M3.75%2012h.01M3.75%2017.25h.01%22%2F%3E%3C%2Fsvg%3E");
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator))):has(.fi-toggle, .fi-fo-toggle, input[type="checkbox"])::after {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5.64%206.36a9%209%200%201%200%2012.73%200M12%203v9%22%2F%3E%3C%2Fsvg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5.64%206.36a9%209%200%201%200%2012.73%200M12%203v9%22%2F%3E%3C%2Fsvg%3E");
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator))):has(input[type="date"], input[type="datetime-local"], input[type="time"], .fi-fo-date-time-picker)::after {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6.75%203v2.25M17.25%203v2.25M3.75%2018.75V7.5a2.25%202.25%200%200%201%202.25-2.25h12a2.25%202.25%200%200%201%202.25%202.25v11.25M3.75%2018.75A2.25%202.25%200%200%200%206%2021h12a2.25%202.25%200%200%200%202.25-2.25M3.75%2018.75v-7.5h16.5v7.5%22%2F%3E%3C%2Fsvg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6.75%203v2.25M17.25%203v2.25M3.75%2018.75V7.5a2.25%202.25%200%200%201%202.25-2.25h12a2.25%202.25%200%200%201%202.25%202.25v11.25M3.75%2018.75A2.25%202.25%200%200%200%206%2021h12a2.25%202.25%200%200%200%202.25-2.25M3.75%2018.75v-7.5h16.5v7.5%22%2F%3E%3C%2Fsvg%3E");
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator))):has(textarea)::after {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3.75%206.75h16.5M3.75%2012h16.5M3.75%2017.25H12%22%2F%3E%3C%2Fsvg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3.75%206.75h16.5M3.75%2012h16.5M3.75%2017.25H12%22%2F%3E%3C%2Fsvg%3E");
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator))):has(input[type="number"], input[inputmode="decimal"], input[inputmode="numeric"])::after {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5.25%208.25h15M3.75%2015.75h15M10.5%203.75%207.5%2020.25M16.5%203.75l-3%2016.5%22%2F%3E%3C%2Fsvg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5.25%208.25h15M3.75%2015.75h15M10.5%203.75%207.5%2020.25M16.5%203.75l-3%2016.5%22%2F%3E%3C%2Fsvg%3E");
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator))):has(.fi-input-wrp-prefix-has-label, .fi-input-wrp-suffix-has-label)::after {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M2.25%2018.75a60%2060%200%200%201%2015.8%202.1c.73.2%201.45-.34%201.45-1.1v-1M3.75%204.5v.75A.75.75%200%200%201%203%206h-.75m0%200v-.38c0-.62.5-1.12%201.13-1.12h15.37c.62%200%201.13.5%201.13%201.13v9.74c0%20.63-.5%201.13-1.13%201.13H3.37c-.62%200-1.12-.5-1.12-1.13V6zM15%2010.5a3%203%200%201%201-6%200%203%203%200%200%201%206%200z%22%2F%3E%3C%2Fsvg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M2.25%2018.75a60%2060%200%200%201%2015.8%202.1c.73.2%201.45-.34%201.45-1.1v-1M3.75%204.5v.75A.75.75%200%200%201%203%206h-.75m0%200v-.38c0-.62.5-1.12%201.13-1.12h15.37c.62%200%201.13.5%201.13%201.13v9.74c0%20.63-.5%201.13-1.13%201.13H3.37c-.62%200-1.12-.5-1.12-1.13V6zM15%2010.5a3%203%200%201%201-6%200%203%203%200%200%201%206%200z%22%2F%3E%3C%2Fsvg%3E");
+    }
+
+    /* --- field yang sudah punya ikon: ikonnya sendiri jadi kotak --- */
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)) .fi-input-wrp {
+        position: relative !important;
+        overflow: visible !important;
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)) .fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator) {
+        position: absolute !important;
+        inset-inline-start: -64px !important;
+        top: calc(50% - 11px) !important;
+        transform: translateY(-50%) !important;
+        box-sizing: border-box !important;
+        width: 52px !important;
+        height: 52px !important;
+        max-width: none !important;
+        padding: 15px !important;
+        border-radius: 12px !important;
+        background: #fff7ed !important;
+        box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.14) !important;
+        color: #f97316 !important;
+    }
+
+    /* prefix yang tinggal kosong (cuma berisi ikon tadi) tidak memakan tempat */
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)) .fi-input-wrp-prefix:not(.fi-input-wrp-prefix-has-label):not(:has(.fi-input-wrp-actions)) {
+        width: 0 !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)) .fi-input-wrp-prefix.fi-input-wrp-prefix-has-label {
+        border-inline-end: 0 !important;
+    }
+
+    /* --- label & input --- */
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label) :is(.fi-fo-field-label, .fi-fo-field-wrp-label, .fi-fo-field-lbl) {
+        font-size: 12.5px !important;
+        font-weight: 500 !important;
+        color: #71717a !important;
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label) :is(.fi-fo-field-label-content, .fi-fo-field-lbl-text) {
+        color: inherit !important;
+        font-weight: inherit !important;
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label) .fi-input-wrp {
+        min-height: 46px !important;
+        border-radius: 12px !important;
+    }
+
+    :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label) .fi-input-wrp :is(.fi-input, .fi-select-input, select) {
+        min-height: 44px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+
+    @media (max-width: 639px) {
+        :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label) {
+            padding-inline-start: 54px !important;
+        }
+
+        :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)))::before {
+            width: 44px;
+            height: 44px;
+            top: 18px;
+        }
+
+        :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)))::after {
+            inset-inline-start: 12px;
+            top: 30px;
+            width: 20px;
+            height: 20px;
+        }
+
+        :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)) .fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator) {
+            inset-inline-start: -54px !important;
+            width: 44px !important;
+            height: 44px !important;
+            padding: 12px !important;
+        }
+    }
+
+    /* ---------- TEMA GELAP ---------- */
+    .dark :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)))::before {
+        background-color: #232327;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .dark :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):not(:has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)))::after {
+        background-color: #fb923c;
+    }
+
+    .dark :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label):has(.fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator)) .fi-input-wrp-prefix > .fi-icon:not(.fi-loading-indicator) {
+        background: #232327 !important;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
+        color: #fb923c !important;
+    }
+
+    .dark :is(.fi-modal-content, .fi-main) :is(.fi-fo-field, .fi-fo-field-wrp):not(.fi-ta-filters *):not(:has(.fi-fo-field, .fi-fo-field-wrp)):not(.fi-fo-field-has-inline-label) :is(.fi-fo-field-label, .fi-fo-field-wrp-label, .fi-fo-field-lbl) {
+        color: #a1a1aa !important;
+    }
+</style>

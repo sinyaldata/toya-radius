@@ -1,0 +1,86 @@
+<style>
+    /* RESPONSIF-FORM-LAYAR-KECIL (2026-10-12) -- tambahan di akhir; hanya mengubah tampilan
+     * di bawah 1280px lebar layar (laptop/PC dengan jendela sempit atau tampilan diperbesar).
+     * Layar yang lebih lebar TIDAK berubah sama sekali. */
+
+    /* Anak grid/flex boleh mengecil dan teks panjang boleh turun baris -- tanpa ini satu
+     * kata/URL panjang melebarkan kolomnya dan mendorong isi form keluar dari kartu. */
+    .fi-grid > *,
+    .fi-fo-field-wrp,
+    .fi-input-wrp {
+        min-width: 0;
+    }
+
+    .fi-fo-field-wrp-helper-text,
+    .fi-fo-field-lbl,
+    .fi-fo-field-wrp-error-message {
+        overflow-wrap: anywhere;
+    }
+
+    /* Pratinjau skrip/kode di form: turun baris, bukan melebar keluar kartu (berlaku di semua lebar). */
+    .fi-sc-wizard pre,
+    .fi-modal-content pre,
+    .fi-fo-field-wrp pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .fi-sc-wizard code,
+    .fi-modal-content code {
+        overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 1279px) {
+        /* 1) Keterangan di bawah input TIDAK lagi dipotong 2 baris. */
+        .fi-fo-field-wrp-helper-text {
+            display: block !important;
+            -webkit-line-clamp: unset !important;
+            line-clamp: unset !important;
+            overflow: visible !important;
+        }
+
+        /* 2) Wizard (NAS, Profile, dst): kepala langkah dirapatkan supaya muat, dan kalau
+         * tetap tidak muat bisa digeser mendatar -- bukan terpotong. */
+        .fi-sc-wizard .fi-sc-wizard-header {
+            overflow-x: auto;
+            padding: 0.25rem 0.35rem;
+        }
+
+        .fi-sc-wizard .fi-sc-wizard-header-step {
+            min-width: 0;
+        }
+
+        .fi-sc-wizard .fi-sc-wizard-header-step-btn {
+            gap: 0.5rem;
+            padding: 0.5rem 0.6rem;
+            min-width: 0;
+        }
+
+        .fi-sc-wizard .fi-sc-wizard-header-step-icon-ctn {
+            width: 2rem;
+            height: 2rem;
+            flex-shrink: 0;
+        }
+
+        .fi-sc-wizard .fi-sc-wizard-header-step-label {
+            font-size: 0.8125rem;
+            overflow-wrap: anywhere;
+        }
+
+        .fi-sc-wizard .fi-sc-wizard-header-step-description {
+            display: none !important;
+        }
+
+        /* 3) Isi langkah lebih hemat ruang samping. */
+        .fi-sc-wizard.fi-contained .fi-sc-wizard-step.fi-active {
+            padding: 1rem 0.9rem;
+        }
+
+        /* 4) Modal tidak pernah lebih lebar dari layar. */
+        .fi-modal-window {
+            max-width: calc(100vw - 1rem) !important;
+        }
+    }
+</style>

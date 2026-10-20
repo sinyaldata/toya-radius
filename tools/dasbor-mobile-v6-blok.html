@@ -1,0 +1,130 @@
+<style>
+    /* =====================================================================
+     * DASBOR-MOBILE-V6 (2026-10-13) -- HP (< 768px):
+     *  - jarak kartu ringkasan -> menu dirapatkan
+     *  - menu ikon cukup 10: 9 menu pertama + "Lainnya" (sisanya muncul di
+     *    jendela bawah saat "Lainnya" diketuk)
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        #tya-titik {
+            margin: 8px 0 0 !important;
+        }
+
+        #tya-menu-utama {
+            margin-top: -10px !important;
+            margin-bottom: 4px !important;
+        }
+
+        #tya-menu-utama.tya-ringkas .tya-menu-grid > .tya-menu-item:nth-child(n+10):not(.tya-lainnya) {
+            display: none !important;
+        }
+
+        #tya-menu-utama .tya-lainnya .tya-menu-ikon {
+            background: #f4f4f5;
+            color: #52525b;
+        }
+
+        .dark #tya-menu-utama .tya-lainnya .tya-menu-ikon {
+            background: rgba(255, 255, 255, 0.08);
+            color: #d4d4d8;
+        }
+    }
+</style>
+<script>
+    /* DASBOR-MOBILE-V6: menu ringkas 10 ikon + "Lainnya". */
+    (function () {
+        if (window.__tyaDasborV6) return;
+        window.__tyaDasborV6 = true;
+
+        var BATAS = 10;
+        var IKON_LAINNYA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6zm0 9.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25zM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6zm0 9.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25z"/></svg>';
+
+        function itemAsli(box) {
+            return Array.prototype.filter.call(box.querySelectorAll('.tya-menu-grid > .tya-menu-item'), function (el) {
+                return !el.classList.contains('tya-lainnya');
+            });
+        }
+
+        function bukaLainnya() {
+            var box = document.getElementById('tya-menu-utama');
+            if (!box) return;
+            var sisa = itemAsli(box).slice(BATAS - 1);
+            var l = document.getElementById('tya-lembar');
+            if (!l) {
+                l = document.createElement('div');
+                l.id = 'tya-lembar';
+                document.body.appendChild(l);
+            }
+            l.innerHTML = '<div class="tya-lembar-latar"></div><div class="tya-lembar-isi" role="dialog" aria-label="Menu lainnya"><div class="tya-lembar-pegangan"></div><div class="tya-lembar-judul">Menu Lainnya</div><div class="tya-menu-grid"></div></div>';
+            var grid = l.querySelector('.tya-menu-grid');
+            sisa.forEach(function (asli) {
+                var salin = asli.cloneNode(true);
+                if (salin.hasAttribute('data-tya-grup')) {
+                    var idx = salin.getAttribute('data-tya-grup');
+                    salin.removeAttribute('data-tya-grup');
+                    salin.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        var o = document.querySelector('#tya-menu-utama [data-tya-grup="' + idx + '"]');
+                        if (o) o.click(); // jendela diganti isi sub menu grup itu
+                    });
+                }
+                grid.appendChild(salin);
+            });
+            l.querySelector('.tya-lembar-latar').addEventListener('click', function () { l.classList.remove('tya-buka'); });
+            l.classList.add('tya-buka');
+        }
+
+        function pasang() {
+            var box = document.getElementById('tya-menu-utama');
+            if (!box) return;
+            var grid = box.querySelector('.tya-menu-grid');
+            if (!grid) return;
+            var items = itemAsli(box);
+            var tombol = grid.querySelector(':scope > .tya-lainnya');
+
+            if (items.length <= BATAS) {
+                box.classList.remove('tya-ringkas');
+                if (tombol) tombol.remove();
+                return;
+            }
+
+            box.classList.add('tya-ringkas');
+            if (!tombol) {
+                tombol = document.createElement('button');
+                tombol.type = 'button';
+                tombol.className = 'tya-menu-item tya-lainnya';
+                tombol.innerHTML = '<span class="tya-menu-ikon">' + IKON_LAINNYA + '</span><span class="tya-menu-label">Lainnya</span>';
+                tombol.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    bukaLainnya();
+                });
+            }
+            if (grid.lastElementChild !== tombol) grid.appendChild(tombol);
+            var adaAktif = items.slice(BATAS - 1).some(function (el) { return el.classList.contains('tya-aktif'); });
+            tombol.classList.toggle('tya-aktif', adaAktif);
+        }
+
+        var dijadwalkan = false;
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            window.requestAnimationFrame(function () { window.requestAnimationFrame(function () { setTimeout(function () { dijadwalkan = false; pasang(); }, 0); }); });
+        }
+
+        function mulai() {
+            jadwalkan();
+            new MutationObserver(function (d) {
+                for (var i = 0; i < d.length; i++) {
+                    var t = d[i].target;
+                    if (t && t.closest && t.closest('#tya-menu-utama') && !(d[i].addedNodes.length === 1 && d[i].addedNodes[0].classList && d[i].addedNodes[0].classList.contains('tya-lainnya'))) { jadwalkan(); return; }
+                    if (t === document.body || (t.querySelector && t.querySelector('#tya-menu-utama'))) { jadwalkan(); return; }
+                }
+            }).observe(document.body, { childList: true, subtree: true });
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai);
+        else mulai();
+        document.addEventListener('livewire:navigated', jadwalkan);
+    })();
+</script>

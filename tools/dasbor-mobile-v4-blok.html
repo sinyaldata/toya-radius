@@ -1,0 +1,153 @@
+<style>
+    /* =====================================================================
+     * DASBOR-MOBILE-V4 (2026-10-13) -- HP (< 768px):
+     *  - kartu ringkasan lebih pendek (176px -> 140px), judul tidak terpotong
+     *  - sapaan di bar atas cukup nama depan (lihat skrip di bawah)
+     * ===================================================================== */
+    @media (max-width: 767px) {
+        .tya-statistik.tya-slide > .tya-k {
+            height: 140px !important;
+            min-height: 140px !important;
+            border-radius: 20px !important;
+        }
+
+        .tya-k .tya-k-ikon {
+            top: 14px !important;
+            left: 14px !important;
+            width: 42px !important;
+            height: 42px !important;
+            border-radius: 13px !important;
+        }
+
+        .tya-k .tya-k-ikon svg {
+            width: 21px !important;
+            height: 21px !important;
+        }
+
+        .tya-k .tya-k-label {
+            top: 14px !important;
+            left: 66px !important;
+            right: 100px !important;
+            height: 42px !important;
+            font-size: 13.5px !important;
+            white-space: normal !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+            align-content: center !important;
+            padding-top: 2px !important;
+        }
+
+        .tya-k .tya-k-chip {
+            top: 21px !important;
+            right: 14px !important;
+            height: 26px !important;
+            padding: 0 9px !important;
+            font-size: 12px !important;
+        }
+
+        .tya-k .tya-k-chip svg {
+            width: 12px !important;
+            height: 12px !important;
+        }
+
+        .tya-k .tya-k-titik {
+            top: 28px !important;
+            right: 18px !important;
+        }
+
+        .tya-k .tya-k-nilai {
+            top: 64px !important;
+            left: 14px !important;
+            right: 14px !important;
+            font-size: 25px !important;
+        }
+
+        .tya-k .tya-k-nilai .tya-mata {
+            width: 30px;
+            height: 30px;
+            margin-inline-start: 6px;
+        }
+
+        .tya-k .tya-k-nilai .tya-mata::before,
+        .tya-k .tya-k-nilai .tya-mata.tya-terbuka::before {
+            width: 21px;
+            height: 21px;
+        }
+
+        .tya-k .tya-k-sub {
+            left: 14px !important;
+            right: 84px !important;
+            bottom: 13px !important;
+            font-size: 11.5px !important;
+        }
+
+        #tya-mtop .tya-mtop-nama {
+            display: none !important;
+        }
+
+        #tya-mtop .tya-mtop-depan {
+            font-size: 15px;
+            font-weight: 700;
+            color: #18181b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dark #tya-mtop .tya-mtop-depan {
+            color: #fafafa;
+        }
+
+        .tya-k .tya-k-spark {
+            right: 14px !important;
+            bottom: 13px !important;
+            transform: scale(0.85) !important;
+            transform-origin: bottom right !important;
+        }
+    }
+</style>
+<script>
+    /* DASBOR-MOBILE-V4: sapaan bar atas cukup nama depan. */
+    (function () {
+        if (window.__tyaDasborV4) return;
+        window.__tyaDasborV4 = true;
+
+        function namaDepan() {
+            var asli = document.querySelector('#tya-mtop .tya-mtop-nama');
+            if (!asli) return;
+            var depan = asli.parentElement.querySelector('.tya-mtop-depan');
+            if (!depan) {
+                depan = document.createElement('div');
+                depan.className = 'tya-mtop-depan';
+                asli.after(depan);
+            }
+            var penuh = (asli.textContent || '').trim();
+            var pertama = penuh.split(/\s+/)[0] || penuh;
+            if (depan.textContent !== pertama) depan.textContent = pertama;
+            if (depan.getAttribute('title') !== penuh) depan.setAttribute('title', penuh);
+        }
+
+        var dijadwalkan = false;
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            window.requestAnimationFrame(function () { window.requestAnimationFrame(function () { dijadwalkan = false; namaDepan(); }); });
+        }
+
+        function mulai() {
+            jadwalkan();
+            new MutationObserver(function (d) {
+                for (var i = 0; i < d.length; i++) {
+                    var t = d[i].target;
+                    if (t && t.nodeType === 3) t = t.parentElement;
+                    if (t && t.closest && t.closest('#tya-mtop')) { jadwalkan(); return; }
+                }
+            }).observe(document.body, { childList: true, subtree: true, characterData: true });
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai);
+        else mulai();
+        document.addEventListener('livewire:navigated', jadwalkan);
+    })();
+</script>

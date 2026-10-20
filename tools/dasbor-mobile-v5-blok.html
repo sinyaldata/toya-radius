@@ -1,0 +1,85 @@
+<style>
+    /* DASBOR-MOBILE-V5 (2026-10-13) -- HP: foto & nama di bar atas bisa diketuk
+     * untuk membuka halaman Profil (tempat ganti foto), karena menu pengguna
+     * bawaan disembunyikan di HP. */
+    @media (max-width: 767px) {
+        #tya-mtop .tya-mtop-foto.tya-ke-profil,
+        #tya-mtop .tya-mtop-teks.tya-ke-profil {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #tya-mtop .tya-mtop-foto.tya-ke-profil {
+            box-shadow: 0 0 0 2px #fed7aa;
+        }
+
+        .dark #tya-mtop .tya-mtop-foto.tya-ke-profil {
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.45);
+        }
+    }
+</style>
+<script>
+    (function () {
+        if (window.__tyaDasborV5) return;
+        window.__tyaDasborV5 = true;
+
+        function linkProfil() {
+            var semua = document.querySelectorAll('.fi-user-menu a[href], .fi-sidebar-nav a[href]');
+            for (var i = 0; i < semua.length; i++) {
+                var a = semua[i];
+                var href = (a.getAttribute('href') || '').toLowerCase();
+                var t = (a.textContent || '').trim().toLowerCase();
+                if (/\/(profil|profile|my-profile|akun-saya|edit-profile|profile-page|profil-saya)(\/|\?|#|$)/.test(href) || /^(profil|profile|profil saya|akun saya|my profile|edit profil)$/.test(t)) {
+                    return a.getAttribute('href');
+                }
+            }
+            return null;
+        }
+
+        function pasang() {
+            var bar = document.getElementById('tya-mtop');
+            if (!bar) return;
+            var url = linkProfil();
+            ['.tya-mtop-foto', '.tya-mtop-teks'].forEach(function (s) {
+                var el = bar.querySelector(s);
+                if (!el) return;
+                if (url) {
+                    el.classList.add('tya-ke-profil');
+                    el.setAttribute('data-tya-url', url);
+                    el.setAttribute('title', 'Buka profil');
+                    if (!el.__tyaKlik) {
+                        el.__tyaKlik = true;
+                        el.addEventListener('click', function () {
+                            var u = el.getAttribute('data-tya-url');
+                            if (u) window.location.href = u;
+                        });
+                    }
+                } else {
+                    el.classList.remove('tya-ke-profil');
+                    el.removeAttribute('data-tya-url');
+                }
+            });
+        }
+
+        var dijadwalkan = false;
+        function jadwalkan() {
+            if (dijadwalkan) return;
+            dijadwalkan = true;
+            window.requestAnimationFrame(function () { window.requestAnimationFrame(function () { dijadwalkan = false; pasang(); }); });
+        }
+
+        function mulai() {
+            jadwalkan();
+            new MutationObserver(function (d) {
+                for (var i = 0; i < d.length; i++) {
+                    var t = d[i].target;
+                    if (t && t.closest && t.closest('#tya-mtop, .fi-topbar')) { jadwalkan(); return; }
+                }
+            }).observe(document.body, { childList: true, subtree: true });
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai);
+        else mulai();
+        document.addEventListener('livewire:navigated', jadwalkan);
+    })();
+</script>

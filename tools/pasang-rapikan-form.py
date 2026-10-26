@@ -81,7 +81,7 @@ BLOK = [
     ('oranye-nyambung-blok.html', 'ORANYE-NYAMBUNG'),
     ('footer-hp-blok.html', 'FOOTER-HP'),
     ('siap-tampil-v2-blok.html', 'SIAP-TAMPIL-V2'),
-    ('daftar-ringkas-v4-blok.html', 'DAFTAR-RINGKAS-V4'),
+    ('daftar-ringkas-v5-blok.html', 'DAFTAR-RINGKAS-V5'),
     ('bersih-kembali-v3-blok.html', 'BERSIH-KEMBALI-V3'),
     ('form-kartu-hp-blok.html', 'FORM-KARTU-HP'),
 ]
@@ -103,6 +103,7 @@ HAPUS = [
     ('daftar-ringkas-blok.html', 'DAFTAR-RINGKAS'),
     ('daftar-ringkas-v2-blok.html', 'DAFTAR-RINGKAS-V2'),
     ('daftar-ringkas-v3-blok.html', 'DAFTAR-RINGKAS-V3'),
+    ('daftar-ringkas-v4-blok.html', 'DAFTAR-RINGKAS-V4'),
     ('bersih-kembali-v2-blok.html', 'BERSIH-KEMBALI-V2'),
 ]
 
